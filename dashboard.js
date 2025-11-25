@@ -432,8 +432,8 @@ async function generateWeeklySummary() {
             ${summaryData}
         `;
 
-        // Try using gemini-1.5-flash-latest
-        const modelId = 'gemini-1.5-flash-latest';
+        // Try using gemini-2.0-flash which is available in the user's list
+        const modelId = 'gemini-2.0-flash';
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
