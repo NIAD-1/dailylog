@@ -28,9 +28,20 @@ const pageSuccess = `
 
 const pageKpiSettings = `
 <section class="card" style="max-width: 600px; margin: auto;">
-  <h2>KPI Targets & Received Cases</h2>
-  <p class="muted">Set the goals for the current period. This data is used to calculate performance on the dashboard.</p>
+  <h2>Settings</h2>
+  <p class="muted">Configure application settings and KPI targets.</p>
+  
   <div id="kpiSettingsForm">
+    <h3>Teams Integration</h3>
+    <div class="row">
+        <div class="col">
+            <label>Teams Webhook URL (Power Automate)</label>
+            <input type="text" id="webhookUrl" placeholder="https://prod-...">
+            <p class="muted small">Used to create folders in Teams for Routine Surveillance reports.</p>
+        </div>
+    </div>
+
+    <h3 style="margin-top: 24px;">KPI Targets</h3>
     <div class="row">
       <div class="col">
         <label>Routine Surveillance Target</label>
@@ -95,6 +106,7 @@ function updateAuthUI(user, role) {
     btnSignIn.classList.add('hidden');
     btnSignOut.classList.remove('hidden');
     btnKpiSettings.classList.toggle('hidden', role !== 'admin');
+    if (role === 'admin') btnKpiSettings.textContent = 'Settings';
   } else {
     userInfo.textContent = 'Not signed in';
     btnSignIn.classList.remove('hidden');
@@ -165,6 +177,7 @@ async function bindKpiSettings() {
     document.getElementById('targetGsdp').value = data.targetGsdp || '';
     document.getElementById('receivedGlsi').value = data.receivedGlsi || '';
     document.getElementById('receivedComplaints').value = data.receivedComplaints || '';
+    document.getElementById('webhookUrl').value = data.webhookUrl || '';
   }
 
   document.getElementById('saveKpiSettings').onclick = async () => {
@@ -173,15 +186,16 @@ async function bindKpiSettings() {
       targetGsdp: parseInt(document.getElementById('targetGsdp').value) || 0,
       receivedGlsi: parseInt(document.getElementById('receivedGlsi').value) || 0,
       receivedComplaints: parseInt(document.getElementById('receivedComplaints').value) || 0,
+      webhookUrl: document.getElementById('webhookUrl').value.trim(),
       updatedAt: serverTimestamp()
     };
 
     try {
       await setDoc(kpiDocRef, settings, { merge: true });
-      alert('KPI settings saved successfully!');
+      alert('Settings saved successfully!');
       navigate('dashboard');
     } catch (error) {
-      console.error("Error saving KPI settings:", error);
+      console.error("Error saving settings:", error);
       alert("An error occurred. Could not save settings.");
     }
   };

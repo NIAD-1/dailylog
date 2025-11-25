@@ -475,25 +475,69 @@ async function handleSubmitWizard(root) {
                 holdCounts: {
                     drugs: parseInt(facilityData.holdCounts?.drugs || facilityData.holdDrugs || 0),
                     cosmetics: parseInt(facilityData.holdCounts?.cosmetics || facilityData.holdCosmetics || 0),
-                    medicalDevices: parseInt(facilityData.holdCounts?.medicalDevices || facilityData.holdMedicalDevices || 0),
-                    food: parseInt(facilityData.holdCounts?.food || facilityData.holdFood || 0)
+                    drugs: parseInt(facility.holdCounts?.drugs || facility.holdDrugs || 0),
+                    cosmetics: parseInt(facility.holdCounts?.cosmetics || facility.holdCosmetics || 0),
+                    medicalDevices: parseInt(facility.holdCounts?.medicalDevices || facility.holdMedicalDevices || 0),
+                    food: parseInt(facility.holdCounts?.food || facility.holdFood || 0)
                 },
-                gsdpSubActivity: facilityData.gsdpSubActivity || '',
-                Samples: parseInt(facilityData.Samplescount || 0) > 0,
-                Samplescount: parseInt(facilityData.Samplescount || 0),
-                consultativeMeetingCategory: facilityData.consultativeMeetingCategory || '',
-                consultativeProductType: facilityData.consultativeProductType || '',
+                gsdpSubActivity: facility.gsdpSubActivity || '',
+                Samples: parseInt(facility.Samplescount || 0) > 0,
+                Samplescount: parseInt(facility.Samplescount || 0),
+                consultativeMeetingCategory: facility.consultativeMeetingCategory || '',
+                consultativeProductType: facility.consultativeProductType || '',
                 createdBy: currentUser.uid,
                 createdAt: serverTimestamp()
-            });
-        }
-        await addDoc(collection(db, 'submissions'), { id: submissionId, createdBy: currentUser.uid, createdAt: serverTimestamp(), count: wizardState.facilityCount });
+            };
+
+            // Add to Firestore
+            await addDoc(collection(db, 'facilityReports'), reportData);
+
+            // Trigger Teams Webhook if Routine Surveillance
+            if (reportData.activityType === 'Routine Surveillance') {
+                await triggerTeamsWebhook(reportData);
+            }
+        });
+
+        await Promise.all(batchPromises);
+        await addDoc(collection(db, 'submissions'), { id: 'sub_' + Date.now(), createdBy: currentUser.uid, createdAt: serverTimestamp(), count: wizardState.facilityCount });
         navigate('success');
-    } catch (err) {
-        console.error("Final Submission Error:", err);
-        alert("An error occurred during submission: " + err.message);
-        submitButton.textContent = "Submit All Reports";
-        submitButton.disabled = false;
+    } catch (error) {
+        console.error("Error submitting reports:", error);
+        alert("Failed to submit reports. Please try again.");
+        btn.textContent = 'Submit All Reports';
+        btn.disabled = false;
+    }
+}
+
+async function triggerTeamsWebhook(report) {
+    try {
+        // Fetch URL from settings
+        const settingsRef = doc(db, 'settings', 'kpiTargets');
+        const settingsSnap = await getDoc(settingsRef);
+
+        if (!settingsSnap.exists()) return;
+
+        const webhookUrl = settingsSnap.data().webhookUrl;
+        if (!webhookUrl) return;
+
+        // Prepare payload
+        const payload = {
+            facilityName: report.facilityName,
+            area: report.area,
+            inspectionDate: report.inspectionDate.toISOString().split('T')[0],
+            inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : report.inspectorName,
+            activity: report.activityType
+        };
+
+        // Fire and forget (don't await response to avoid blocking UI if slow)
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(err => console.error("Webhook trigger failed:", err));
+
+    } catch (error) {
+        console.error("Error in triggerTeamsWebhook:", error);
     }
 }
 
