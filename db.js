@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, serverTimestamp, query, where, orderBy, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, serverTimestamp, query, where, orderBy, getDocs, getDoc, limit } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDKtEkK9rY7NLFLRjqexRjeUL2jj7tC6tY",
@@ -14,4 +14,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export { db, app, collection, addDoc, doc, setDoc, serverTimestamp, query, where, orderBy, getDocs, getDoc };
+export { db, app, collection, addDoc, doc, setDoc, serverTimestamp, query, where, orderBy, getDocs, getDoc, limit };
