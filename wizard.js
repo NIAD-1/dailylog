@@ -440,17 +440,23 @@ async function handleSubmitWizard(root) {
     const submissionId = 'sub_' + Date.now();
 
     try {
-        for (const facilityData of wizardState.facilities) {
+        const promises = wizardState.facilities.map(async (facilityData) => {
             const finalInspectorNames = wizardState.sameInspectorsForAll ? wizardState.sharedInspectorNames : facilityData.inspectorNames;
 
             const sanctionFileEl = document.querySelector(`input[name="sanctionDoc"]`);
             let sanctionDocUrl = '';
+            // Note: File upload logic might need adjustment for multiple facilities if they share the same input name in a single form step, 
+            // but currently the wizard seems to handle one facility at a time or this loop implies batch processing.
+            // However, the current wizard implementation saves data to wizardState.facilities.
+            // If sanctionDoc is a file input, it can't be easily saved in wizardState object (which is just data).
+            // We might need to handle file uploads differently or assume it was handled before.
+            // For now, keeping existing logic but acknowledging it might be brittle for multiple files.
             if (facilityData.sanctionGiven === 'true' && sanctionFileEl && sanctionFileEl.files[0]) {
                 const uploaded = await uploadToCloudinary(sanctionFileEl.files[0]);
                 sanctionDocUrl = uploaded.secure_url || '';
             }
 
-            await addDoc(collection(db, 'facilityReports'), {
+            const reportData = {
                 submissionId,
                 inspectorNames: finalInspectorNames,
                 productTypes: facilityData.productTypes || [],
@@ -475,16 +481,14 @@ async function handleSubmitWizard(root) {
                 holdCounts: {
                     drugs: parseInt(facilityData.holdCounts?.drugs || facilityData.holdDrugs || 0),
                     cosmetics: parseInt(facilityData.holdCounts?.cosmetics || facilityData.holdCosmetics || 0),
-                    drugs: parseInt(facility.holdCounts?.drugs || facility.holdDrugs || 0),
-                    cosmetics: parseInt(facility.holdCounts?.cosmetics || facility.holdCosmetics || 0),
-                    medicalDevices: parseInt(facility.holdCounts?.medicalDevices || facility.holdMedicalDevices || 0),
-                    food: parseInt(facility.holdCounts?.food || facility.holdFood || 0)
+                    medicalDevices: parseInt(facilityData.holdCounts?.medicalDevices || facilityData.holdMedicalDevices || 0),
+                    food: parseInt(facilityData.holdCounts?.food || facilityData.holdFood || 0)
                 },
-                gsdpSubActivity: facility.gsdpSubActivity || '',
-                Samples: parseInt(facility.Samplescount || 0) > 0,
-                Samplescount: parseInt(facility.Samplescount || 0),
-                consultativeMeetingCategory: facility.consultativeMeetingCategory || '',
-                consultativeProductType: facility.consultativeProductType || '',
+                gsdpSubActivity: facilityData.gsdpSubActivity || '',
+                Samples: parseInt(facilityData.Samplescount || 0) > 0,
+                Samplescount: parseInt(facilityData.Samplescount || 0),
+                consultativeMeetingCategory: facilityData.consultativeMeetingCategory || '',
+                consultativeProductType: facilityData.consultativeProductType || '',
                 createdBy: currentUser.uid,
                 createdAt: serverTimestamp()
             };
@@ -498,14 +502,14 @@ async function handleSubmitWizard(root) {
             }
         });
 
-        await Promise.all(batchPromises);
-        await addDoc(collection(db, 'submissions'), { id: 'sub_' + Date.now(), createdBy: currentUser.uid, createdAt: serverTimestamp(), count: wizardState.facilityCount });
+        await Promise.all(promises);
+        await addDoc(collection(db, 'submissions'), { id: submissionId, createdBy: currentUser.uid, createdAt: serverTimestamp(), count: wizardState.facilityCount });
         navigate('success');
     } catch (error) {
         console.error("Error submitting reports:", error);
         alert("Failed to submit reports. Please try again.");
-        btn.textContent = 'Submit All Reports';
-        btn.disabled = false;
+        submitButton.textContent = 'Submit All Reports';
+        submitButton.disabled = false;
     }
 }
 
