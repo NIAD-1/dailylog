@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit } from "./db.js";
+import { db, doc, getDoc, setDoc, serverTimestamp } from "./db.js";
 import { initAuth, signIn, logOut, currentUser, currentUserRole } from "./auth.js";
 import { navigate, clearRoot } from "./ui.js";
 import { startReportWizard, setWizardUser } from "./wizard.js";
@@ -8,7 +8,7 @@ const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
 
 const pageWelcome = `
-  < section class="card" style = "text-align: center; padding: 80px 20px; border: 2px solid var(--accent);" >
+<section class="card" style="text-align: center; padding: 80px 20px; border: 2px solid var(--accent);">
   <div style="margin-bottom: 32px;">
     <img src="logo.png" alt="NAFDAC Logo" style="height: 100px; margin-bottom: 24px;">
     <h1 style="font-size: 36px; font-weight: 900; color: var(--accent); margin-bottom: 16px; text-transform: uppercase;">PMS Inspector Portal</h1>
@@ -22,27 +22,20 @@ const pageWelcome = `
     <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
     <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
   </div>
-
-  <div id="recentActivityContainer" style="margin-top: 60px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto; display: none;">
-    <h3 style="color: var(--secondary-text); font-size: 14px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">Recent Submissions</h3>
-    <div id="recentActivityList" style="display: flex; flex-direction: column; gap: 12px;">
-        <!-- Activity items will be injected here -->
-    </div>
-  </div>
-</section >
-  `;
+</section>
+`;
 
 const pageSuccess = `
-  < section class="card" >
+<section class="card">
   <h2>Success</h2>
   <p>Your reports were submitted successfully.</p>
   <div class="controls">
     <button id="backToWelcome">Back to Home</button>
   </div>
-</section > `;
+</section>`;
 
 const pageKpiSettings = `
-  < section class="card" style = "max-width: 600px; margin: auto;" >
+<section class="card" style="max-width: 600px; margin: auto;">
   <h2>Settings</h2>
   <p class="muted">Configure application settings and KPI targets.</p>
   
@@ -82,8 +75,8 @@ const pageKpiSettings = `
         <button id="saveKpiSettings" class="success">Save Settings</button>
     </div>
   </div>
-</section >
-  `;
+</section>
+`;
 
 let authReady = false;
 
@@ -177,44 +170,9 @@ function bindWelcome() {
     dashboardBtn.style.display = currentUserRole === 'admin' ? 'block' : 'none';
   }
   dashboardBtn.onclick = () => navigate('dashboard');
-
-  if (currentUserRole === 'admin') {
-    // Fetch Recent Activity for Admin
-    fetchRecentActivity();
-  }
 }
 
 function bindSuccess() { document.getElementById('backToWelcome').onclick = () => navigate('welcome'); }
-
-async function fetchRecentActivity() {
-  const container = document.getElementById('recentActivityContainer');
-  const list = document.getElementById('recentActivityList');
-  if (!container || !list) return;
-
-  try {
-    const q = query(collection(db, 'facilityReports'), orderBy('createdAt', 'desc'), limit(5));
-    const snap = await getDocs(q);
-
-    if (snap.empty) return;
-
-    container.style.display = 'block';
-    list.innerHTML = snap.docs.map(d => {
-      const data = d.data();
-      const date = data.inspectionDate && data.inspectionDate.toDate ? data.inspectionDate.toDate().toLocaleDateString() : 'N/A';
-      return `
-  < div style = "padding: 12px; background: #f8f9fa; border-left: 4px solid var(--accent); border-radius: 4px;" >
-                    <div style="font-weight: 700; color: var(--primary-text);">${data.facilityName || 'Unknown Facility'}</div>
-                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--secondary-text); margin-top: 4px;">
-                        <span>${data.activityType}</span>
-                        <span>${date}</span>
-                    </div>
-                </div >
-  `;
-    }).join('');
-  } catch (err) {
-    console.error("Error fetching recent activity:", err);
-  }
-}
 
 async function bindKpiSettings() {
   document.getElementById('backToDashboard').onclick = () => navigate('dashboard');

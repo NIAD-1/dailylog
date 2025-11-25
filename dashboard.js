@@ -47,11 +47,9 @@ const pageDashboard = `
         </div>
         <div class="charts" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
             <div class="card"><canvas id="chartActivities"></canvas></div>
-            <div class="card"><canvas id="chartLga"></canvas></div>
             <div class="card"><canvas id="chartMopHold"></canvas></div>
             <div class="card"><canvas id="chartGsdv"></canvas></div>
             <div class="card"><canvas id="chartSanctions"></canvas></div>
-            <div class="card"><canvas id="chartTrend"></canvas></div>
         </div>
         <div class="card" style="margin-top:12px"><h3>Submissions</h3><div id="tableContainer"></div></div>
     </div>
@@ -162,8 +160,6 @@ async function loadDashboard() {
         buildMopHoldChart(reports);
         buildGsdvChart(reports);
         buildSanctionsChart(reports);
-        buildLgaChart(reports);
-        buildTrendChart(reports);
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
         if (error.code === 'failed-precondition') {
