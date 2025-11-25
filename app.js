@@ -1,4 +1,3 @@
-```javascript
 import { db, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit } from "./db.js";
 import { initAuth, signIn, logOut, currentUser, currentUserRole } from "./auth.js";
 import { navigate, clearRoot } from "./ui.js";
