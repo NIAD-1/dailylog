@@ -1,23 +1,30 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PMS Inspector App</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </head>
+
 <body>
   <header>
-    <div class="logo">POST MARKETING SURVEILLANCE</div>
+    <div class="logo-container">
+      <!-- Placeholder NAFDAC Logo -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/NAFDAC_Logo.png" alt="NAFDAC Logo" class="logo-img"
+        onerror="this.style.display='none'">
+      <div class="logo-text">NAFDAC Post Marketing Surveillance</div>
+    </div>
     <div id="authPanel" class="flex">
       <div id="userInfo" class="muted small">Not signed in</div>
-      <button id="btnSignIn">Sign in</button>
-      <button id="btnKpiSettings" class="hidden secondary">KPI Settings</button>
-      <button id="btnSignOut" class="hidden">Sign out</button>
+      <button id="btnSignIn" class="secondary">Sign in</button>
+      <button id="btnKpiSettings" class="hidden secondary">Settings</button>
+      <button id="btnSignOut" class="hidden secondary">Sign out</button>
     </div>
   </header>
 
@@ -28,4 +35,5 @@
 
   <script type="module" src="app.js"></script>
 </body>
+
 </html>

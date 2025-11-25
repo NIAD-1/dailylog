@@ -8,14 +8,22 @@ const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
 
 const pageWelcome = `
-<section class="card">
-  <h2>Welcome</h2>
-  <p class="muted">Start a new inspection report or go to the dashboard.</p>
-  <div class="controls" style="margin-top:12px">
-    <button id="startReport">Start Report</button>
-    <button id="openDashboard" style="display:none;">Open Dashboard</button>
+<section class="card" style="text-align: center; padding: 60px 20px; border: none; box-shadow: none; background: transparent;">
+  <div style="margin-bottom: 32px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/NAFDAC_Logo.png" alt="NAFDAC Logo" style="height: 80px; margin-bottom: 16px;">
+    <h1 style="font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 12px;">PMS Inspector Portal</h1>
+    <p style="font-size: 18px; color: var(--secondary-text); max-width: 600px; margin: 0 auto;">
+      Welcome to the Post Marketing Surveillance Daily Log system. 
+      Please sign in to submit your daily inspection reports.
+    </p>
   </div>
-</section>`;
+  
+  <div class="controls" style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+    <button id="startReport" style="padding: 16px 32px; font-size: 16px;">Start New Report</button>
+    <button id="openDashboard" class="secondary" style="padding: 16px 32px; font-size: 16px; display: none;">View Dashboard</button>
+  </div>
+</section>
+`;
 
 const pageSuccess = `
 <section class="card">
