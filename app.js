@@ -8,19 +8,19 @@ const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
 
 const pageWelcome = `
-<section class="card" style="text-align: center; padding: 60px 20px; border: none; box-shadow: none; background: transparent;">
+<section class="card" style="text-align: center; padding: 80px 20px; border: 2px solid var(--accent);">
   <div style="margin-bottom: 32px;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/NAFDAC_Logo.png" alt="NAFDAC Logo" style="height: 80px; margin-bottom: 16px;">
-    <h1 style="font-size: 32px; font-weight: 800; color: var(--accent); margin-bottom: 12px;">PMS Inspector Portal</h1>
-    <p style="font-size: 18px; color: var(--secondary-text); max-width: 600px; margin: 0 auto;">
-      Welcome to the Post Marketing Surveillance Daily Log system. 
-      Please sign in to submit your daily inspection reports.
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/NAFDAC_Logo.png" alt="NAFDAC Logo" style="height: 100px; margin-bottom: 24px;">
+    <h1 style="font-size: 36px; font-weight: 900; color: var(--accent); margin-bottom: 16px; text-transform: uppercase;">PMS Inspector Portal</h1>
+    <p style="font-size: 20px; color: var(--primary-text); max-width: 700px; margin: 0 auto; font-weight: 500;">
+      National Agency for Food and Drug Administration and Control<br>
+      <span style="font-size: 16px; color: #666;">Post Marketing Surveillance Directorate</span>
     </p>
   </div>
   
-  <div class="controls" style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
-    <button id="startReport" style="padding: 16px 32px; font-size: 16px;">Start New Report</button>
-    <button id="openDashboard" class="secondary" style="padding: 16px 32px; font-size: 16px; display: none;">View Dashboard</button>
+  <div class="controls" style="display: flex; gap: 24px; justify-content: center; margin-top: 48px;">
+    <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
+    <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
   </div>
 </section>
 `;
