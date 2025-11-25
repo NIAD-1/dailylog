@@ -432,8 +432,9 @@ async function generateWeeklySummary() {
             ${summaryData}
         `;
 
-        // Use gemini-1.5-flash for better availability and speed
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        // Try using gemini-1.5-flash-latest
+        const modelId = 'gemini-1.5-flash-latest';
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -444,6 +445,20 @@ async function generateWeeklySummary() {
         if (!response.ok) {
             const errorData = await response.json();
             console.error("Gemini API Error:", errorData);
+
+            // If model not found, try to list available models to help debug
+            if (response.status === 404 || (errorData.error && errorData.error.message.includes('not found'))) {
+                try {
+                    const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                    const listData = await listResp.json();
+                    console.log("Available Models:", listData);
+                    const modelNames = listData.models ? listData.models.map(m => m.name).join(', ') : 'None found';
+                    throw new Error(`Model '${modelId}' not found. Available models: ${modelNames}`);
+                } catch (listErr) {
+                    console.error("Failed to list models:", listErr);
+                }
+            }
+
             throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
         }
 
