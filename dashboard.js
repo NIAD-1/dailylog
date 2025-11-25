@@ -425,10 +425,21 @@ async function generateWeeklySummary() {
         `).join('\n');
 
         const promptText = `
-            Analyze the following inspection reports from the last week and provide a concise executive summary.
-            Highlight key trends, major sanctions, and areas of concern.
+            Analyze the following inspection reports from the last week and generate a **Visual HTML Report**.
             
-            Reports:
+            **Requirements:**
+            1.  **Do NOT** use Markdown. Use only HTML tags (e.g., <table>, <tr>, <th>, <td>, <ul>, <li>, <b>).
+            2.  **Style the tables** with 'border-collapse: collapse; width: 100%; margin-bottom: 16px;'. Add borders to cells.
+            3.  **Section 1: Activity Summary Table**
+                -   Columns: Activity Type | Facility Count | Inspector(s) (comma separated)
+                -   Group by Activity Type.
+            4.  **Section 2: Key Actions Table**
+                -   Columns: Facility Name | Action Taken | Mop Up Count | Hold Count | Sanction Given
+                -   Only include facilities where Mop Up > 0 OR Hold > 0 OR Sanction is Yes.
+            5.  **Section 3: Executive Summary**
+                -   A concise paragraph highlighting trends and areas of concern.
+
+            Reports Data:
             ${summaryData}
         `;
 

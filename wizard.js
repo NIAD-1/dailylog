@@ -111,7 +111,7 @@ function renderStep_FacilityForm() {
           </div>` : ''}
         <div class="row"><div class="col"><label>Date</label><input type="date" name="inspectionDate" required></div><div class="col"><label>Area</label><select name="area">${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div></div>
         <div class="row"><div class="col"><label>Facility Name</label><input name="facilityName" required></div><div class="col"><label>Facility Address</label><input name="facilityAddress" required></div></div>
-        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
+        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>Surveillance for Donated, Service & Orphan Drugs</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
         <div name="conditional" style="margin-top:8px"></div>
         <div style="margin-top:8px"><label>Action Taken / Remarks</label><textarea name="actionTaken" rows="4"></textarea></div>
       </div>
@@ -215,10 +215,10 @@ function bindStep_FacilityForm(root) {
             // Actually, ui.js has removeChoicesInstance.
             // But here we are inside the form binding, so we might need to manually remove it from the array in ui.js
             // Let's assume addChoicesInstance just pushes, so we need to filter it out.
-            // I'll update ui.js to have a remove function or just handle it here.
+            // I'll update ui.js to have a remove function or just proceed. 
+            // Actually, I can just use a unique key or manage it locally.
+
             // For now, let's assume we can just filter the global array in ui.js if we exported it, but we didn't export the array itself, only helpers.
-            // I'll add removeChoicesInstance to ui.js in the previous step or just rely on clearRoot cleaning up everything on step change.
-            // But this is dynamic update within the step.
             // I'll add a removeChoicesInstance helper in ui.js.
         }
 
@@ -269,7 +269,7 @@ function bindStep_FacilityForm(root) {
                 </div>
             </div>`;
 
-        if (['Routine Surveillance', 'Consumer Complaint'].includes(val)) {
+        if (['Routine Surveillance', 'Consumer Complaint', 'Surveillance for Donated, Service & Orphan Drugs'].includes(val)) {
             conditionalHTML = `
                 <div style="margin-top:8px">
                     <label>Product Type(s)</label>
