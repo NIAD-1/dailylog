@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp } from "./db.js";
+import { db, collection, addDoc, serverTimestamp, doc, getDoc } from "./db.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];

@@ -135,7 +135,7 @@ async function loadDashboard() {
         lastLoadedInspectors = inspectors;
 
         const inspectorSelect = document.getElementById('filterInspector');
-        if (inspectorSelect.options.length <= 1) {
+        if (inspectorSelect && inspectorSelect.options.length <= 1) {
             inspectorSelect.innerHTML = '<option value="">All Submitters</option>' + inspectors.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
         }
 
