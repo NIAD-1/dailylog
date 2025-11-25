@@ -432,7 +432,8 @@ async function generateWeeklySummary() {
             ${summaryData}
         `;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+        // Use gemini-1.5-flash for better availability and speed
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -440,7 +441,19 @@ async function generateWeeklySummary() {
             })
         });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Gemini API Error:", errorData);
+            throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
+        }
+
         const data = await response.json();
+
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            console.error("Unexpected API Response:", data);
+            throw new Error("Unexpected response format from AI service.");
+        }
+
         const aiSummary = data.candidates[0].content.parts[0].text;
 
         // Show Summary in Modal
@@ -458,7 +471,7 @@ async function generateWeeklySummary() {
 
     } catch (error) {
         console.error(error);
-        alert("Failed to generate summary. Check console for details.");
+        alert(`Failed to generate summary: ${error.message}`);
     } finally {
         btn.textContent = originalText;
         btn.disabled = false;
