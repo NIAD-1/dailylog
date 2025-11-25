@@ -196,11 +196,13 @@ function renderKpiOverview(reports, targets) {
 }
 
 function renderStatCards(data) {
+    const container = document.getElementById('statCardsContainer');
+    if (!container) return;
     const totalReports = data.length;
     const totalSanctions = data.filter(r => r.sanctionGiven).length;
     const totalMopUps = data.reduce((sum, r) => sum + (r.mopUpCount || 0), 0);
     const uniqueFacilities = new Set(data.map(r => r.facilityName)).size;
-    const container = document.getElementById('statCardsContainer');
+
     container.innerHTML = `
         <div class="stat-card"><div class="stat-card-title">Total Reports</div><div class="stat-card-value">${totalReports}</div></div>
         <div class="stat-card"><div class="stat-card-title">Facilities Visited</div><div class="stat-card-value">${uniqueFacilities}</div></div>
