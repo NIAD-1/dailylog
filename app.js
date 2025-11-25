@@ -10,7 +10,7 @@ const modalContainer = document.getElementById('modalContainer');
 const pageWelcome = `
 <section class="card" style="text-align: center; padding: 80px 20px; border: 2px solid var(--accent);">
   <div style="margin-bottom: 32px;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/NAFDAC_Logo.png" alt="NAFDAC Logo" style="height: 100px; margin-bottom: 24px;">
+    <img src="logo.png" alt="NAFDAC Logo" style="height: 100px; margin-bottom: 24px;">
     <h1 style="font-size: 36px; font-weight: 900; color: var(--accent); margin-bottom: 16px; text-transform: uppercase;">PMS Inspector Portal</h1>
     <p style="font-size: 20px; color: var(--primary-text); max-width: 700px; margin: 0 auto; font-weight: 500;">
       National Agency for Food and Drug Administration and Control<br>
