@@ -39,8 +39,9 @@ const pageDashboard = `
             <div style="flex:1;min-width:150px"><label class="small">To</label><input type="date" id="filterTo" /></div>
             <div style="flex:1;min-width:150px"><label class="small">Area</label><select id="filterArea"><option value="">All Areas</option>${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div>
             <div style="flex:1;min-width:150px"><label class="small">Submitter</label><select id="filterInspector"><option value="">All Submitters</option></select></div>
-            <div style="flex:2;min-width:200px"><label class="small">Activity</label><select id="filterActivity"><option value="">All Activities</option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
+            <div style="flex:2;min-width:200px"><label class="small">Activity</label><select id="filterActivity"><option value="">All Activities</option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option><option>Surveillance for Donated, Service & Orphan Drugs</option></select></div>
             <div style="flex:2;min-width:200px"><label class="small">Product Type</label><select id="filterProductType" multiple></select></div>
+            <div style="flex:2;min-width:200px"><label class="small">Search Facility</label><input type="text" id="filterSearch" placeholder="Search by Facility Name..." /></div>
             <button id="applyFilters">Apply</button>
             <button id="exportCsvBtn" class="secondary">Export to CSV</button>
         </div>
@@ -69,6 +70,13 @@ export const bindDashboard = (root) => {
     dashboardChoices.push(productChoices);
 
     document.getElementById('applyFilters').onclick = loadDashboard;
+    // Allow pressing Enter in search box to apply filters
+    document.getElementById('filterSearch').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            loadDashboard();
+        }
+    });
+
     document.getElementById('exportCsvBtn').onclick = () => {
         if (lastLoadedReports.length === 0) {
             alert("There is no data to export. Please apply a filter first.");
@@ -100,6 +108,7 @@ async function loadDashboard() {
     const filterInspector = document.getElementById('filterInspector').value;
     const filterFrom = document.getElementById('filterFrom').value;
     const filterTo = document.getElementById('filterTo').value;
+    const filterSearch = document.getElementById('filterSearch').value.trim().toLowerCase();
 
     const productTypeFilterEl = dashboardChoices[0].passedElement.element;
     const selectedProductTypes = Array.from(productTypeFilterEl.selectedOptions).map(option => option.value);
@@ -127,9 +136,14 @@ async function loadDashboard() {
 
     try {
         const snap = await getDocs(q);
-        const reports = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        let reports = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         const allUsersSnap = await getDocs(query(collection(db, 'users')));
         const inspectors = allUsersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Client-side filtering for search term
+        if (filterSearch) {
+            reports = reports.filter(r => (r.facilityName || '').toLowerCase().includes(filterSearch));
+        }
 
         lastLoadedReports = reports;
         lastLoadedInspectors = inspectors;
