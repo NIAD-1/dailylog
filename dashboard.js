@@ -1,7 +1,7 @@
 import { db, collection, query, where, orderBy, getDocs, doc, getDoc, setDoc, serverTimestamp } from "./db.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./ui.js";
 
-const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals"];
+const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
 
 let chartActivities, chartMopHold, chartGsdv, chartSanctions;
@@ -39,7 +39,7 @@ const pageDashboard = `
             <div style="flex:1;min-width:150px"><label class="small">To</label><input type="date" id="filterTo" /></div>
             <div style="flex:1;min-width:150px"><label class="small">Area</label><select id="filterArea"><option value="">All Areas</option>${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div>
             <div style="flex:1;min-width:150px"><label class="small">Submitter</label><select id="filterInspector"><option value="">All Submitters</option></select></div>
-            <div style="flex:2;min-width:200px"><label class="small">Activity</label><select id="filterActivity"><option value="">All Activities</option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option><option>Surveillance for Donated, Service & Orphan Drugs</option></select></div>
+            <div style="flex:2;min-width:200px"><label class="small">Activity</label><select id="filterActivity"><option value="">All Activities</option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
             <div style="flex:2;min-width:200px"><label class="small">Product Type</label><select id="filterProductType" multiple></select></div>
             <div style="flex:2;min-width:200px"><label class="small">Search Facility</label><input type="text" id="filterSearch" placeholder="Search by Facility Name..." /></div>
             <button id="applyFilters">Apply</button>

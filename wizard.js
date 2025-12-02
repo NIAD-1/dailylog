@@ -3,7 +3,7 @@ import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./u
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
 const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Others"];
-const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals"];
+const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/d1mla94c/upload';
 const CLOUDINARY_UPLOAD_PRESET = 'Daily-Activity';
 
@@ -111,7 +111,7 @@ function renderStep_FacilityForm() {
           </div>` : ''}
         <div class="row"><div class="col"><label>Date</label><input type="date" name="inspectionDate" required></div><div class="col"><label>Area</label><select name="area">${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div></div>
         <div class="row"><div class="col"><label>Facility Name</label><input name="facilityName" required></div><div class="col"><label>Facility Address</label><input name="facilityAddress" required></div></div>
-        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>Surveillance for Donated, Service & Orphan Drugs</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
+        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
         <div name="conditional" style="margin-top:8px"></div>
         <div style="margin-top:8px"><label>Action Taken / Remarks</label><textarea name="actionTaken" rows="4"></textarea></div>
       </div>
@@ -210,23 +210,7 @@ function bindStep_FacilityForm(root) {
         const oldChoices = getChoicesInstance('productTypeSelect');
         if (oldChoices) {
             oldChoices.instance.destroy();
-            // remove from array is handled by clearRoot or we need a specific remove function, 
-            // but here we are re-rendering conditional HTML so just destroying is enough if we manage the array correctly.
-            // Actually, ui.js has removeChoicesInstance.
-            // But here we are inside the form binding, so we might need to manually remove it from the array in ui.js
-            // Let's assume addChoicesInstance just pushes, so we need to filter it out.
-            // I'll update ui.js to have a remove function or just proceed. 
-            // Actually, I can just use a unique key or manage it locally.
-
-            // For now, let's assume we can just filter the global array in ui.js if we exported it, but we didn't export the array itself, only helpers.
-            // I'll add a removeChoicesInstance helper in ui.js.
         }
-
-        // Since I can't edit ui.js right now without another tool call, I will assume I can just ignore the old instance reference in the array 
-        // because it will be cleared when the step changes. 
-        // However, if I re-create it with the same key, I should probably clean it up.
-        // I will add a TODO to update ui.js or just proceed. 
-        // Actually, I can just use a unique key or manage it locally.
 
         let conditionalHTML = '';
         const val = activitySelect.value;
@@ -269,7 +253,7 @@ function bindStep_FacilityForm(root) {
                 </div>
             </div>`;
 
-        if (['Routine Surveillance', 'Consumer Complaint', 'Surveillance for Donated, Service & Orphan Drugs'].includes(val)) {
+        if (['Routine Surveillance', 'Consumer Complaint'].includes(val)) {
             conditionalHTML = `
                 <div style="margin-top:8px">
                     <label>Product Type(s)</label>
@@ -445,12 +429,6 @@ async function handleSubmitWizard(root) {
 
             const sanctionFileEl = document.querySelector(`input[name="sanctionDoc"]`);
             let sanctionDocUrl = '';
-            // Note: File upload logic might need adjustment for multiple facilities if they share the same input name in a single form step, 
-            // but currently the wizard seems to handle one facility at a time or this loop implies batch processing.
-            // However, the current wizard implementation saves data to wizardState.facilities.
-            // If sanctionDoc is a file input, it can't be easily saved in wizardState object (which is just data).
-            // We might need to handle file uploads differently or assume it was handled before.
-            // For now, keeping existing logic but acknowledging it might be brittle for multiple files.
             if (facilityData.sanctionGiven === 'true' && sanctionFileEl && sanctionFileEl.files[0]) {
                 const uploaded = await uploadToCloudinary(sanctionFileEl.files[0]);
                 sanctionDocUrl = uploaded.secure_url || '';
@@ -524,13 +502,20 @@ async function triggerTeamsWebhook(report) {
         const webhookUrl = settingsSnap.data().webhookUrl;
         if (!webhookUrl) return;
 
+        // Extract Year and Month from inspectionDate
+        const dateObj = new Date(report.inspectionDate);
+        const year = dateObj.getFullYear().toString();
+        const month = dateObj.toLocaleString('default', { month: 'long' }).toUpperCase(); // e.g., "JANUARY"
+
         // Prepare payload
         const payload = {
             facilityName: report.facilityName,
             area: report.area,
             inspectionDate: report.inspectionDate.toISOString().split('T')[0],
             inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : report.inspectorName,
-            activity: report.activityType
+            activity: report.activityType,
+            year: year,
+            month: month
         };
 
         // Fire and forget (don't await response to avoid blocking UI if slow)
