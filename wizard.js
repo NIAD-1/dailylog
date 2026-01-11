@@ -474,8 +474,15 @@ async function handleSubmitWizard(root) {
             // Add to Firestore
             await addDoc(collection(db, 'facilityReports'), reportData);
 
-            // Trigger Teams Webhook if Routine Surveillance
-            if (reportData.activityType === 'Routine Surveillance') {
+            // Trigger Teams Webhook for activities that need folder creation
+            const folderActivities = [
+                'Routine Surveillance',
+                'Consumer Complaint',
+                'GSDP',
+                'GLSI',
+                'COLD CHAIN Monitoring'
+            ];
+            if (folderActivities.includes(reportData.activityType)) {
                 await triggerTeamsWebhook(reportData);
             }
         });
@@ -505,20 +512,39 @@ async function triggerTeamsWebhook(report) {
         // Extract Year and Month from inspectionDate
         const dateObj = new Date(report.inspectionDate);
         const year = dateObj.getFullYear().toString();
-        const month = dateObj.toLocaleString('default', { month: 'long' }).toUpperCase(); // e.g., "JANUARY"
+        const month = dateObj.toLocaleString('default', { month: 'long' }).toUpperCase();
 
-        // Prepare payload
+        // Generate unique Report ID
+        const timestamp = Date.now();
+        const activityCode = getActivityCode(report.activityType);
+        const reportId = `${activityCode}-${year}-${timestamp}`;
+
+        // Calculate deadline (2 days from now)
+        const deadline = new Date();
+        deadline.setDate(deadline.getDate() + 2);
+        deadline.setHours(23, 59, 59, 0);
+
+        // Determine folder routing based on activity and product type
+        const folderConfig = getFolderConfig(report);
+
+        // Prepare enhanced payload
         const payload = {
+            reportId: reportId,
             facilityName: report.facilityName,
             area: report.area,
             inspectionDate: report.inspectionDate.toISOString().split('T')[0],
             inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : report.inspectorName,
             activity: report.activityType,
             year: year,
-            month: month
+            month: month,
+            productType: folderConfig.productType || null,
+            rootFolder: folderConfig.rootFolder,
+            subfolders: folderConfig.subfolders,
+            deadline: deadline.toISOString(),
+            gsdpSubActivity: report.gsdpSubActivity || null
         };
 
-        // Fire and forget (don't await response to avoid blocking UI if slow)
+        // Fire and forget
         fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -527,6 +553,83 @@ async function triggerTeamsWebhook(report) {
 
     } catch (error) {
         console.error("Error in triggerTeamsWebhook:", error);
+    }
+}
+
+// Helper: Get activity code for Report ID
+function getActivityCode(activity) {
+    const codes = {
+        'Routine Surveillance': 'RS',
+        'Consumer Complaint': 'CC',
+        'GSDP': 'GDP',
+        'GLSI': 'GLSI',
+        'COLD CHAIN Monitoring': 'CCM',
+        'Consultative Meeting': 'CM',
+        'Laboratory Analysis': 'LA',
+        'RASFF': 'RASFF',
+        'Survey': 'SRV'
+    };
+    return codes[activity] || 'OTH';
+}
+
+// Helper: Get folder configuration based on activity type
+function getFolderConfig(report) {
+    const activity = report.activityType;
+    const productTypes = report.productTypes || [];
+
+    // Check if this is Service/Donated/Orphan drugs
+    const specialDrugs = ['Service Drugs', 'Donated Items/Drugs', 'Orphan Drugs'];
+    const hasSpecialDrugs = productTypes.some(pt => specialDrugs.includes(pt));
+
+    switch (activity) {
+        case 'Routine Surveillance':
+            if (hasSpecialDrugs) {
+                return {
+                    rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS',
+                    productType: productTypes.join(', '),
+                    subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
+                };
+            }
+            return {
+                rootFolder: '/ROUTINE SURVEILLANCE/DRUGS',
+                productType: 'Drugs',
+                subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
+            };
+
+        case 'Consumer Complaint':
+            return {
+                rootFolder: '/CONSUMER COMPLAINT',
+                productType: productTypes.join(', ') || null,
+                subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Investigation_Data']
+            };
+
+        case 'GSDP':
+            return {
+                rootFolder: '/GDP (GOOD DISTRIBUTION PRATICE)/GSDP COMPANY FILES',
+                productType: null,
+                subfolders: ['GDP/Inspection_Reports', 'GDP/Compliance_Directives', 'GDP/CAPA_Template', 'CEVI']
+            };
+
+        case 'GLSI':
+            return {
+                rootFolder: '/GLSI MONITORING',
+                productType: null,
+                subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Data']
+            };
+
+        case 'COLD CHAIN Monitoring':
+            return {
+                rootFolder: '/COLD-CHAIN-MONITORING',
+                productType: null,
+                subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Field_Data']
+            };
+
+        default:
+            return {
+                rootFolder: '/OTHER',
+                productType: null,
+                subfolders: []
+            };
     }
 }
 
