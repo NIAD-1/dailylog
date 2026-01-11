@@ -530,7 +530,7 @@ async function triggerTeamsWebhook(report) {
         // Prepare enhanced payload
         const payload = {
             reportId: reportId,
-            facilityName: report.facilityName,
+            facilityName: report.facilityName.trim(),
             area: report.area,
             inspectionDate: report.inspectionDate.toISOString().split('T')[0],
             inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : report.inspectorName,
