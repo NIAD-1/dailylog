@@ -527,10 +527,17 @@ async function triggerTeamsWebhook(report) {
         // Determine folder routing based on activity and product type
         const folderConfig = getFolderConfig(report);
 
+        // Sanitize facility name for SharePoint (remove trailing periods/spaces and invalid chars)
+        const sanitizedFacilityName = report.facilityName
+            .trim()
+            .replace(/[."*:<>?\/\\|]/g, '') // Remove invalid SharePoint characters
+            .replace(/\.+$/, '')  // Remove trailing periods
+            .trim();
+
         // Prepare enhanced payload
         const payload = {
             reportId: reportId,
-            facilityName: report.facilityName.trim(),
+            facilityName: sanitizedFacilityName,
             area: report.area,
             inspectionDate: report.inspectionDate.toISOString().split('T')[0],
             inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : report.inspectorName,
