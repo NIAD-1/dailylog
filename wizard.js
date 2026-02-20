@@ -568,7 +568,7 @@ function getActivityCode(activity) {
     const codes = {
         'Routine Surveillance': 'RS',
         'Consumer Complaint': 'CC',
-        'GSDP': 'GDP',
+        'GSDP': 'GSDP',
         'GLSI': 'GLSI',
         'COLD CHAIN Monitoring': 'CCM',
         'Consultative Meeting': 'CM',
@@ -612,9 +612,9 @@ function getFolderConfig(report) {
 
         case 'GSDP':
             return {
-                rootFolder: '/GDP (GOOD DISTRIBUTION PRATICE)/GSDP COMPANY FILES',
+                rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES',
                 productType: null,
-                subfolders: ['GDP/Inspection_Reports', 'GDP/Compliance_Directives', 'GDP/CAPA_Template', 'CEVI']
+                subfolders: ['GSDP/Inspection_Reports', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'CEVI']
             };
 
         case 'GLSI':
