@@ -614,7 +614,7 @@ function getFolderConfig(report) {
             return {
                 rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES',
                 productType: null,
-                subfolders: ['GSDP/Inspection_Reports', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'CEVI']
+                subfolders: ['GSDP/Inspection_Report', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'CEVI/Inspection_Report']
             };
 
         case 'GLSI':
