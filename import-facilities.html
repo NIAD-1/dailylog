@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Import Facilities to Firestore</title>
+    <style>
+        body {
+            font-family: system-ui;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #2e7d32;
+        }
+
+        button {
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #log {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .stat {
+            background: #e8f5e9;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📦 Import Facilities to Firestore</h1>
+    <p>This will import all facility data from <code>facilities-data.json</code> into the <code>facilities</code>
+        Firestore collection.</p>
+
+    <div class="stats">
+        <div class="stat"><strong id="totalCount">—</strong>Total</div>
+        <div class="stat"><strong id="glsiCount">—</strong>GLSI</div>
+        <div class="stat"><strong id="gsdpCount">—</strong>GSDP</div>
+        <div class="stat"><strong id="rsCount">—</strong>Routine Surv.</div>
+    </div>
+
+    <button id="importBtn" disabled>Loading data...</button>
+    <div id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, writeBatch, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKtEkK9rY7NLFLRjqexRjeUL2jj7tC6tY",
+            authDomain: "enilama-system-app.firebaseapp.com",
+            projectId: "enilama-system-app",
+            storageBucket: "enilama-system-app.firebasestorage.app",
+            messagingSenderId: "180395774893",
+            appId: "1:180395774893:web:7bd017f2b1478f22264724"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const logEl = document.getElementById('log');
+        const btn = document.getElementById('importBtn');
+
+        function log(msg) {
+            logEl.textContent += msg + '\n';
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        let facilities = [];
+
+        // Load JSON
+        try {
+            const resp = await fetch('./facilities-data.json');
+            facilities = await resp.json();
+
+            document.getElementById('totalCount').textContent = facilities.length;
+            document.getElementById('glsiCount').textContent = facilities.filter(f => f.activityType === 'GLSI').length;
+            document.getElementById('gsdpCount').textContent = facilities.filter(f => f.activityType === 'GSDP').length;
+            document.getElementById('rsCount').textContent = facilities.filter(f => f.activityType === 'Routine Surveillance').length;
+
+            btn.textContent = `Import ${facilities.length} Facilities`;
+            btn.disabled = false;
+            log(`✅ Loaded ${facilities.length} facilities from JSON`);
+        } catch (e) {
+            log(`❌ Error loading JSON: ${e.message}`);
+        }
+
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = 'Importing...';
+
+            try {
+                // Use batched writes (max 500 per batch)
+                const BATCH_SIZE = 450;
+                let imported = 0;
+
+                for (let i = 0; i < facilities.length; i += BATCH_SIZE) {
+                    const batch = writeBatch(db);
+                    const chunk = facilities.slice(i, i + BATCH_SIZE);
+
+                    for (const facility of chunk) {
+                        const docRef = doc(collection(db, 'facilities'));
+                        batch.set(docRef, {
+                            name: facility.name || '',
+                            address: facility.address || '',
+                            activityType: facility.activityType || '',
+                            contactPerson: facility.contactPerson || '',
+                            email: facility.email || '',
+                            fileNumber: facility.fileNumber || '',
+                            lastVisitDate: facility.lastVisitDate || '',
+                            lastObservation: facility.lastObservation || '',
+                            status: facility.status || 'Active',
+                            visitCount: 0
+                        });
+                    }
+
+                    await batch.commit();
+                    imported += chunk.length;
+                    log(`📦 Batch ${Math.ceil((i + 1) / BATCH_SIZE)}: imported ${imported}/${facilities.length}`);
+                }
+
+                log(`\n🎉 Done! ${imported} facilities imported to Firestore.`);
+                btn.textContent = '✅ Import Complete';
+            } catch (e) {
+                log(`\n❌ Error: ${e.message}`);
+                btn.textContent = 'Retry Import';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

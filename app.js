@@ -3,6 +3,7 @@ import { initAuth, signIn, logOut, currentUser, currentUserRole } from "./auth.j
 import { navigate, clearRoot } from "./ui.js";
 import { startReportWizard, setWizardUser } from "./wizard.js";
 import { bindDashboard, setDashboardUserRole } from "./dashboard.js";
+import { renderSchedulerPage, setSchedulerUser } from "./scheduler.js";
 
 const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
@@ -20,6 +21,7 @@ const pageWelcome = `
   
   <div class="controls" style="display: flex; gap: 24px; justify-content: center; margin-top: 48px;">
     <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
+    <button id="openScheduler" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">Schedule Inspections</button>
     <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
   </div>
 </section>
@@ -92,13 +94,14 @@ btnKpiSettings.addEventListener('click', () => navigate('kpi-settings'));
 initAuth(db, (user, role) => {
   updateAuthUI(user, role);
   setWizardUser(user);
+  setSchedulerUser(user);
   setDashboardUserRole(role);
 
   if (!authReady) {
     authReady = true;
     const page = window.location.hash.substring(1);
 
-    if ((page === 'dashboard' || page === 'kpi-settings') && role === 'admin') {
+    if (['dashboard', 'kpi-settings', 'scheduler'].includes(page) && (role === 'admin' || page === 'scheduler')) {
       navigate(page, false);
     } else if (['report', 'success'].includes(page) && user) {
       navigate(page, false);
@@ -153,6 +156,9 @@ function renderPage(page) {
       navigate('welcome');
     }
   }
+  if (page === 'scheduler') {
+    renderSchedulerPage(root);
+  }
   if (page === 'dashboard') {
     if (currentUserRole === 'admin') {
       bindDashboard(root);
@@ -165,6 +171,11 @@ function renderPage(page) {
 
 function bindWelcome() {
   document.getElementById('startReport').onclick = () => navigate('report');
+  const schedulerBtn = document.getElementById('openScheduler');
+  if (schedulerBtn) {
+    schedulerBtn.style.display = currentUser ? 'block' : 'none';
+    schedulerBtn.onclick = () => navigate('scheduler');
+  }
   const dashboardBtn = document.getElementById('openDashboard');
   if (dashboardBtn) {
     dashboardBtn.style.display = currentUserRole === 'admin' ? 'block' : 'none';

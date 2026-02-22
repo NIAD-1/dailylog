@@ -1,0 +1,6602 @@
+[
+  {
+    "name": "DE PRINCE SUPERMARKET",
+    "address": "7/9 AKERELE STREET,GBAGADA, LAGOS STATE.",
+    "contactPerson": "Mr. Sunny - 08021113382",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PALMORA NIGERIA LIMITED",
+    "address": "47, IGI OLUGBIN STREET, PEDRO ROAD, LADI-LAK, BARIGA",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PAXO PHARMACEUTICALS LTD",
+    "address": "3, BILLINGS WAY, OREGUN IKEJA,LAGOS",
+    "contactPerson": "Mr Semilore - 08138433208",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "COMPLIMENTS SUPERMARKET",
+    "address": "19B, LOVE ALL STREET, IKOSI KETU, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SNV ENTERPRISES",
+    "address": "NO.1, KASUMU STREET, SHANGISHA BUS STOP, MAGODO, LAGOS STATE",
+    "contactPerson": "FUNMILAYO SOLOMON - 08063621953",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CARESVILLE PHARMACEUTICAL LIMITED",
+    "address": "SHOP 12&13,NO. 44 IKOSI ROAD,SHOPPING MALL,KETU,LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SENSOR MERCHANT NIG LIMITED",
+    "address": "MILLION MARK PLAZA, 96, AYANGBUNRE ROAD,IKORODU, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AFRICA RETAIL SOLUTIONS LIMITED",
+    "address": "IKEJA CITY MALL, ALAUSA, IKEJA",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CHUKSON BENBEN & SONS ENTERPRISES",
+    "address": "PLOT 381, ADEMOLA AJASA, OMOLE ESTATE PHASE 1, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FEMBROOK LIMITED",
+    "address": "GRAND SQUARE SUPERMARKET, 38B, MOBOLAJI JOHNSON AVENUE, OREGUN INDUSTRIAL AREA, IKEJA",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FOREVER LIVING PRODUCTS NIGERIA LIMITED",
+    "address": "21/23, AROMIRE AVENUE, IKEJA, LAGOS",
+    "contactPerson": "OLUFEMI OLUSANYA - 08033218138",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FMCG DISTRIBUTIONS LIMITED",
+    "address": "PLOT 22A, COCOA INDUSTRY ROAD, OFF ACME ROAD, OGBA, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GODREG NIG. LTD",
+    "address": "PLOT 2A, AYODELE DIYAN STREET, IKEJA  INDUSTRIAL ESTATE, IKEJA, LAGOS",
+    "contactPerson": "GRACE- 08058299207",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GOODISS SUPERSTORE LIMITED",
+    "address": "23, MOBOLAJI BANK ANTHONY WAY, BESIDE ETIEBET HOUSE, IKEJA",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "HEGAI AND ESTHER",
+    "address": "NO. 15, AJAO ROAD, OFF ADENIYI JONES, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "HIDDEN GLORY PERFUMES AND COSMETICS LIMITED",
+    "address": "NO. 47, ALLEN AVENUE, IKEJA, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "HUAFEI LOGISTICS NIGERIA LIMITED",
+    "address": "33, MOBOLAJI JOHNSON STREET, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "INNOVATIVE MARKETING LIMITED",
+    "address": "55, KUDIRAT ABIOLA WAY, OREGUN ROAD, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "IMPERIO INTERNATIONAL LIMITED",
+    "address": "PLOT 6, AYODELE DIYAN ROAD, IKEJA INDUSTRIAL ESTATE, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "KOBIS FOOD & SERVICES",
+    "address": "18/20, KUDIRAT ABIOLA WAY, OREGUN, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LA SIMI SKIN CARE",
+    "address": "NO 3, ALLEN AVENUE, IKEJA, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MEDPLUS LIMITED",
+    "address": "MURTALA MOHAMMED INTERNATIONAL AIRPORT (MM2), IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "OASIS SUPERMARKET LIMITED",
+    "address": "OPIC PLAZA, NEAR SHERATON HOTEL, BANK ANTHONY WAY, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ORIFLAME COSMETICS NIGERIA LIMITED",
+    "address": "43, ADENIYI JONES, IKEJA, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PERNOD RICARD NIGERIA LIMITED",
+    "address": "13B, ANTHONY ETUKUDO STREET, LEKKI PHASE 1,LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "RCY SUPERMARKET",
+    "address": "52, MKO ABIOLA CRESCENT, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SWISSGARDE NIGERIA LIMITED",
+    "address": "",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "TARIES BEAUTY LOUNGE",
+    "address": "1A, AJAO ROAD, OFF ADENIYI JONES IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "UAC RESTAURANT LIMITED",
+    "address": "PLOT 32, KUDIRAT ABIOLA WAY, OREGUN, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "WESTERN METAL PRODUCTS COMPANY LIMITED (WEMPCO)",
+    "address": "18, WEMPCO ROAD, PLOT 1A, BLOCK D, OGBA SCHEME, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CASCADE LUXURY LIMITED",
+    "address": "L21, IKEJA CITY MALL, IKEJA, LAGOS",
+    "contactPerson": "ODUWAYE ANUOLUWAPO - 08163697452",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DIVA CAKES AND CONFECTION",
+    "address": "63A, OPEBI ROAD, SALVATION BUS STOP, IKEJA LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BEDROCK MART",
+    "address": "NO 16, ISHERI OSHUN ROAD, BY TRAFFIC LIGHT/TRANSFORMER BUS STOP, BUCKNOR, EJIGBO, LAGOS STATE",
+    "contactPerson": "NNEKA NNAMA - 08034247326",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JENDOL NIGERIA LIMITED",
+    "address": "NO. 60, IDIMU ROAD, ORELOPE BUS-STOP, EGBEDA, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GREEN LANDS SUPERSTORE NIGERIA LIMITED",
+    "address": "NO. 8, ADAWATU KALITU STREET, ORELOPE ROAD, OPPOSITE LION OF JUDAH OKUNOLA, EGBEDA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PRIMEMART SUPERSTORES",
+    "address": "NO. S8, LAGOS-ABEOKUTA EXPRESSWAY, LAGOS",
+    "contactPerson": "MR. EDEBA DAVID - 07063695232",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BRAND CONCEPT STORES",
+    "address": "SHOP D023, OYO PLAZA, TRADE FAIR COMPLEX, LAGOS-BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BIVON VENTURE LIMITED",
+    "address": "A38/40, KANO PLAZA, TRADE FAIR COMPLEX, BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CHUDDY AND SOUL INTERNATIONAL LIMITED",
+    "address": "KADUNA PLAZA 1, SHOP B10, INTERNATIONAL CENTRE FOR COMMERCE, TRADE FAIR COMPLEX, BADAGRY EXPRESS ROAD, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CEE-CEE INTERNATIONAL LTD,",
+    "address": "BLOCK A, SHOP A043, BORNO PLAZA,TRADE FAIR COMLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "COSOKO WORLD LINK NIGERIA LIMITED",
+    "address": "AKWA IBOM PLAZA, SHOP A017, TRADE FAIR COMPLEX, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CYRIL INTEGRATED CONCEPT LIMITED",
+    "address": "A05/06, RIVERS PLAZA, BDAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "D.C.I. FANCY INTERNATIONAL LIMITED",
+    "address": "IKEDINACHUKWU PLAZA, RIVER II, TRADE FAIR COMPLEX, BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DUMELO VENTURES LIMITED",
+    "address": "B-062, JIGAWA PLAZA, TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "EKENE GLOBAL VENTURES",
+    "address": "BLOCK D, SHOP D007, ANAMBRA PLAZA, BALOGUN MARKET, TRADE FAIR, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ELSIM INTERNATIONAL TRADES LIMITED",
+    "address": "ATIKU ABUBAKAR HALL, OPP ENUGU PLAZA, BBA, TRADE FAIR COMPLEX, LAGOS-BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FLAWLESS COSMETICS LIMITED",
+    "address": "TRADE FAIR COMPLEX, UPWARD GLOBAL PLAZA, NO. A20 APT, BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JOCHEZ LABORATORY LIMITED",
+    "address": "KANO PLAZA, TRADE FAIR COMPLEX, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JOUF VENTURE NIGERIA LIMITED",
+    "address": "JOUF CORPORATE PLAZA, BB CENTRE FOR COMMERCE, TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JULIOZANN NIGERIA LIMITED",
+    "address": "B 10, KADUNA 1, TRADE FAIR COMPLEX, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "KUDDY COSMETICS INTERNATIONAL LIMITED",
+    "address": "SHOP F17-19, DELTA PLAZA, TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MAC RESOLUTE SERVICESLIMITED",
+    "address": "C011 STREET, JIGAWA PLAZA, TRADE FAIR COMPLEX, BADAGRY EXPRESSWAY, LAGOS STATE.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PRINCE OJI OKOSISI & SONS LTD",
+    "address": "CANARY WORLD PLAZA, 23 ROAD, FESTAC TOWN, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "STONEMARK INVESTMENT LIMITED",
+    "address": "NO 33 VINCCO PLAZA, TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "UCHESON (OKE) NIGERIA ENTERPRISES LIMITED",
+    "address": "UCHESON PLAZA, INTN'L CENTRE FOR COMMERCE, TRADE FAIR COMPLEX, BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LION BRAND LIMITED",
+    "address": "ENUGU PLAZA, SHOP B003, TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FEENOCK AND PARTNERS LIMITED",
+    "address": "ABIA BLOCK SHOPS D33-D35 TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JUMATEX INVESTMENT LIMITED",
+    "address": "AWESOME GOD PLAZA, TRADE FAIR COMPLEX LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "EMMY CLASSIC COSMETICS LIMITED",
+    "address": "A28, RIVERS PLAZA, TRADE FAIR COMPLEX, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MOLTIZEE INTL SERVICES LIMITED",
+    "address": "NEW MANDALAS, ZENITH PLAZA TRADE FAIR COMPLEX, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PF PANDAS PHARMACEUTICAL LIMITED",
+    "address": "AWESOME GOD PLAZA, BESIDE RIVERS PLAZA TRADE FAIR COMPLEX LAGOS",
+    "contactPerson": "OBIORA OKAKPU - 08169286617",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "XPEL PHARMACEUTICAL LIMITED",
+    "address": "SHOP D47, KADUNA 1 PLAZA, BBA, TRADE FAIR, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PENAFORT ENERGY NIGERIA LIMITED",
+    "address": "1, VILLAGE BUS STOP, ALONG LASU IBA ROAD, OJO, LAGOS",
+    "contactPerson": "NGOZI ONYEBUCHI - 08066482429",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BEVERAGES SPIRITS AND WINES DIRECT LIMTED",
+    "address": "23 ROAD, G-CLOSE, FESTAC, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GLOBUS SUPERMARKET LIMITED",
+    "address": "TOTAL FILLING STATION, APPLE JUNCTION, BY FESTAC LINK ROAD, AMUWO ODOFIN, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PHARMACARE PLACE",
+    "address": "51 ROAD BY NITEL GATE, FESTAC TOWN, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AMERICAN AIRSEA CARGO NIGERIA LIMITED",
+    "address": "5A, BANANA CLOSE AJAO ESTATE, ISOLO, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AYCEE LIMITED",
+    "address": "62, MARINE ROAD, GRA APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BLEND CHILDREN & VARIETY STORE LTD",
+    "address": "52, IRE AKARI ESTATE ROAD, ISOLO, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CHELLARAMS PLC",
+    "address": "110/114, OSHODI APAPA EXPRESSWAY, ISOLO, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CHI COMPANY LIMITED",
+    "address": "14, CHIVITA AVENUE, AJAO ESTATE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DEVYANI INTERNATIONAL NIG. LTD (KENTUCKY FRIED CHICKEN)",
+    "address": "110/114, OSHODI APAPA EXPRESSWAY, ISOLO, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "KIVI FOODS LTD",
+    "address": "40, CHIVITA AVENUE AJAO ESTATE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LACRISTO LAMBERT LIMITED",
+    "address": "32, ALHAJI WASIU SOLOLA CLOSE, ILAMOSE, OKE-AFA, ISOLO, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LANEJ INTEGRATED COMPANY",
+    "address": "1, AJIBADE OKE STREET, AJAO ESTATE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LEVI' KITCHEN LIMITED",
+    "address": "7, JOHNSON UMEJI CLOSE, OFF KOLAWOLE SONIBARE STREET, AJAO ESTATE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MECURE WECARE LIMITED",
+    "address": "OSHODI APAPA EXPRESSWAY, OSHODI, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PESCCO FOODS",
+    "address": "7, JOHNSON EMEJIE CLOSE, OFF KOLAWOLE SONIBARE STREET, AJAO ESTATE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "TGI DISTRI LIMITED",
+    "address": "5, LAMBERT EMASEUN DRIVE, AJAO ESTATE, LAGOS STATE.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ARIZONA TOP BRANDS LTD",
+    "address": "7/8,KOLEX AVENUE,AJAO ESTATE ISOLO,LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AMEESI COMMERCIAL ENTERPRISES LIMITED",
+    "address": "36, OJEKUNLE STREET, PAPA AJAO, MUSHIN, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BAZAAR FARM & SERVICES LIMITED",
+    "address": "14, ADE AKINSANYA STREET, OFF TOWN PLANNING WAY, ILUPEJU, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "INTERNATIONAL RESTAURANTS LIMITED",
+    "address": "18, ADE AKINSANYA AVENUE, ILUPEJU, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JUST FOOD LIMITED",
+    "address": "31, VONO ROAD MUSHIN, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "KALIKAMA INTERNATIONAL LIMITED",
+    "address": "18, ADEYINKA STREET, OFF COKER ROAD, ILUPEJU, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "OLIVORA COSMESTICS",
+    "address": "126, AGEGE MOTOR ROAD, IDI-ORO\nMUSHIN, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SHOP PERFECT LIMITED",
+    "address": "26B, OLUTUNDA STREET, OFF COKER ROAD ILUPEJU, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "VAN VED MERCANTILE LIMITED",
+    "address": "7, ADEPEGBA STREET, OFF COKER ROAD, ILUPEJU, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ZAIKA PAY 'N' SMILESUPERMARKET LIMITED",
+    "address": "2, OGUNDELE STREET, OFF BISHOP STREET, NEAR ILUPEJU POLICE STATION, ILUPEJU, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "H. B AGRICULTURE LIMITED",
+    "address": "230, MOSHOOD ABIOLA WAY, IJORA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "Mcgill INVESTMENT LIMITED",
+    "address": "BLOCK 1,PHCN QUARTERS IJORA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "OTIS MCALLISTER NIGERIA LIMITED",
+    "address": "25, AVIA UCHE STREET, BADAGRY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BICU & SONS LIMITED",
+    "address": "182/184, BROAD STREET, WUBERFORCE HOUSE, APONGBON, LAGOS ISLAND",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DE TASTEE FRIED CHICKEN",
+    "address": "PLOT 1672,OYIN JOLAYEMI STREET,VICTORIA",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MERCHANT INVESTORS LTD",
+    "address": "63, ENU-OWA STREET, LAGOS ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PRIME GROCERS INTERNATIONAL",
+    "address": "17, ISSA WILLIAMS STREET, OKE ARIN, LAGOS ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SHINE-SAROD NIGERIA LIMITED",
+    "address": "76, NNAMDI AZIKIWE STREET, TOM JONES, LAGOS ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SIGNORA BEAUTY SUPPLY LIMITED",
+    "address": "2, ISSA WILLIAMS STREET, OKE ARIN, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SSC PRODUCTIONS NIGERIA LIMITED",
+    "address": "35, MOLONEY STREET, LAGOS ISLAND, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "E.CHUKWUDI AND BROS",
+    "address": "4, OKO AWO STREET, IDUMOTA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "REAL ANACO INTERNATIONAL LIMITED",
+    "address": "20 OFFIN ROAD, OKE ARIN MARKET, BALOGUN, LAGOS ISLAND, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "B.O ILOANUGO & COMPANY LIMITED",
+    "address": "37, KOSEH STREET BALOGUN, LAGOS ISLAND, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "TEGA COSMETICS NIGERIA ENT.",
+    "address": "TEJUOSHO ULTA MORDERN MARKET, TEJUOSHO, YABA, LAGOS",
+    "contactPerson": "MRS OMOYENI CHRISTY - 07055800552",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CCECC NIGERIA LTD",
+    "address": "46, NNAMDI AZIKIWE DRIVE, EBUTE METTA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ECIRUAM & CLARK LIMITED",
+    "address": "37, OGUNLANA DRIVE, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DOMINO STORES LIMITED",
+    "address": "NO 15, COMMERCIAL AVENUE, YABA, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GRANDEX NIGERIA LIMITED",
+    "address": "NO 25, ADELABU STREET, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "NUBAN BEAUTY LTD",
+    "address": "39, OGUNLANA DRIVE, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "L'OREAL CENTER WEST AFRICA LIMITED",
+    "address": "84, ADENIRAN OGUNSANYA STREET, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AFRICAN YARD NIG LTD.",
+    "address": "23A, JIMOH ODUTOLA STREET, SURULERE, LAGOS",
+    "contactPerson": "FUNKE AKINYOSOYE - 07049222296",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MARADARAH LIMITED",
+    "address": "C10, ADENIRAN OGUNSANYA SHOPPING MALL, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PTF ORCHARDS LIMITED",
+    "address": "66, BODE THOMAS STREET, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ROSEOLA GLOBAL VENTURES",
+    "address": "PIZZA HOUSE, ADENIRAN OGUNSANYA SHOPPING MALL, SURULERE, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SUMERU ENTERPRISES SOLUTION LIMITED",
+    "address": "PLOT 44, BLOCK 1, JIMOH ODUTOLA STREET, OFF ERIC MOORE ROAD, SURULERE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "TRISTA DISTRIBUTION SERVICES",
+    "address": "1, TESLIM BALOGUN STREET, OFF ALHAJI MASHA ROAD, NEXT TO TESLIM BALOGUN STADIUM, SURULERE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BISMID AGBENI COSMETICS LIMITED",
+    "address": "NO 32, RANDLE AVENUE, SURULERE LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BEST TRADE NIGERIA LIMITED",
+    "address": "17, OGENDENGBE STREET, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "C.H.F. HERON NIGERIA LIMITED",
+    "address": "39, WAREHOUSE ROAD, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DELIFROST CATERERS NIGERIA LIMITED",
+    "address": "20, NORTH AVENUE, APAPA, LAGOS.",
+    "contactPerson": "THOMPSON OKOBOH - 07058005925",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FAHA DYNAMICS WEST AFRICAN LIMITED",
+    "address": "10, CALCUTTA CRESCENT, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FOOD MAXX LIMITED",
+    "address": "11, CALCUTTA CRESCENT, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GRAND PRODUCTS COMPANY LIMITED",
+    "address": "28, WHARF ROAD, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "H.B AGRICULTURE LIMITED",
+    "address": "230, MOSHOOD ABIOLA WAY, IJORA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "KARMA MART LIMITED",
+    "address": "17, BURMA ROAD, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "NISON FOODS LTD",
+    "address": "14B, WAREHOUSE ROAD, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "RODA COMMERCIAL VENTURES",
+    "address": "34, WAREHOUSE ROAD, APAPA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "478 LIMITED THE LANDMARK",
+    "address": "(The Invent Building), KM 29, LEKKI-EPE EXPRESSWAY,AJAH, LAGOS STATE",
+    "contactPerson": "Mr Patrick Ogbonna",
+    "email": "7034080426",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ISOCARE WEST AFRICA NIGERIA LIMITED",
+    "address": "SHOP 30, LAGOON PLAZA, OPPOSITE SHOPRITE BY SANFIELD BUS STOP, LEKKI-AJAH EXPRESSWAY, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "9 TO 7 SAVE MART GLOBAL STORES",
+    "address": "20, OJU OLOBUN STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ADCOSE LIMITED( DELIS SUPERMARKET)",
+    "address": "PLOT 1291, AKIN ODESOLA STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AMEERA VENTURES LIMITED",
+    "address": "SHOP J250, ROAD 5, IKOTA SHOPPING COMPLEX, LEKKI, LAGOS",
+    "contactPerson": "Mrs Stella Buba - 08056644612",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ARTEE GROUP PARK 'N'SHOP SUPERMARKET (SPAR)",
+    "address": "BLOCK A1, EKO COURT COMPLEX, KOFO ABAYOMI STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ARZEH INTEGRATED LIMITED",
+    "address": "251B, SAPARA WILLIAMS CLOSE,OFF ADEOLA ODEKU, BY KOFO ABAYOMI,VICTORIA ISLAND",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BODYLINE FITNESS AND GYM LIMITED",
+    "address": "6, BANK ROAD, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BOLD MUSE COMPANY LIMITED",
+    "address": "NO.5B, MUFUTAU ELETU STREET, JAKANDE, LEKKI, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BOUNTY BROOKS LIMITED",
+    "address": "B7, CHERUB MALL, KM 18, LEKKI EXPRESSWAY, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CAMPODELL' FORTE LTD",
+    "address": "NO 12, ABIKE SULAIMON STREET, LEKKI PHASE 1, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CHARISMA COSMETICS LIMITED",
+    "address": "22B, ABAYOMI SHONUGA CRESCENT, LEKKI PHASE 1, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CONCCCA GLOBAL SERVICES LIMITED",
+    "address": "SUITE H343B, IKOTA SHOPPING COMPLEX, KM. 6, LEKKI/EPE EXPRESSWAY, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DE-TASTEE FRIED CHICKEN LIMITED",
+    "address": "PLOT 1672, OYIN JOLAYEMI STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "DISTRIMARQ GLOBAL LIMITED",
+    "address": "9, ABEKE ANIMASHAUN, OFF ADMIRALTY WAY, LEKKI PHASE 1, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ATLANTIC SHRIMPERS LIMITED",
+    "address": "N0. 1, VICTORIA AROBIEKE STREET, OFF ADMIRALTY WAY, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "CANDY CO DISTRIBUTION LIMITED",
+    "address": "SHOP 6, OLAWAE COLE ONITIRI AVENUE, LEKKI, LAGOS STATE",
+    "contactPerson": "JOHN OKEREKE - 08099448946",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "EAGLE ROCK LIMITED",
+    "address": "T/A DEBONAIRS PLAZA, SPAR SUPERMARKET MALL, LEKKI-EPE EXPRESSWAY, LEKKI PHASE1, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "EARTH AND BEYOND NIGERIA LIMITED",
+    "address": "14B, AKIN ODESOLA, VICTORIA ISLAND, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "EAT'N'GO LIMITED (A FRANCHISE OF DOMINOS PIZZA & COLDSTONE CREAMRY)",
+    "address": "4, SAKA TINUBU STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "EKULO INTERNATIONAL LIMITED",
+    "address": "PLOT 1401B, TIAMIYU SAVAGE STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "MR IDOWU SAMUEL -08023684107",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BITMARTE CBIT INDUSTRIES LIMITED",
+    "address": "2ND FLOOR, O'KEMS OASIS, GOLDEN GATE, 25B, GLOVER ROAD, IKOYI, LAGOS STATE",
+    "contactPerson": "MR. EKE EKE - 07064171396",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ESSENZA INTERNATIONAL LIMITED",
+    "address": "74, AWOLOWO ROAD, IKOYI, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "BOGO BEVERAGES LIMITED",
+    "address": "ODYSSEY PLACE, 2ND FLOOR, PLOT 4, J.F KUBOYE ROAD, ONIRU, LAGOS STATE",
+    "contactPerson": "OLAYINKA ANTHONIA- 09033835915",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FAREAST MERCANTILE CO. LIMITED",
+    "address": "PLOT 721, ADETOKUNBO ADEMOLA STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FIRST MASTERS RETAILERS LIMITED (CITYDIA SUPERMARKET)",
+    "address": "9, OTUNBA ADEDOYIN OGUNGBE CRESCENT, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FIRST ZOLU NIGERIA LIMITED",
+    "address": "NO. 3, IBIYINKA CLOSE AMODU OJIKUTU STREET, VICTORIA ISLAND, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FLAWLESS BEAUTY BY MIMI INTERNATIONAL LIMITED",
+    "address": "G5-G6, VICTORIA GARDEN CITY SHOPPING MALL, V.G.C, LEKKI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FRAICHEUR NIGERIA LIMITED",
+    "address": "BELLA VISTA TOWER, 1ST AVENUE, BANANA ISLAND, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "FREDDY HIRSH NIGERIA LIMITED",
+    "address": "7TH FLOOR, MARBLE HOUSE, 1, KINGSWAY ROAD, FALOMO, IKOYI, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GAMES DISCOUNT WORLD NIGERIA LIMITED",
+    "address": "THE PALMS SHOPPING CENTER, OFF LEKKI EXPRESSWAY, VICTORIA ISLAND, LAGOS STATE.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GENERAL FOODS AND SWEETS MANUFACTURING LIMITED (CHOCOLAT ROYALE)",
+    "address": "267, ETIM-INYANG CRESCENT, VICTORIA ISLAND, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GLOBAL POWER BRANDS RESOURCES CO. LIMITED",
+    "address": "3/4 ODO OGUN CLOSE, KEFFI STREET, IKOYI, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GOODIES SUPERMARKET",
+    "address": "PLOT 237, KOFO ABAYOMI STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GOURMET KITCHENS LIMITED",
+    "address": "36, ADEOLA ODEKU STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "GRAVITAS SUPERMARKET VENTURES",
+    "address": "BLOCK 74, PLOT 17, EMMA ABIMBOLA CLOSE, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "HAANO INDUSTRIES LIMITED",
+    "address": "11B, ADEOLA ODEKU STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "HOUSE OF TARA INTERNATIONAL LIMITED",
+    "address": "ROAD 12, PLOT 13A, ONIKEPO AKANDE, OFF ADMIRALTY WAY, LEKKI PHASE 1, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "HUBMART STORES LIMITED",
+    "address": "35, ADEOLA ODEKU STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JAPARI WORLD COMPANY LIMITED",
+    "address": "8B AYENI AKINMADE STREET, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "JUST FROZEN LIMITED",
+    "address": "SHOP HI, IKOTA SHOPPING COMPLEX, LEKKI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "KRYSTAL LIMITED",
+    "address": "4A, AKIN OLUGBADE, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LA CAVE LIMITED",
+    "address": "282, AKIN OLUGBADE STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "LILIAN COLLINS LIMITED",
+    "address": "NO. 9B, AYINDE AKINMADE STREET, OFF ADMIRALTY WAY, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MADIBA MART LIMITED",
+    "address": "72, KUSENLA ROAD, LEKKI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MALLMART HYPERMARKET",
+    "address": "G5-G6, VICTORIA GARDEN CITY SHOPPING MALL, V.G.C, LEKKI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MARATHON PIZZA HUT",
+    "address": "156, AWOLOWO ROAD, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MAS VENTURES LIMITED (SCENT AND SUCH)",
+    "address": "26A, LUSHMALL, ADMIRALTY WAY, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MILDRED ANGELS UNIVERSL",
+    "address": "NO.12A, EGERTON CRESCENT, EGERTON PLACE, THE FRIEND'S COLONY, LEKKI PHASE 2, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MINISO LIFESTYLE NIGERIA LIMITED",
+    "address": "SHOPS 34 & 3, FIRST FLOOR, NO 1, BIS WAY, THE PALM SHOPPING MALL, LEKKI, LAGOS STATE",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MONTAIGNE AH LTD",
+    "address": "PLOT 226B, MURI OKUNLOLA STREET, VIC///TORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "NAIL STUDIO LIMITED",
+    "address": "9, ABOYADE COLE STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "NECTAR BEAUTY HUB LIMITED",
+    "address": "NO. 5, LAYI YUSUF CRESCENT, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ORAHBASE LIMITED",
+    "address": "ADMINISTRATION BLOCK, 1004 ESTATE, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "PERSIANAS RETAIL LIMITED",
+    "address": "PERSIANAS PALM COURT, 999A DANMOLE STREET, OFF IDEJO STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "POLARIS SUPERMARKET(SMRIDU)",
+    "address": "1623 SAKA JOJO STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "9-CARAT CASINO AND GAMES LTD",
+    "address": "PLOT 9, NORTHERN BUSINESS DISTRICT, ALONG ADMIRALTY WAY, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "Mrs Ogochukwu Mainasara",
+    "email": "7017369388",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "QFA NIGERIA LIMITED",
+    "address": "IKEJA CITY MALL, ALAUSA, IKEJA, LAGOS.",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "RENEE SUPERMARKET",
+    "address": "45, CAMEROUN STREET, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "RETAIL SUPERMARKETS NIGERIA LIMITED",
+    "address": "THE PALMS RETAIL CENTRE, OFF BRITISH INTERNATIONAL SCHOOL WAY, OFF LEKKI EXPRESSWAY, MAROKO, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ROAD CHEF COMPANY LIMITED",
+    "address": "33B, ADEBAYO DOHERTY STREET, ROAD 14, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SAMTREX NIGERIA LIMITED",
+    "address": "15, MUSA YARDUA STREET, VICTORIA ISLAND LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SAYED FARMS LIMITED",
+    "address": "PLOT 13B, OLUWOLE STREET, OFF CHIEF COLLINS ROAD, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SCOA NIGERIA PLC",
+    "address": "4A, AKIN OLUGBADE, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SERENA FINE FOODS LTD",
+    "address": "PLOT 13B, OLUWOLE STREET, OFF CHIEF COLLINS ROAD, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "MY MART LIMITED",
+    "address": "NO 17A, ADMIRALTY WAY, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "MR. KAYSSAR - 08089344442",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "SEVEN GOLDEN STARS CONCEPT",
+    "address": "7B, BISOLA DUROSINMI ETTI ROAD, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "THE ONE SPIRIT COMPANY LIMITED (LECONNAISEUR)",
+    "address": "69, ADMIRALTY WAY, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "GIFT OHUKA - 09139405469",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "THE ROAD CHEF COMPANY LIMITED",
+    "address": "33B, ADEBAYO DOHERTY STREET, ROAD 14, LEKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "THE WINEHOUSE LIMITED",
+    "address": "19A, MEKUNWEN ROAD, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "VANE STYLE FASHION LTD",
+    "address": "WOLLY'S MALL, 27, FOLA OSIBO STREET, LAKKI PHASE 1, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "VTL STORES",
+    "address": "PLOT 8, AJIRAN STREET, AGUNGI, LEKKI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "WINES AND THINGS LIMITED",
+    "address": "SHOP 1276, ROAD 4, IKOTA SHOPPING COMPLEX, LEKKI,LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "WINNERS SHOPPING CENTRE & CATERING LIMITED.",
+    "address": "237, KOFO ABAYOMI STREET, VICTORIA ISLAND, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "X.O WINES STORES LIMITED",
+    "address": "82, RAYMOND UNJOKU, OFF AWOLOWO ROAD, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ZARON COSMETICS LIMITED",
+    "address": "72, AWOLOWO ROAD, OPPOSITE TOTAL FILLING STATION, IKOYI, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ATTENABLE PRICE SUPERMARKET NIG LTD (ABITIOS SUPERMARKET)",
+    "address": "ALPHA BUS STOP, LEKKI EPE EXPRESSWAY, SANGOTEDO, LAGOS",
+    "contactPerson": "Mr. Enadeghe",
+    "email": "8022901995",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ADDAS ULTIMATELIMITED",
+    "address": "8/10, HAKEEM BALOGUN STREET, OPPOSITE TECHNICAL COLLEGE, AGIDINGBI, IKEJA, LAGOS",
+    "contactPerson": "Mr Ifeanyi Aigboje",
+    "email": "8092711267",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AFRICAN YARD NIGERIA LIMITED",
+    "address": "NO. 23A, JIMIH ODUTOLA STREET, SURULERE, LAGOS",
+    "contactPerson": "Mrs Helen Edward",
+    "email": "8030907123",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "ALLURE COSMETICS LIMITED",
+    "address": "49, OPEBI ROAD, IKEJA, LAGOS",
+    "contactPerson": "",
+    "email": "",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "AMACO RESOURCES",
+    "address": "AMACO PLAZA, BESIDE ENUGU CLUSTER ICC (BBA), TRADE FAIR COMPLEX, BADAGRY EXPRESSWAY, LAGOS",
+    "contactPerson": "Mr Obianoti Chidi-Ebere",
+    "email": "08037452694 chidi@amacoresources.com; princechydee@yahoo.com",
+    "status": "",
+    "activityType": "GLSI"
+  },
+  {
+    "name": "A Lantra Pharmacy",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/159/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "A.N CHIDOZIE PHARMACEUTICAL LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/167/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ABIROT",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/088/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Abtevic",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/324/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AD PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/204/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Adcem",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/282/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Addmore",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/281/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ADLER PRODUCT LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/013/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AFRAB CHEM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/331/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AF-UCHENNA PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/085/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AGARY PHARMACEUTICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/192/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AGU JUDEA PHARMACEUTICLAS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/147/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Ajac Samuel Pharmaceutical Limited",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/206/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AKU-UDO PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/107/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALGANDA PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/161/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALIMOSHO CHEMISTS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/153/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALKATRICE PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/184/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALL ROUND PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/074/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALL SAINTS PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/072/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALLWAYS PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/099/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ALMOND ETHICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/292/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AL-TINEZ PHARMA. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/233/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AMAKIN PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/309/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ANGANS PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/071/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ANOBS PHARMACY AND STORES LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/073/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ANOKEM PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/137/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ANTHILL INVESTMENT LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/091/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ANYI WEST PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/156/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AQUATIX",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/275/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ARINZESON PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/024/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ARTEMIS LIFE SCIENCES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/332/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ASHMOLA PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/036/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ASSENE LABOREX",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/303/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ATIDAM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/106/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ATSI PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/035/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AWARD GLOBAL",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/243/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AXION PHARMA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/283/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "AZU PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/098/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BARNAETO PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/062/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BASIC PHARMACEUTICAL HERBAL HEALTHCARE LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/337/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BAZREAL GLOBAL LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/338/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "B-EMMANUEL",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/078/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BENPAT AELIBEN LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/045/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BERLIN PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/307/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BEVANS GATE PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/021/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BIOMERIC PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/038/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BJ CHOICE PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/124/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BLESSED NEODYKE PHARM CO",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/188/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BLUE SUMMIT",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/340/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BOLUKE PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/104/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BOUCIA LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/335/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Brent Cross",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/262/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Brian Munroe",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/298/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "BRIGHT MEX",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/086/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "C. GODSWILL",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/070/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CA AND JO PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/109/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CEEMIKE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/318/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CEEMMAX PHARMACEUTICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/069/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Cemcee",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/323/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHANRAI",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/001/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHARITY NWAIZU PHARM. CO. NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/095/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Charter House",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/263/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHEV PHARMACEUTICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/165/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHI PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/003/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHIDO PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/082/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHIDOSKY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/172/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHILINK PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/054/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHIZZY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/041/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHRIS NELB PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/175/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CHUPET PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/231/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CIKASON PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/160/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CITY OF GLORY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/177/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CLARION HEALTHCARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/205/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "COLLIBEX PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/209/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "COMPLETE CARE LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/349/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CROSS & CROWN PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/076/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CU PEDRO",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/081/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CUS PHARM AND CARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/012/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "CYRUS DRUGS & MEDICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/027/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DANNY FAITH PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/033/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DARUCH PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/084/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DE GOOD GOD PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/178/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DEBINCO & SONS PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/050/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DE-LAW PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/004/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DERM PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/196/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DIAMOND HEALTHCARE LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/039/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DIVINE CHEMIST PHARM ACIST",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/018/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DIVINE LIFT PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/189/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DOMINO PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/182/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DORTEMAG",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/271/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "D-Raggio Pharmacy",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/221/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DRUG AMBASADOR  PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/174/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DRUG FIELD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/190/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DRUG IT PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/154/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DRUG STOC EHUB",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/164/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "DRUGMASTA PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/037/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "E. EGBESON CHEM PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/176/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "E.CLEMS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/056/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "E.U EMMASON",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/162/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EJIMATH",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/285/GDC",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ELBE PHARMA. NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/199/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ELFIMO PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/067/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EL-NOSCO PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/228/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EMBASSY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/191/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EMINENT DRUGS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/315/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EMMASTEV PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/208/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EMZOR PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/066/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ESTIN LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/028/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ESTYBEE PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/064/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EUROMED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/274/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EVANS THERAPEUTICS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/304/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EVERSHINE PHARMA NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/131/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EVITA MOORE NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/187/GD",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EXPHARLAB",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/348/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "exxon",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/255/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EZE YAHWEH PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/048/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EZE-SUNICH PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/223/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "EZEUDO PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/108/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Faes Farma ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/260/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FAMOUS CHEMIST LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/152/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FEDESON PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/227/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FENOMAS PHARMCEUTICAL NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/089/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FENSYL MHP",
+    "address": "",
+    "fileNumber": "",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FIDSON HEALTHCARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/015/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FRANKCY NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/133/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FRANPHINO PHARMACEUTICAL NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/083/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FRESHBORN",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/314/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "FUNKET NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/148/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GBGL PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/268/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GEMININI PHARMACEUTICALS NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/057/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GENEITH PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/123/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GENERAL GDP FILE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/112/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GENERICS & SPECIALITIES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/249/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GENEX LIFESCIENCE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/345/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GETZ PHARM NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/273/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GLACK PHARMECEUTICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/169/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Global Healthcare Ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/295/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Global One healthcare",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/288/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GLOBAL ORGANIC",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/327/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GLORY ZONE PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/020/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GM&F SPECIALIST LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/029/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GOD IS GREAT PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/134/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GOD SAINTS PHARMA LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/214/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GODS FOUNDATION",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/163/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GOLDEN GAZELLE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/319/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GOLDMOORE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/310/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GOODCARE PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/129/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GRACE JOHNSON LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/220/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "GREENLIFE PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/200/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HEALTHLINE NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/272/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HENBOSCO PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/126/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HEPHZEBAH PHARM & ALLIED PRODUCTS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/077/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HERBINCO PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/049/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HIGHRISE PHARM NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/034/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HILLY PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/235/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HOCHIEZ PHARM NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/023/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HOLEX PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/166/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HOLY TRINTY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/236/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HOMILY'S PROSPECTS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/019/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HUGO DRUGS LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/202/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "HYGIEIA PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/030/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ICE REMEDIES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/347/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "IDEAL EAGLES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/329/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "IKOMO PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/022/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "IKON PHARM NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/058/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "IMMACULATE CARE PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/207/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "INSPIRATION PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/216/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "INTERPHARM GMBH",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/242/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "INTERPHARMA INDUSTRIES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/247/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "IYK-MAVIAN PHARM NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/032/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "J.O SARCHMORE PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/237/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Jane-Madok",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/269/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JAWA INTERNATIONAL LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/339/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JIN SPECTRAL PHARMACEUTICAL",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/330/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JMD PHARMALINK LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/005/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JOE DRUG PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/044/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JOEBIZ PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/219/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JOHNVIKEE PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/181/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JOMEK",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/238/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JONCO PHARMACEUTICAL LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/336/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JOSEFERKMART PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/170/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JTL PHARMACEUTICAL AND CO LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/105/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JUDE THADDY PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/080/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JUDEX CHAMP PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/110/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JUMENCO PHARMACEUTICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/138/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JUSTINAK PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/217/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "JUVYWAY PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/132/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KATCEE-MACKENZIE LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/150/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KCH CONSUMER",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/248/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KEDOL HEALTH PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/100/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KENIX PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/343/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KOJOS PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/130/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KRANTZ PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/157/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KRIS DANIEL PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/052/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KRISPHINA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/079/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "KUNIMED1",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/306/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LABETA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/289/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LADAMOS PHARM. NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/116/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LIFE POINT PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/061/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LINCO STAR PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/173/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LIVE BETA PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/145/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LIVE MORE PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/185/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LUGZ PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/115/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LYN EDGE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/261/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "LYNDUS PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/119/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "M.U. SAM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/146/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MAC EVENTUS PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/158/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MALVEN MEDICS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/211/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MARCSON HEALTHCARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/244/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MARK PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/197/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MARY IYKE PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/155/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MAYDON",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/293/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MC TOTALCARE PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/042/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MCFORIS Pharm ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/311/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MDS PHARMA LOGISTICS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/101/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MECURE IND. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/122/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MEDEXPRESS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/284/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MEDITRADE NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/103/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MEDVACC PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/252/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MEEK MEDICAL CO. NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/068/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MEEKY MORE PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/087/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MELOKION",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/346/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MERCED PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/102/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MERIT HEALTHCARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/256/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Micronova Pharm LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/300/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Mid century Agro Allied Ventures",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/326/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MIVERO PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/140/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MOODY DRUGS CO. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/114/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MUJID",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/278/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MULTIBASE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/291/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "MULTICHARIS PHARMACY & CHEM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/093/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NAFRO PHARMA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/286/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NANCIL1",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/290/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NEAT LINE PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/051/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NECTAR",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/265/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NEIMETH",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/297/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NEMITT PHARMACEUTICALS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/006/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NEOLIFE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/254/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NEW HEIGHT PHARMA LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/016/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NICH DRUGS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/047/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NIGERIA AIRFORCE DRUG MANUFACTURING UNIT",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/111/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NKOYO CHEMISTS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/296/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "NUGENIC",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/341/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "OBITEX DIVINE PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/168/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "OCICAN PHARMACY & STORES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/075/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Olpharm Nigeria Limited",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/321/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ONEC PHARM AND CHEM CO. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/094/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ONIFAM LABORATORIES LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/201/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ONWUADI AND SONS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/112/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Orange drugs ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/294/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "OTS UNITED NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/097/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Oxus pharma",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/301/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Pacmal intl ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/313/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PAKEN VENTURES LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/125/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PANGENE BIOTECH",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/317/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PATVICS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/128/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PEMASON",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/302/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PHARMABOX VENTURES LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/334/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Pharmadeal nig ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/328/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PHARMAMAX NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/245/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PHARMFORTE NETWORK LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/007/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Pharmgate Healthcare LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/267/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PHILIPS PHARMACEUTICAL LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/002/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Pinnacle Health Pharm Ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/203/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PLACEWARE NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/253/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PRECIOUS TRUST",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/246/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "PZ CUSSONS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/017/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "R.L UPRIGHTWAY NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/151/GP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "RALPHONES PHARMACEUTICAL LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/139/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "REALS PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/014/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "REMSON",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/171/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "RICNOS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/320/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "RIGHTMARES PHARM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/121/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ROCA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/239/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Roche Products ltd",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/279/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ROM CHIDEK",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/118/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ROYAL PRIESTHOOD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/218/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "S AND S DUKE PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/043/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "S. UMUNNA PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/226/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SA PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/120/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SABIZ PHARMACEUTICAL NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/090/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SAFCO MEGA SOLUTION LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/065/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SAGAR VITACEAUTICALS NIG LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/194/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SAI SAGAR",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/277/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SAM SUNNY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/215/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SAMNTO PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/183/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Santa Care LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/270/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SANTUS PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/142/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SAVOCENT PHARMA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/342/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Seagreen Pharmaceuticals",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/259/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SEC PHARMACEUTICAL",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/225/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SEPAT PHARMACEUTICAL LIMITED",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/344/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SHALINA HEALTHCARE LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/198/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SHEPHERD HEALTH",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/280/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SILVER BROTHERS PHARM CHEM LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/008/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SKINPHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/312/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SKY PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/212/GP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SLOCHARS PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/229/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Solid Accord",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/276/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SOLOCHUKS PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/230/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SOMEC UNITED PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/136/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SONYDON & SON",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/222/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SOOD& JINS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/046/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SPINE PRODUCT LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/232/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "STANDARD GENERICS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/333/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "STERLING BIOPHARMA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/258/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "STRIDELIFESCIENCES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/305/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SUITELIFE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/308/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SUMMIT HEALTHCARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/251/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SUNLIGHT LINK PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/234/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SURPLUS PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/180/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "SWIPHA NIG. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/127/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TAYLEK",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/325/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TEACO PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/149/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TEKA PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/195/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TETA PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/266/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "THINK ENTERNITY DRUGS LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/144/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Thompson & Grace Pharm",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/287/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TIBROS PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/060/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TOC PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/316/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TONIVIC",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/224/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TRICARE",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/257/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TRINITAS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/322/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TUM TAY COMPANY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/213/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "TURNER WRIGHT",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/299/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "U-N PHARMA SOLUTION LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/092/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "UNIQUE PHARMACEUTICALS",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/241/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "UNITED ABC PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/135/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "UNITED AFRICA LABORATORY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/143/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "UZOKENN PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/186/GD",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VACCI PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/055/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VICTORIOUS PHARMACY LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/096/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VINCO PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/193/GD",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VITBORAH",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/210/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VITBORAH PHARMA LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/011/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VIVIGOLD LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/031/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "VIXA PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/117/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "WINDOM PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/179/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "WORLDWIDE COMMERCIAL VENTURES",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/009/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "XCEL PHARMA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/250/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "YENKEE PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/063/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZADIP PHARMA",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/240/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZEST PHARM",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/053/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZIFAM PINNACLES LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/141/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZIM PHARM. LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/026/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZOGGAR PHARMA LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PMS/264/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZOLON HEALTHCARE LTD",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/010/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "ZOMENCE PHARMACY",
+    "address": "",
+    "fileNumber": "NAFDAC/LA/PVPMS/025/GDP",
+    "activityType": "GSDP"
+  },
+  {
+    "name": "Gottgabe Pharmacy",
+    "address": "3.\u00a0\u00a0\u00a0\u00a0\u00a0 26, Prince Adebowo Adediji Street, Lekki Phase 1",
+    "lastVisitDate": "24th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Widdi RX",
+    "address": "5.\u00a0\u00a0\u00a0\u00a0\u00a0 Marwa mall, Widdi pharmacy (Change Address)",
+    "lastVisitDate": "12th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Unividol Pharmacy",
+    "address": "176, Ikotun Igando Road, Lagos",
+    "lastVisitDate": "13th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Hakron\u00a0Rx",
+    "address": "No. 95, Oshodi Road, Oshodi",
+    "lastVisitDate": "14th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Gudema\u00a0Rx",
+    "address": "No. 35 Church Street, Oshodi",
+    "lastVisitDate": "14th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Chard",
+    "address": "No. 11,\u00a0Adebowole\u00a0Street, Mende",
+    "lastVisitDate": "15th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "RDC Pharmacy",
+    "address": "No. 7, Bush Street Anthony Lagos",
+    "lastVisitDate": "31st January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Variety Pharmacy & Stores",
+    "address": "5 Aderibigbe\u00a0shita, Maryland\u00a0Lagos\u00a0state.",
+    "lastVisitDate": "15th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Medix Pharmacy",
+    "address": "3, Ajose Street, Mende, Maryland\u00a0Lagos state",
+    "lastVisitDate": "31st January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Al\u00a0ticare\u00a0Pharmacy",
+    "address": "8\u00a0Bajulaiye\u00a0street Shomolu",
+    "lastVisitDate": "26th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Healthward-ed Pharmacy",
+    "address": "107\u00a0Bajulaiye\u00a0strt\u00a0Shomolu",
+    "lastVisitDate": "29th April",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Well green Pharmacy",
+    "address": "47\u00a0Bajulaiye\u00a0street\u00a0Shomolu",
+    "lastVisitDate": "29th April",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Reinomed Pharmacy",
+    "address": "24\u00a0BAJULAIYE ROAD,\u00a0SHOMOLU,\u00a0\u00a0LAGOS\u00a0STATE",
+    "lastVisitDate": "26th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Safecare Pharmacy",
+    "address": "2 ABULE-OKOTA\u00a0ROAD,\u00a0SHOMOLU,\u00a0LAGOS STATE.",
+    "lastVisitDate": "26th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Medstar Pharmacy",
+    "address": "16\u00a0BARIGA\u00a0ROAD,\u00a0SHOMOLU,\u00a0LAGOS STATE.",
+    "lastVisitDate": "22ND MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sitawell\u00a0Rx",
+    "address": "84, ADENIRAN OGUNSANYA STREET, SURULERE, LAGOS",
+    "lastVisitDate": "28th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Dominus Rx",
+    "address": "5, ADENIRAN OGUNSANYA, SURULERE, LAGOS",
+    "lastVisitDate": "28th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Healthrite\u00a0Rx",
+    "address": "72, AKERELERE STR., SURULERE, LAGOS",
+    "lastVisitDate": "28th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ski Pharmacy",
+    "address": "183, AKERELERE ROAD, SURULERE, LAGOS",
+    "lastVisitDate": "26TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DRUG COAST PHARMACY",
+    "address": "71\u00a0IJESHA ROAD, SURULERE, LAGOS",
+    "lastVisitDate": "27TH MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Bistol\u00a0Pharmacy",
+    "address": "21 Simbiat Abiola way, Ikeja",
+    "lastVisitDate": "28th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Rommy Freed Pharmacy",
+    "address": "7\u00a0Oriyomi\u00a0 street, Ikeja",
+    "lastVisitDate": "22th July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Alatra\u00a0Pharmacy",
+    "address": "7\u00a0Oriyomi\u00a0 street, Ikeja",
+    "lastVisitDate": "29th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Rufaddas Medical Supplies",
+    "address": "Suite 41, Aderonke plaza, 20 Olowu street, Ikeja",
+    "lastVisitDate": "29th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ollies Pharmacy",
+    "address": "42, Olowo street, Ikeja",
+    "lastVisitDate": "29th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Health Serve Plus Pharmacy",
+    "address": "1 Toyin street Ikeja",
+    "lastVisitDate": "29th January, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Bydow Pharmacy",
+    "address": "Plot 124 TF, Kubioye Oniru Estate, Lekki 1. Lagos state.",
+    "lastVisitDate": "1st August, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DOZ Medical Upward Care Pharmacy",
+    "address": "Shop 1/2 ,\u00a0Dan Ville Mall, Orchid Road,\u00a0Eleganza, Lekki II,\u00a0Lagos State.",
+    "lastVisitDate": "6th February, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Benbol Pharmacy",
+    "address": "Vickie\u2019s\u00a0plaza, Lekki-Epe Expressway, Opposite Crown Estate,\u00a0Sangotedo, Lagos State",
+    "lastVisitDate": "12th February, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OKC Restore Health Pharmacy",
+    "address": "9 Sikiru\u202fOtunba\u202fStreet,\u202fMaza-Maza,\u202fLagos state",
+    "lastVisitDate": "9th February, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Seadone Pharmacy",
+    "address": "16, Old Ojo Road, Maza-maza,\u00a0Lagos state.",
+    "lastVisitDate": "9th February, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Tomal Medipharm Pharmacy",
+    "address": "NO.\u00a0126, ODOJO\u00a0ROAD,\u00a0MAZA-MAZA,\u00a0LAGOS STATE",
+    "lastVisitDate": "9th February, 2026",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PIUS AND GINA PHARMACY",
+    "address": "IKEJA, LAGOS",
+    "lastVisitDate": "30TH JANUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ALL DRUGS PHARMACY",
+    "address": "77B MOBOLAJI BANK ANTHONY WAY, IKEJA, LAGOS",
+    "lastVisitDate": "30TH JANUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "RYANETHAN PHARMACY",
+    "address": "NO 12, EMINA CRESCENT, IKEJA, LAGOS",
+    "lastVisitDate": "3RD FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ADDMORE PHARMACY",
+    "address": "251 AGEGE MOTOR ROAD, MUSHIN, LAGOS",
+    "lastVisitDate": "6TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BENMAX PHARMACY",
+    "address": "54 ISOLO ROAD, MUSHIN, LAGOS",
+    "lastVisitDate": "7th November",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CHILINK PHARMACY",
+    "address": "241 AGEGE MOTOR ROAD, MUSHIN, LAGOS",
+    "lastVisitDate": "6TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ETHICS PHARMACY",
+    "address": "NO 1 OLATUNJI STREET, OSHODI, LAGOS",
+    "lastVisitDate": "6TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EXPRESS PHARMACY",
+    "address": "223  AGEGE MOTOR ROAD, MUSHIN, LAGOS",
+    "lastVisitDate": "6TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SABIZ PHARMACY",
+    "address": "23 ADEYEMI STREET, OSHODI, LAGOS",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GUUDS PHARMACY",
+    "address": "ELEGANZA BUS STOP, LEKKI, LAGOS",
+    "lastVisitDate": "27TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JENNY & JESSY PHARMACY",
+    "address": "CASTLE ROCK DRIVE, VICTORY PARK, LEKKI, LAGOS",
+    "lastVisitDate": "27TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "UBA PHARMACY",
+    "address": "ORCHID PLAZA, ASHLEY PLAZA",
+    "lastVisitDate": "27TH  FEBRUARY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MASSEY VICKERS PHARMACY",
+    "address": "INSIDE TWINS FAJA STORE, EGBEDA, LAGOS",
+    "lastVisitDate": "5TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMNET PHARMACY",
+    "address": "",
+    "lastVisitDate": "5TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMATON 693 COOP MULTIPURPOSE",
+    "address": "136 EGBEDA-ISHERI ROAD, LAGOS",
+    "lastVisitDate": "6TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GRACE JOHNSON'S PHARMACY",
+    "address": "35, FAJUMOBI STREET, BY PONLE BUS STOP, EGBEDA, LAGOS",
+    "lastVisitDate": "6TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SILVER BROTHERS PHARMACY",
+    "address": "116 IJESHA ROAD, SURULERE, LAGOS",
+    "lastVisitDate": "12TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PURE LIFE PHARMACY",
+    "address": "NO 146 LIGALI, AYORINDE, VICTORIA ISLAND, LAGOS",
+    "lastVisitDate": "25TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "AXEL PHARMACY",
+    "address": "NRC COMPOUND EBUTE METTA, LAGOS",
+    "lastVisitDate": "27TH MARCH 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "21ST CENTURY HEALTH SHOP & PHARMACY",
+    "address": "22 M.E.A PLAZA, CMD ROAD, IKOSI LAGOS",
+    "lastVisitDate": "10TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "3R PHARMACARE",
+    "address": "46 ADEKUNLE BANJO MAGODO SHANGISHA LAGOS",
+    "lastVisitDate": "10TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ABIDOL PHARMACY",
+    "address": "21 OSHO ROAD, OPEBI LINK BRIDGE IKEJA LAGOS",
+    "lastVisitDate": "23RD APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ALTICARE PHARMACY",
+    "address": "NO 8 BAJULAYE ROAD SURULERE, LAGOS",
+    "lastVisitDate": "30TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BELMIC PHARMACY",
+    "address": "19 KUDIRAT ABIOLA WAY OREGUN LAGOS",
+    "lastVisitDate": "16TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BENGERTY PHARMACY",
+    "address": "3 KUDIRAT ABIOLA WAY OREGUN LAGOS",
+    "lastVisitDate": "16TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BID PEARLS PHARMACY",
+    "address": "26 ODUBSI STREET BARIGA LAGOS",
+    "lastVisitDate": "28TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BONCET PHARMACY",
+    "address": "28 ADELABU STREET OFF MASHA ROAD SURULERE LAGOS",
+    "lastVisitDate": "7TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CARECORE PHARMACY",
+    "address": "21 ARIKEWUYO STREET ONIPAN, LAGOS",
+    "lastVisitDate": "30TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DIAMOND GRACE PHARMACY & SUPERMARKET",
+    "address": "32 RAFIU BABATUNDE STREET BY TINUBU ROAD, APPLE JUNCTION, AMUWO ODOFIN, LAGOS",
+    "lastVisitDate": "7TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DORGLORY PHARMACY",
+    "address": "3 OLANIYI STREET ORELOPE BUS STOP EGBEDA LAGOS",
+    "lastVisitDate": "15TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DUBAS PHARMACY & STORES LTD",
+    "address": "11 KAYODE STREET ONIPANU LAGOS",
+    "lastVisitDate": "30TH APRIL2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ENAVEC PHARMACY & SUNDRIES",
+    "address": "HOUSE 26, 4TH AVENUE FESTAC LAGOS",
+    "lastVisitDate": "10TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FLICSMED PHARMACY",
+    "address": "15 ABAYOMI STREET OREGUN LAGOS STATE",
+    "lastVisitDate": "16TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GLOBAL HEALTHCARE",
+    "address": "12 OLUSOJI IDOWU STREET OFF ADEKUNLE ODUNLAMI CRESCENT ILLUPEJU LAGOS",
+    "lastVisitDate": "14TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALS PHARMACY",
+    "address": "14 KUDIRAT ABIOLA WAY OREGUN LAGOS",
+    "lastVisitDate": "16TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALTH PYRAMID PHARMACY & STORES",
+    "address": "33 ISHERI ROAD OGBA-AGUDA IKEJA LAGOS",
+    "lastVisitDate": "23RD APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HENOR PHARMACY",
+    "address": "21 ROAD JCL FESTAC LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JOUF HEALTH & BEAUTY PHARMACY",
+    "address": "SKY CASTLE PLAZA, APPLE JUNCTION, EGBEDA LAGOS",
+    "lastVisitDate": "7TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KAYCEE PHARMACY",
+    "address": "511 ROAD OPPOSITE SLOT FESTAC LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LEADMART PHARMACY",
+    "address": "6TH AVENUE CANAL GATE FESTAC TOWN LAGOS",
+    "lastVisitDate": "7TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HMR APEX PHARMACY",
+    "address": "32 LANRE AWOLOKUN STREET GBAGADA PHASE 2 LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LIFE BOUNTY PHARMACY",
+    "address": "21 ROAD HOUSE 1 F1 CLOSE FESTAC, LAGOS",
+    "lastVisitDate": "10TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LIMAN PHARMACY",
+    "address": "14 LANRE AWOLOKUN STREET GBAGADA PHASE 2 LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MAWUCARE PHARMACY",
+    "address": "OWRO ROAD BARIGA LAGOS",
+    "lastVisitDate": "29TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDPLUS PHARMACY",
+    "address": "113 OGUNLANA STREET SURULERE LAGOS",
+    "lastVisitDate": "18TH JULY 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDVAC PHARMACY",
+    "address": "3 ADELABU STREET MASHA BUS STOP SURULERE LAGOS",
+    "lastVisitDate": "7TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MICHOFAM AND FAMILY CARE PHARMACY",
+    "address": "12 LANRE AWOLOKUN STREET GBAGADA PHASE 2 LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OSBUD PHARMACY",
+    "address": "32 ROAD BESIDE FIRST BANK FESTAC LAGOS",
+    "lastVisitDate": "4TH JANUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OX PHARMACY",
+    "address": "32 ROAD BESIDE ACCESS BANK FESTAC LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARM AFFAIRS & SUPERMARKET",
+    "address": "NO 6 COOKER ROAD ILUPEJU LAGOS",
+    "lastVisitDate": "30TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SABEST PHARMACY",
+    "address": "19 CHURCH STREET GBAGADA PHASE 1 LAGOS",
+    "lastVisitDate": "19TH JANUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TOTAL PHARMACY",
+    "address": "9A HOSPITAL ROAD GBAGADA PHASE 1 LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TRUE CARE PHARMACY",
+    "address": "59, ADEKUNLE BANJO\u00a0STREET,\u00a0SHANGISHA,\u00a0LAGOS STATE",
+    "lastVisitDate": "7TH FEBUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "VICTORY DRUGS PHARMACY",
+    "address": "PLOT 57A 11 ROAD FESTAC LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZAM ZAM PHARMACY",
+    "address": "32 ROAD FESTAC LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZEMAX PHARMACY",
+    "address": "MERCY SEAT PLAZA AKOWONJO ROAD EGBEDA LAGOS",
+    "lastVisitDate": "9TH APRIL 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARM AID PHARMACY",
+    "address": "30 ENTRANCE EXIT JAKANDE GATE ISHERI OSUN ROAD LAGOS",
+    "lastVisitDate": "21ST MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PEAK PHARMACY & STORES",
+    "address": "12 ISHERI OSUN ROAD LAGOS",
+    "lastVisitDate": "21ST MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "WELLGREEN PHARMACY",
+    "address": "NO 47 BAJULAYE ROAD YABA LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "VASTOVER DRUGS & ALLIED PRODUCTS",
+    "address": "GBAGADA EXPRESSWAY LAGOS",
+    "lastVisitDate": "6TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TURN BY TURN PHARMACY",
+    "address": "12 CDAT STREET BORNO WAY OYIGBO LAGOS",
+    "lastVisitDate": "15TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TRIPLE C PHARMACY",
+    "address": "23 FOLAYO STREET YABA LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "THEOLAIT PHARMACY",
+    "address": "23 OKE AYO STREET OFF AGBOTIKUYO JUNCTION DOPEMU AGEGE LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SURPLUS PHARMACY",
+    "address": "NO 48 IGI OLUGBIN STREET BARIGA LAGOS",
+    "lastVisitDate": "12TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ST TOBY PHARMACY",
+    "address": "46 FASHORO STREET SURULERE LAGOS",
+    "lastVisitDate": "15TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SIMSTEL PHARMACY & STORES",
+    "address": "96 SHIPEOLU STREET PALMGROOVE LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SHOP LIFE PHARMACY",
+    "address": "68 ISHERI OSUN ROAD BUCKNOR LAGOS",
+    "lastVisitDate": "21ST MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ROYAL CHANNELS PHARMACY",
+    "address": "7TH AVENUE BESIDE 73B ROAD FESTAC LAGOS",
+    "lastVisitDate": "14TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "RODJENK PHARMACY",
+    "address": "118, Mba Road,\u00a0Oregie,\u00a0Ajegunle, Lagos",
+    "lastVisitDate": "14TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ROCASON PHARMACY",
+    "address": "NO 8 AKINTAN STREET LUTH ROAD MUSHIN LAGOS",
+    "lastVisitDate": "12TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PINCO  PHARMACY",
+    "address": "IGI OLUGBIN STREET PEDRO ROAD BARIGA LAGOS",
+    "lastVisitDate": "12TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OTS UNITED PHARMACY",
+    "address": "NO 2 AYIDE STREET ORILE AGEGE LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OLIVA NELSON PHARMACY",
+    "address": "23 KELANI STREET MUSHIN LAGOS STATE",
+    "lastVisitDate": "12TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ABEK PHARMACY",
+    "address": "143, IPAJA ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ACTICARE PHARMACY",
+    "address": "12, OLUBUMI STREET, LEKKI PHASE 1, LAGOS",
+    "lastVisitDate": "15TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BROOKS PHARMACY",
+    "address": "41, ADEBAYO DOHARTY, LEKKI PHASE 1, LAGOS",
+    "lastVisitDate": "15TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CANICE HANS PHARMACY",
+    "address": "10, AKINHANMI STREET, SURULERE, LAGS",
+    "lastVisitDate": "6th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CHEC BRYNE PHARMACY",
+    "address": "1, FRANPAT STREET, BUCKNOR, EJIBO, LAGOS",
+    "lastVisitDate": "21ST MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CHUKSMEAL PHARMACY",
+    "address": "31, MORCAS STREET, AGEGE, LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DELRAN PHARMACY",
+    "address": "8, IJAOYE STREET, JIBOWU, LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DRUG CONSULT PHARMACY",
+    "address": "52, SHIPEOLU STREET, PALMGROOVE, LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EBADEL PHARMACY",
+    "address": "46, ISAAC JOHN STREET, YABA, LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EVERONE PHARMACY",
+    "address": "54, DOPEMU ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EZE UGO DE BEST PHARMACY",
+    "address": "50, SURULERE STREET, DOPEMU, LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FLORA TRUWORTHS PHARMACY",
+    "address": "LAGOS ISLAND MARKET, LAGOS",
+    "lastVisitDate": "6TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GRACE PHARMACY",
+    "address": "26, CARDOSO STREET, ALONG GEN. HOSPITAL, APAPA, AJEGUNLE, LAGOS",
+    "lastVisitDate": "14TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HALE & HEARTY PHARMACY",
+    "address": "POSH PLAZA, ADMIRALTY WAY, LEKKI PHASE 1",
+    "lastVisitDate": "15TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALTH ACE PHARMACY",
+    "address": "144, DOPEMU ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALTHYLIFE PHARMACY",
+    "address": "JOSH'S PLACE, PLOT 13, OLADIMEJI ALAO STREET, OFF FREEDOMWAY ROAD, LEKKI PHASE 1, LAGOS",
+    "lastVisitDate": "15TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HENICARE PHARMACY",
+    "address": "24, ADARANIJO STREET, KADUPE BUS-STOP, LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "IYK KONAVIAN PHARMACY",
+    "address": "18, AKINRILO STREET, BAJULAYE ROAD, SHOMOLU, LAGOS",
+    "lastVisitDate": "12TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JANE-MADOK PHARMACY",
+    "address": "3, ISHERI OSUN ROAD, JAKANDE ESTATE, LAGOS",
+    "lastVisitDate": "21ST MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JAYBION PHARMACY",
+    "address": "7, 8, & 9 BOLA TINUBU SHOPPING ARCADE OPP. MFM, PEN CINEMA, AGEGE, LAGOS",
+    "lastVisitDate": "13TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JENCEE PHARMACY & SUNDRIES",
+    "address": "PLOT 1776, 7TH AVENUE, FESTAC, LAGOS",
+    "lastVisitDate": "14TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KRIS DANIELS PHARMACY",
+    "address": "2, WATER FRONT, FIRST AVENUE, FESTAC, LAGOS",
+    "lastVisitDate": "14TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MAMS PHARMACY",
+    "address": "1, TOLU ROAD, OLODI-APAPA, LAGOS",
+    "lastVisitDate": "14TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDRITE PHARMACY",
+    "address": "148, ONIWAYA ROAD DOPEMU, AGEGE, LAGOS",
+    "lastVisitDate": "",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OCTAVIA PHARMACY",
+    "address": "33, OKUTA ROAD, BARIGA, LAGOS",
+    "lastVisitDate": "8TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OLINT PHARMACY",
+    "address": "BLOCK 100, VULCANIZER BUS-STOP, ISHERI, OSUN ROAD, LAGOS",
+    "lastVisitDate": "20TH MAY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALTHPLUS PHARMACY",
+    "address": "26, ADETOKUNBO ADEMOLA STREET, VICTORIA ISLAND, LAGOS.",
+    "lastVisitDate": "1st August, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ALL DAY PHARMACY",
+    "address": "12, SADIKU STREET ILASA, LAGOS STATE.",
+    "lastVisitDate": "14TH JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "D&M PHARMACY",
+    "address": "OGUDU ROAD, OJOTA, LAGOS",
+    "lastVisitDate": "23RD JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DEEPER CARE PHARMACY",
+    "address": "5B, OGUDU ROAD, OJOTA, LAGOS",
+    "lastVisitDate": "23RD JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FONTANA CHEMISTRY LIMITED",
+    "address": "77, OGUNLANA DRIVE, SURULERE, LAGOS",
+    "lastVisitDate": "14TH JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NEATLINE PHARMACY",
+    "address": "OGUDU ROAD, OJOTA, LAGOS",
+    "lastVisitDate": "23RD JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NETT PHARMACY",
+    "address": "159, AKILO ROAD, OFF SHOBOWALE JUNCTION, OGBA, AGEGE, LAGOS",
+    "lastVisitDate": "26th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PDM PHARMACY",
+    "address": "1A, ALHAJI MASHA ROAD, SURULERE, LAGOS",
+    "lastVisitDate": "21ST MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PERO PHARMACY",
+    "address": "83, OGBA ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "14TH JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMACITY PHARMACY & STORES",
+    "address": "114/116, OGBA ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "14TH JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PRO-SAFE LIFE PHARMACY",
+    "address": "8A, ISHAGA ROAD, MUSHIN, IDI-ARABA, LAGOS",
+    "lastVisitDate": "14TH JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "REMEDIA PHARMACY",
+    "address": "OGUDU, LAGOS",
+    "lastVisitDate": "23RD JULY 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "VAS PHARMACY",
+    "address": "78, AJAYI STREET, SURULERE, LAGOS",
+    "lastVisitDate": "17TH MAY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HAVANNAH MEDICS PHARMACY & STORES",
+    "address": "19, OLD OJO ROAD, SATELLITE TOWN, LAGOS",
+    "lastVisitDate": "22ND AUGUST 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SYLVAGENE PHARMACY",
+    "address": "4, ABIJA STREET, SATELLITE TOWN, LAGOS",
+    "lastVisitDate": "22ND AUGUST 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "A.F UCHENNA PHARMACY",
+    "address": "6, ADERINTO STREET, ISOLO, LAGOS",
+    "lastVisitDate": "16TH SEPTEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DONOMBONITAS PHARMACY",
+    "address": "473, IKORODU ROAD, KETU ROAD BUS-STOP, LAGOS",
+    "lastVisitDate": "25TH SEPTEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GROCREST PHARMACY",
+    "address": "26, AGIDI ROAD, ALAPERE ROAD, KETU, LAGOS",
+    "lastVisitDate": "24TH SEPTEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HERBINCO PHARMACY",
+    "address": "28, DEMURIN STREET, KETU, LAGOS",
+    "lastVisitDate": "24TH SEPTEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MYKVILA PHARMACY",
+    "address": "19, AJIBOYE STREET, ALAPERE, KETU, LAGOS",
+    "lastVisitDate": "24TH SEPTEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMAHUB PHARMACY",
+    "address": "33, IYASE STREET, OFF ADEDOYIN STREET, KOSOFE, MILE 12, LAGOS",
+    "lastVisitDate": "25TH SEPTEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "AMEXCO PHARMACY",
+    "address": "1, IKOSI ROAD, KETU, LAGOS",
+    "lastVisitDate": "15TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CHIZZY PHARMACEUTICAL",
+    "address": "18, IKOSI ROAD, KETU, LAGOS",
+    "lastVisitDate": "15TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DRUG MATTERS PHARMACY",
+    "address": "ADDO ROAD, KEKERE BUS-STOP, AJAH, LAGOS",
+    "lastVisitDate": "13TH JUNE 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EMBASSY PHARMA & CHEMICAL LIMITED",
+    "address": "41, ADEBAYO STREET, IKOYI, LAGOS",
+    "lastVisitDate": "20TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GHT PHARMACY",
+    "address": "209, ADDO ROAD, SKIDDO BUS-STOP, AJAH, LAGOS",
+    "lastVisitDate": "8TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GLORY ZONE PHARMACY",
+    "address": "13, OGBOLOKAN STREET, OSHODI, LAGOS",
+    "lastVisitDate": "14TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALTHY YOU PHARMACY",
+    "address": "106, PALM AVENUE, MUSHIN, LAGOS",
+    "lastVisitDate": "14TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDEXTRA PHARMACY",
+    "address": "ADDO ROAD, ZIBET BUS-STOP, AJAH, LAGOS",
+    "lastVisitDate": "8TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SHOKHAD PHARMACY",
+    "address": "13, OLAYEYE STREET, OSHODI, LAGOS",
+    "lastVisitDate": "13TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "WELLNEX PHARMACY",
+    "address": "35, SENDI CALISTUS STREET, OSHODI LAGOS",
+    "lastVisitDate": "13TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZENITH ZALE PHARMACY",
+    "address": "516, IKORODU ROAD, KETU, LAGOS",
+    "lastVisitDate": "15TH OCTOBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ACCESS PHARMACY",
+    "address": "KORODO BLOCK, OPP. IBUKUNOLA FILLING STATION, ABULE-ADO, LAGOS",
+    "lastVisitDate": "12TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CITO-RAMSGATE PHARMACY",
+    "address": "378, LAGOS-ABEOKUTA EXPRESSWAY, ABULE-EGBA, LAGOS",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CIVIC PHARMACY",
+    "address": "176, LAGOS-ABEOKUTA EXPRESSWAY, IYANA-IPAJA, LAGOS",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DE-HUB PHARMACY",
+    "address": "1, SIR OTEDOLA STREET, OFF JOEL OGUNAIKE, IKEJA GRA, LAGOS",
+    "lastVisitDate": "19TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "E. UBACO PHARMACEUTICALS",
+    "address": "1, ATIN STREET, IDUMOTA, LAGOS",
+    "lastVisitDate": "26TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ELIXR HEXX PHARMACY",
+    "address": "7, KUNSELA STREET, IKATE, LEKKI, LAGOS",
+    "lastVisitDate": "5TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ENDY INTERNATIONAL SERVICES LTD",
+    "address": "16, ATIN STREET, IDUMOTA, LAGOS",
+    "lastVisitDate": "26TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GLADYS PHARMACY",
+    "address": "49, TOS BENSON ROAD, EBUTE, IKORODU, LAGOS",
+    "lastVisitDate": "25TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HELIX PHARMACY",
+    "address": "67, AYANGBUREN STREET, IKORODU, LAGOS",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JOSFEMARKET PHARMACY",
+    "address": "146, EKORO ROAD, ABULE EGBA, LAGOS",
+    "lastVisitDate": "12TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KWIK PHARMACY",
+    "address": "72, TOS BINSON, GENERAL HOSPITAL ROAD, IKORODU, LAGOS",
+    "lastVisitDate": "25TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LIFE MED PHARMACY",
+    "address": "52, TOS BENSON ROAD, OBASEKUNMADE, EBUTE, IKORODU, LAGOS",
+    "lastVisitDate": "25TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LUGZ PHARMACY",
+    "address": "28, TOS BENSON ROAD, EBUTE, IKORODU, LAGOS",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDICVILLE PHARMACY",
+    "address": "PLOT 734, ROAD 237, FESTAC PHASE II, LAGOS",
+    "lastVisitDate": "12TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MED-REMS PHARMACY & SUPERSTORES",
+    "address": "KM 13, GANI ADAMS WAY, ABULE-ADO, LAGOS",
+    "lastVisitDate": "12TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "RAMSGATE PHARMACY",
+    "address": "2, SANTOS AVENUE, ABULE-EGBA, LAGOS",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SAMBRIGHT HEALTH SERVICES",
+    "address": "88, DOSUMU STREET, IDUMOTA, LAGOS",
+    "lastVisitDate": "26TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SEH PHARMACY",
+    "address": "52, OLD OTA ROAD, OLOTA BUS-STOP, LAGOS",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SOLITE PHARMACY",
+    "address": "1, GANI ADAMS STREET, ABULE-ADO, LAGOS",
+    "lastVisitDate": "12TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FOUNTAIN MEDS PHARMACY",
+    "address": "69B, AMIRALTY WAY, LEKKI, LAGOS STATE",
+    "lastVisitDate": "11TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "RANSOMED PHARMACY",
+    "address": "1, BABS OGUNWOLE STREET, OFF NEW OKO-OBA ROAD, LAGOS.",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ELTIS PHARMACY",
+    "address": "53, TEMBLE ROAD, OLANIYI, ABULE-EGBA, LAGOS",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EJOVIL PHARMACY",
+    "address": "107, OLANIYI STREET, ABULE-EGBA, LAGOS",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MOCARE PHARMACY",
+    "address": "26, OLAYIWOLA STREET, NEW OKO-OBA, LAGOS",
+    "lastVisitDate": "13TH NOVEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ASHIFAU PHARMACY",
+    "address": "19, OSHIYEMI STREET, CAPP ILUPEJU, LAGOS STATE",
+    "lastVisitDate": "4TH DECEMBER 2025",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pills Pius Pharamacy",
+    "address": "5, Wole Ariyo Street, Off Admiralty Way, Lekki Phase 1 Lagos",
+    "lastVisitDate": "24th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Hills Dew Pharmacy",
+    "address": "Bliss mall, Chris Madueke Drive, Lekki Phase 1",
+    "lastVisitDate": "24th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Uzormark Global Services LTD",
+    "address": "No. 50 Ashoebong Street, Idumota",
+    "lastVisitDate": "25th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pharmfinale Pharmacy",
+    "address": "No. 75 Akanro Street, Ilasamaja",
+    "lastVisitDate": "25th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Orbit Lynk Pharmacy",
+    "address": "No. 13 Bode Thomas Street Surulere",
+    "lastVisitDate": "25th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Bay Kay Pharmacy",
+    "address": "No. 2, Adelaja Street, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Dan Zege Pharmacy",
+    "address": "No. 2, Afanogun Street, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Hakron Pharmacy",
+    "address": "No. 95, Oshodi Road, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Gudema Pharmacy",
+    "address": "No. 35 Church Street, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Calson Pharmacy",
+    "address": "No. 3, Oyegoke Street, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Drug Zone Pharmacy",
+    "address": "No. 11, Church Street, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Chev Pharmacy",
+    "address": "No. 13 Adeyemi Street, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Fenomas Pharmacy",
+    "address": "No. 41, Daodu Street, Mafoluku Oja, Oja",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Homilis Pharmacy",
+    "address": "No. 9, Adesanya Street, Mafoluku Oja, Oshodi",
+    "lastVisitDate": "29th January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Wellness Hub Pharmacy",
+    "address": "No. 15, Adesoye  Mende Maryland",
+    "lastVisitDate": "31st January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Filter Health Pharmacy",
+    "address": "No. 10, Otiba Osundu Mende Maryland",
+    "lastVisitDate": "31st January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Chard Pharmacy",
+    "address": "No. 11, Adebowole Street, Mende",
+    "lastVisitDate": "31st January 2024",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pius and Gauis Pharmacy",
+    "address": "No. 25, Diya, Ifako Gbagada",
+    "lastVisitDate": "5th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Springcare Pharmacy",
+    "address": "No. 2, Ajaji  Street, Ifako Gbagada",
+    "lastVisitDate": "19TH JANUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Isalu Pharmacy",
+    "address": "No. 55, Diya Ifako, Gbagada",
+    "lastVisitDate": "5th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "UN Dozie Pharmacy",
+    "address": "No. 1A, Ibrahim Onashokun, Ifako, Gbagada",
+    "lastVisitDate": "5th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Lumaco Pharmacy and Store",
+    "address": "No. 1, Toyo Street, Obalende",
+    "lastVisitDate": "6th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Hilly Pharmacy",
+    "address": "No. 2, Odo Street, Obalende",
+    "lastVisitDate": "6th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Okolowhite Pharmacy",
+    "address": "No. 1, Birrd, Avenue, Sabo Yaba",
+    "lastVisitDate": "6th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Alpha Pharmacy",
+    "address": "No. 8, Afariogun Street Ajao Estate",
+    "lastVisitDate": "5TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "3D Radiance Pharmacy",
+    "address": "No 47, Powal Shop Ogudu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "St Peter and Paul Pharmacy",
+    "address": "No. 20, Adisa Balogun Alaperi Ketu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Rose Bod Pharmacy",
+    "address": "No. 1, Omotayo Banwo transformer bustop Ogudu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Drugwell Pharmacy",
+    "address": "No. 25, Osoloway, Ajao Estate",
+    "lastVisitDate": "5TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sparcod Health Care Service",
+    "address": "No. 1a, Omotayo banwo street Ori-oke Ogudu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sophia and Williams Pharmacy",
+    "address": "No. 5, Prince Oyewunmi street Goodluck junction, Ogudu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Gocrest Pharmacy",
+    "address": "No. 26, Agidi Road Alaperi Ketu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sera Pharmacy",
+    "address": "No. 3, David Street Ketu",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Obitex Divine Pharmacy",
+    "address": "No. 1, Ajelogo Road Mile 12",
+    "lastVisitDate": "8th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MJ Touch Pharmacy",
+    "address": "",
+    "lastVisitDate": "15th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pro Drug Pharmacy",
+    "address": "No. 7b, Asa-Afa Rofun Ajao Estate",
+    "lastVisitDate": "15th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sunny Lucky Pharmacy",
+    "address": "",
+    "lastVisitDate": "15th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ripple Pharmacy",
+    "address": "No. 10, Chivita Avenue Ajao Estate",
+    "lastVisitDate": "15th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pets shop plus",
+    "address": "No 306, Ikorodu road, Anthony",
+    "lastVisitDate": "22th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pharmamail global",
+    "address": "34 Alhaja Kudirat Adenekan street, canoe bus stop Isolo",
+    "lastVisitDate": "22th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Bio organic ltd",
+    "address": "",
+    "lastVisitDate": "22th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ibro Pharmacy",
+    "address": "shop 93-94 Ebute modern market",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Remedy Pharmacy",
+    "address": "6 NBC Road Ikorodu",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ifyzol Pharmacy",
+    "address": "31 NBC road",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Lifemed Pharmacy",
+    "address": "50 Tos Benson road, Ebute",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Gladiz Pharmacy",
+    "address": "49 beach road Ikorodu",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Macojo Pharmacy",
+    "address": "13 Tos Benson road Ikorodu",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Roma Pharmacy",
+    "address": "27 Ayobunre road",
+    "lastVisitDate": "26th February",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Careforte Pharmacy",
+    "address": "plot 299, Akin Olugbade street, Idowu Martins Victoria Island, Lagos",
+    "lastVisitDate": "15TH OCTOBER 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Felimat Pharmacy",
+    "address": "Km 173 Lagos Badagry expressway",
+    "lastVisitDate": "21st March",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sazo Bakery",
+    "address": "",
+    "lastVisitDate": "3rd April",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Al ticare Pharmacy",
+    "address": "8 Bajulaiye street Shomolu",
+    "lastVisitDate": "29th April",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Chymedics Pharmacy",
+    "address": "18 Olufemi Ojo street, Shasha Akwonjo",
+    "lastVisitDate": "6th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Libeta Pharmacy",
+    "address": "",
+    "lastVisitDate": "6th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "C.P Coop wholesale pharm",
+    "address": "Giant strides MFB building, Celemical bus stop Badagry expressway Lagos",
+    "lastVisitDate": "6th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Myfil Pharmacy",
+    "address": "167 Akwonjo road, Lagos",
+    "lastVisitDate": "6th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "The Charter Pharmacy",
+    "address": "205 Akwonjo road, Lagos",
+    "lastVisitDate": "6th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Eagle Pharmacy",
+    "address": "No 43 Shasha road, Lagos",
+    "lastVisitDate": "6th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Givanas nig ltd",
+    "address": "18/20 Busmon road, Apapa Lagos",
+    "lastVisitDate": "10th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Jay Kay Pharmacy",
+    "address": "32/33 Calcutta crescent Apapa Lagos",
+    "lastVisitDate": "10th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sylken Pharmacy",
+    "address": "20 Kofo Abayomi Avenue, Apapa Lagos",
+    "lastVisitDate": "10th May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Renee Supermarket",
+    "address": "Renee supermarket freedom way, Lekki Lagos",
+    "lastVisitDate": "21st May",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Switz Pharmacy",
+    "address": "21/22 Metro quarters, Kodesho Ikeja",
+    "lastVisitDate": "28th June",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pharma Reach",
+    "address": "3 Obafemi Awolowo way, Ikeja",
+    "lastVisitDate": "28th June",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Juli Pharmacy",
+    "address": "19 Kodesho street, Ikeja",
+    "lastVisitDate": "28th June",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Nebinco Pharmacy",
+    "address": "G6 Obafemi Awolowo way, Ikeja",
+    "lastVisitDate": "28th June",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Single  eagle pharmacy & supermarket",
+    "address": "21 Obafemi Awolowo way Ikeja",
+    "lastVisitDate": "28th June",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Jawa int'l ltd",
+    "address": "",
+    "lastVisitDate": "1st July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ibidunni stores",
+    "address": "5, Oke-arin Lagos Island",
+    "lastVisitDate": "8th July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pharma Solutions",
+    "address": "Murphis plaza, 27 Sanusi Fafunwa, Victoria Island Lagos",
+    "lastVisitDate": "17th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Medfinity Pharmacy",
+    "address": "49 Adeola Odeku street, VI lagos",
+    "lastVisitDate": "16th july",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Medvacc Pharmacy",
+    "address": "16 Karimu Kotun street, VI Lagos",
+    "lastVisitDate": "21ST JANUARY, 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Chemart Pharmacy",
+    "address": "3/5 Adeyemo Alakija street, VI Lagos",
+    "lastVisitDate": "17th July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pedov healthcare ltd",
+    "address": "37 Ajibulu street, Mafoluku",
+    "lastVisitDate": "22th July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Alatra Pharmacy",
+    "address": "7 Oriyomi  street, Ikeja",
+    "lastVisitDate": "22th July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Bistol Pharmacy",
+    "address": "21 Simbiat Abiola way, Ikeja",
+    "lastVisitDate": "22th July",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "He Land Shine supermarket",
+    "address": "No1 Adenekan Plaza, Okota road",
+    "lastVisitDate": "21st August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Hosts superstores",
+    "address": "142 Cele Okota road",
+    "lastVisitDate": "21st August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pennymart Supermarket",
+    "address": "No26 Ago palace way, Okota Lagos",
+    "lastVisitDate": "21st August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Able Superstore",
+    "address": "",
+    "lastVisitDate": "22nd August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pennyexpress superstore",
+    "address": "122 Ago palace way, Okota Lagos",
+    "lastVisitDate": "22nd August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Sundry market",
+    "address": "115/117 Ago palace way, Okota Lagos",
+    "lastVisitDate": "22nd August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Globus market",
+    "address": "No64 Ago palace way Okota Lagos",
+    "lastVisitDate": "22nd August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Toxz Primary & stores",
+    "address": "40b, Coker road, Ilupeju",
+    "lastVisitDate": "28th August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "F & T Pharmacy",
+    "address": "154 Obafemi Awolowo way, Ikeja",
+    "lastVisitDate": "28th August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pharm Affairs Pharmacy & Supermarket",
+    "address": "6 Coker road, Ilupeju",
+    "lastVisitDate": "28th August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "No1 Supermarket",
+    "address": "21 coker road, Mushin Ilupeju",
+    "lastVisitDate": "28th August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SEC Pharmacy",
+    "address": "135 Lawanson road, Ijesha bus stop",
+    "lastVisitDate": "29th August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Vind Gold",
+    "address": "46 Orikoyi street, Idumota Lagos",
+    "lastVisitDate": "30th August",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Fasid Pharmacy",
+    "address": "Omole bus stop by traffic light, Osunsina house ikeja",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Rubby Pharmacy",
+    "address": "No 73 Aino street, Ojodu Berger",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Cek Pharmacy",
+    "address": "No 101, Ojodu road",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "360\u00b0 Royal care Pharmacy",
+    "address": "No 14 Ogunusi road, Ojodu",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Audion Pharmacy",
+    "address": "No 1b isheri road, Ogba Lagos",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Nukai Global ltd",
+    "address": "No 19 Mokolu street, ogba",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Estin Pharmacy",
+    "address": "No6 Ijaye road, Ogba bus stop",
+    "lastVisitDate": "12th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Juliettarrison/Healthbond pharmacy",
+    "address": "15 Ajanji Aina street, Ifako-gbagada Lagos",
+    "lastVisitDate": "18th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Addas Mall",
+    "address": "8/10 Hakeem Balogun street, Agidingbi, Ikeja",
+    "lastVisitDate": "26th September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Atidam Pharmacy",
+    "address": "No1 Olayiwola street, off social club road, New Okoba Abule egba",
+    "lastVisitDate": "29th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Tito B Pharmacy",
+    "address": "No53 charity road, New okoba Agege",
+    "lastVisitDate": "29th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "God dey Pharmacy",
+    "address": "No1 charity road, Abule egba",
+    "lastVisitDate": "29th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Golden rule Pharmacy",
+    "address": "24 Mosefejo road, Amukoko Lagos",
+    "lastVisitDate": "30th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Jeneru Pharmaceutical ltd",
+    "address": "109 Alaba oro road Alaba, Lagos",
+    "lastVisitDate": "30th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Tibos Pharmacy",
+    "address": "35 Olumokun street, Amukoko Lagos",
+    "lastVisitDate": "30th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Wisdom-med Pharmacy",
+    "address": "31 Ajose street, Amukoko Lagos",
+    "lastVisitDate": "30th October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Vatican Pharmacy",
+    "address": "131 Isolo road, Mushin",
+    "lastVisitDate": "7th November",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Chido Pharmacy",
+    "address": "37 Isolo road, Mushin",
+    "lastVisitDate": "7th November",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Roche Products",
+    "address": "48/50 Isaac John street, Ikeja GRA Lagos",
+    "lastVisitDate": "5th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Exxon Pharma",
+    "address": "59A coker road, Ilupeju",
+    "lastVisitDate": "5th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pinehealth Pharmacy",
+    "address": "Hakeem Dickson link road, Lekki phase 1",
+    "lastVisitDate": "11th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Livewell Pharmacy",
+    "address": "17 Emma Abinbola cole, Lekki phase 1",
+    "lastVisitDate": "11th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Daytona  Pharmacy",
+    "address": "Hakeem Dickson link road, Lekki phase 1",
+    "lastVisitDate": "11th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Widdi Pharmacy",
+    "address": "Marwa mall, Widdi pharmacy",
+    "lastVisitDate": "11th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Evercare Hospital",
+    "address": "No1 Admiralty way, Lekki phase 1",
+    "lastVisitDate": "11th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DAILY LIFE PHARMACY",
+    "address": "91, BAALE STREET APAPA, LAGOS",
+    "lastVisitDate": "11TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DRUG THEATRE PHARMACY AND STORES",
+    "address": "67, KIRIKIRI ROAD, BY OLUS BUS-TOP",
+    "lastVisitDate": "11TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GEOPRIM PHARMACY LTD",
+    "address": "NO 11, AMERE ST., APAPA LAGOS",
+    "lastVisitDate": "11TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ROSE MILD PHARMACEUTICAL LIMITED",
+    "address": "NO 1, AMORE, APAPA, LAGOS",
+    "lastVisitDate": "11TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DOC MORRIS PHARMACY",
+    "address": "80, KIRIKIRI, LAGOS",
+    "lastVisitDate": "11TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KALU MEMORIAL FOUNDATION",
+    "address": "",
+    "lastVisitDate": "16TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CARLISLE PHARMACY",
+    "address": "186, AWOLOWO ROAD, IKOYI",
+    "lastVisitDate": "17TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PRIMEAH PHARMACY",
+    "address": "59, AWOLOWO ROAD, IKOYI",
+    "lastVisitDate": "17TH MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NEMITT PHARMACY",
+    "address": "96, WESTERN AVENUE, OJUELEGBA, LAGOS",
+    "lastVisitDate": "22ND MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DENRAN PHARMACY AND STORES",
+    "address": "8, IJA OYE STREET, JIBOWU, LAGOS",
+    "lastVisitDate": "22ND MAY 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TROOP PHARMACEUTICALS",
+    "address": "41, ONTSHE STREET, IKEJA, LAGOS",
+    "lastVisitDate": "27/07/2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MAMA TEGA COSMETICS AND SPA, TEJUOSHO",
+    "address": "TEJUOHO ROAD, OJUELEGBA, LAGOS",
+    "lastVisitDate": "7th SEPTEMBER, 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PROGNOSY PHARMACY LTD",
+    "address": "359,OLD ABEOKUTA ROAD,OKO-OBA, AGEGE, LAGOS STATE.",
+    "lastVisitDate": "31st SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ADIBA SUPERMARKET",
+    "address": "46B, ADMIRALTY ROAD LEKKI, LAGOS",
+    "lastVisitDate": "15th SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FREEDOM MART",
+    "address": "NO. 29, BLOCK 77A, ADMIRALTY ROAD, LEKKI, LAGOS",
+    "lastVisitDate": "15th SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MY MART SUPERMARKET",
+    "address": "17B, ADMIRALTY ROAD, LEKKI, LAGOS",
+    "lastVisitDate": "15th SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEALTHRITE PHARMACY",
+    "address": "72, AKERELERE STR., SURULERE, LAGOS",
+    "lastVisitDate": "26TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DOMINUS PHARMACY",
+    "address": "45, ADENIRAN OGUNSANYA, SURULERE, LAGOS",
+    "lastVisitDate": "26TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SITAWELL PHARMACY",
+    "address": "84, ADENIRAN OGUNSANYA STREET, SURULERE, LAGOS",
+    "lastVisitDate": "26TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DISCOVERING PHARMACY",
+    "address": "GOLDMORE PLAZA, BESIDE CLINIX HEALTHCARE, AGO PALACE WAY, LAGOS",
+    "lastVisitDate": "28TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BLUE SEAL PHARMACY",
+    "address": "FESTAC CLINIC ROAD, OFF DIAMOND ESTATE GATE, FESTAC, LAGOS",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BLUE GATE PHARMACY",
+    "address": "",
+    "lastVisitDate": "28TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TEHILLAH PHARMACY",
+    "address": "",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ROYAL TREAT PHARMACY",
+    "address": "",
+    "lastVisitDate": "28TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ENAVEC PHARMACY",
+    "address": "",
+    "lastVisitDate": "28TH SEPTEMBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "IRENE CARE PHARMACY",
+    "address": "No 696 Agege Motor Road, Bwd Bustop Oshodi, Lagos",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HEN-BOSCO PHARMACY",
+    "address": "No 195, Lagos-Abeokuta Expressway Iyana Ipaja Lagos.",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JOSTADE PHARMACY",
+    "address": "",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "AGU-JUDEA PHARMACY",
+    "address": "191/193, Lagos-Abeokuta Expressway, Iyana Ipaja, Lagos.",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DRUGS AND MEDICAMENTS PHARMACY",
+    "address": "No. 117, Lagos-Abeokuta Expressway, Iyana Ipaja, Lagos",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JUVYWAY PHARMACY",
+    "address": "No. 57, Alimosho Road, Iyana Ipaja, Lagos.",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "OLIVE PHARMACY",
+    "address": "Suite 14, Carol Plaza, Alimosho Rd. Iyana Ipaja, Lagos.",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Prime Mart Super Store",
+    "address": "No. 38 Lagos-Abeokuta Exp. Way, Lagos",
+    "lastVisitDate": "11th OCTOBER 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KLS Supermarket",
+    "address": "No. 105 Awolowo Way, Ikeja Lagos",
+    "lastVisitDate": "13th October  2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ideal Supermarket",
+    "address": "KM31, Bogije Bustop Lekki-Epe express way Lagos",
+    "lastVisitDate": "16th October 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NY Supermarket",
+    "address": "NO. 18 Admiralty Way, Lekki Phase ! Lagos",
+    "lastVisitDate": "18th October 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Prince Ebeano Supermarket",
+    "address": "Plot 9 Northern District, Lekki Phase 1 Lagos",
+    "lastVisitDate": "18th October 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Buy Better Cosmetics",
+    "address": "No. 19A, Aliu Animashaun Lekki Phase ! Lagos",
+    "lastVisitDate": "18th October 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SamaGod Project Nig LTD",
+    "address": "43 Offin Road, Lagos Island",
+    "lastVisitDate": "26th October 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Dominos Stores",
+    "address": "11 Commercial Avenue Sabo, Yaba",
+    "lastVisitDate": "17th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Health Plus Pharmacy",
+    "address": "11 Commercial Avenue Sabo, Yaba",
+    "lastVisitDate": "7TH FEBUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Mall Mart Supermarket",
+    "address": "266 Herbert Macaulay Way, Yaba",
+    "lastVisitDate": "17th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Leaque Pharmacy",
+    "address": "289 Herbert Macaulay Way, Yaba",
+    "lastVisitDate": "17th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Blenco Supermarket",
+    "address": "Near Worldoil, ilasen Lekki-Epe Expressway Lagos",
+    "lastVisitDate": "29th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Karma Mart",
+    "address": "2/4 Adeola Odeku street, Victoria Island, Lagos",
+    "lastVisitDate": "29th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Food Corner",
+    "address": "1/2 Adeola Odeku s\ntreet, Victoria Island, Lagos",
+    "lastVisitDate": "29th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Jojo Pet Food",
+    "address": "8A Adeleke Adedoyin Street off Musa Yar'Adua Street, Victoria Island",
+    "lastVisitDate": "29th November 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ngumed Pharmacy",
+    "address": "12 Ikotun Egbe Road, Jakande Isolo",
+    "lastVisitDate": "7th December 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Apploz E-Pharmacy",
+    "address": "96 Egbe Road, Opposite Ejigbo LCDA Office Lagos",
+    "lastVisitDate": "7th December 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Semper Pharmacy",
+    "address": "Iyana-Ejigbo Bus Stop, Lagos",
+    "lastVisitDate": "7th December 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Healthmaps Pharmacy",
+    "address": "1 Adekunjo Street, Opp Synagogue Ikotun, Lagos",
+    "lastVisitDate": "7th December 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Di-Maggio Pharmaceptical LTD",
+    "address": "1 Egbe Road, Ikotun Lagos",
+    "lastVisitDate": "7th December 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Fansef Pharmacy",
+    "address": "78, ikotun-idimu road, Lagos",
+    "lastVisitDate": "7th December 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "West Gate Life Care Pharmacy and Supermarket",
+    "address": "No 1 the Apostolic church CL, Isheri, Lagos",
+    "lastVisitDate": "11th December",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NEUCHEM PHARMACY",
+    "address": "",
+    "lastVisitDate": "19TH JANUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEBUK PHARMACY",
+    "address": "19, CHURCH STREET, GBAGADA",
+    "lastVisitDate": "19TH JANUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "COME ALIVE PHARMACY",
+    "address": "17, AKERELE ANNEX, SOLUYI GBAGADA, LAGOS",
+    "lastVisitDate": "19TH JANUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDUS PHARMACY",
+    "address": "",
+    "lastVisitDate": "10TH FEBUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ORI PHARMACY",
+    "address": "",
+    "lastVisitDate": "10TH FEBUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DEZENUS PHARMACY",
+    "address": "",
+    "lastVisitDate": "10TH FEBUARY 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DRUG SUPREMACY PHARMACY",
+    "address": "1, KARUNWO STREET, IJASHE SURULERE, LAGOS",
+    "lastVisitDate": "3RD MARCH 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDICAL SUPREMACY PHARMACY",
+    "address": "33, ADENIYI STREET, ITIRE, LAGOS",
+    "lastVisitDate": "3RD MARCH 2023",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LASE PHARMACY",
+    "address": "25, KAJOLA RD, BY BELLO BUSTOP, IFAKO IJAIYE, OBAWOOE, L/S",
+    "lastVisitDate": "29TH MARCH 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DAMILOLA PHARMACY",
+    "address": "49, KAJAOLA RD, NSIKE, OBAWOLE ESTATE, IJU ISHAGA, LAGOS",
+    "lastVisitDate": "29TH MARCH 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "XTRA THERAPEUTICS AND SUNDRIES LTD",
+    "address": "132, MUSHIN ROAD, ISOLO, LAGOS",
+    "lastVisitDate": "1ST APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MATRIX PHARAMCY",
+    "address": "387, ADEMOLA AJASA, OMOLE PHASE 1, IKEJA, LAGOS",
+    "lastVisitDate": "7TH APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "360 DEGREE PHARAMACY",
+    "address": "14, OGUNNUSI ROAD, OJODU BERGER, LAGOS",
+    "lastVisitDate": "7TH APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "VIVA PHARMACY",
+    "address": "324, ADEYEMO AKAPO, OMOLE PHASE 1, OMOLE PHASE 1, IKEJA, LAGOS",
+    "lastVisitDate": "7TH APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LIVING WELL PHARMACY",
+    "address": "4, WILMER STREET, ISHERI-MAGODO, BERGER, LAGOS",
+    "lastVisitDate": "27TH APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CAREWORTH PHARMACY",
+    "address": "42/44, OLD OLOWORAAD, ISHERI-MAGODO, BERGER, LAGOS",
+    "lastVisitDate": "27TH APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDKONSULT PHARMACY",
+    "address": "5, OLD OLOWORA ROAD, ISHERI-MAGODO, LAGOS",
+    "lastVisitDate": "27TH APRIL 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NAZA PHARMACY",
+    "address": "4, DIYA STREET, GBAGADA",
+    "lastVisitDate": "14TH October, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PLUS & CHINA PHARMACY",
+    "address": "25, DIYA STREET, GBAGADA",
+    "lastVisitDate": "12TH DECEMBER 2022",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZOMENCE NIGERIA LTD",
+    "address": "170B, AGEGE MOTOR ROAD, MUSHIN, LAGOS",
+    "lastVisitDate": "22ND JUNE 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ENAVEC PHARMACEUTICAL",
+    "address": "HOUSE 26, 4TH AVENUE, FESTAC TOWN, LAGOS",
+    "lastVisitDate": "5TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FRANPAT PHARMACY",
+    "address": "31 Road, Festac Town, Lagos",
+    "lastVisitDate": "5TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KRIS DANIEL",
+    "address": "1st Avenue, 111 Road, Festac Town, Lagos",
+    "lastVisitDate": "6TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMACARE PLACE PHARMACY",
+    "address": "694th Avenue, Festac Town, Lagos",
+    "lastVisitDate": "5TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "WELLPLUS PHARMACY",
+    "address": "Marcarthy Street, Lagos Island",
+    "lastVisitDate": "",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZAMZAM PHARMACY",
+    "address": "32 Road, House 27, Festac, Lagos State",
+    "lastVisitDate": "6TH MAY 2021",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "BERLIN PHARMA AND HEALTHCARE LTD",
+    "address": "",
+    "lastVisitDate": "September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DEEVICK NIGERIA LIMITED",
+    "address": "22/24, Olokunola Crescent, Ebute, Ikorodu, Lagos",
+    "lastVisitDate": "September",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DERM'S PHARMACY",
+    "address": "",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FRIENDSHIP PHARM LTD",
+    "address": "3, Opere Street, Coker, Lagos",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GIMBA PHARMACY",
+    "address": "10, Funtua Road, Birini Gwari, Kaduna State.",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "KLUSYL INTERNATIONAL",
+    "address": "No. 6, Ilobido Street, Awada Obosi, Onitsha, Anambra State",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MC FORIS PHARMACEUTICALS",
+    "address": "",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NASAJONES INDUSTRIES LIMITED",
+    "address": "No. 31/32, Office Complex Middle Road, By Ado Bayero Square, Sabon Gari, Kano, Fagge, Kano State.",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PNL NIGERIA LIMITED",
+    "address": "17, Muyibi Street, Off Ajayi Road, Ogba, Ikeja, Lagos.",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZEST PHARMACEUTICAL NIG. LTD",
+    "address": "No. 5, Abiodun Adeleye Street, Okota Lagos, Amuwo, Amuwo-Odofin, Lagos",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ADPHARM PHARMACEUTICALS INDUSTRIES LTD",
+    "address": "60, Ajao Road, Surulere, Lagos",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DORGLORY PHARM",
+    "address": "",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ELIONA PHARM. CO.",
+    "address": "No. 6, Akinfewa Street, Off Oshogo Street, Ogudu, Lagos.",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "EMBASSY PHARMACEUTICAL & CHEMICALS LTD",
+    "address": "No. 41, Ademola Street, Ikoyi, Lagos State.",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FEST PHARMACY",
+    "address": "No. 61, Emir Road, Sabon Gari, Kano State.",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "IBU PHARM. NIG. LTD.",
+    "address": "No. 1, Labiran Street, Ikenne, Ogun State",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ORJI PHARMACEUTICAL CO. LTD.",
+    "address": "",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZADIP PHARMA NIG. LTD.",
+    "address": "",
+    "lastVisitDate": "October",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PKN PHARMACEUTICAL LTD",
+    "address": "No. 2, Maikaram Plaza, 2nd Floor, Niger Steer, Kano State.",
+    "lastVisitDate": "November",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ZUNAMEDIKS PHARM. LTD",
+    "address": "No. 16, GBC Murphy Avenue, Asaba, Delta State",
+    "lastVisitDate": "November",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LAB PHARMACY",
+    "address": "25B AJAO ROAD, IKEJA, LAGOS",
+    "lastVisitDate": "7TH FEBRUARY, 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARM AFFAIRS PHARMACY LIMTED",
+    "address": "NO. 6 COKER ROAD ILLUPEJU, LAGOS",
+    "lastVisitDate": "18TH FEBRUARY 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SUPER DRUG INTERGRATED PHARMACY",
+    "address": "NO. 30 ILUPEJU BY-PASS, ILUPEJU, LAGOS",
+    "lastVisitDate": "18TH FEBRUARY 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JAYBION NIGERIA",
+    "address": "SUITE 7&8 BLOCK A BOLA TINUBU SHOPPING COMPLEX, PEN-CINEMA AGEGE, LAGOS",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MOOVEON PHARMACY",
+    "address": "30, IJU ROAD AGEGE",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDVALUE PHARMACY",
+    "address": "88, IJU ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DANOUR PHARMACY",
+    "address": "32, IJU ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PETMAUR PHARMACY",
+    "address": "BOLA TINUBU SHOPPING COMPLEX, PEN-CINEMA, AGEGE, LAGOS",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ABSA HEALTHCARE",
+    "address": "100 IJU ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "VANTAGE MED PHARMACY",
+    "address": "168, IJU ROAD, AGEGE, LAGOS",
+    "lastVisitDate": "4TH MARCH 2020",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NET PHARMACY",
+    "address": "2ND AVENUE, 22 ROAD JUNCTION AGBOJU MARKET",
+    "lastVisitDate": "4TH JANUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMCARE PHARMACY",
+    "address": "51, ROAD, BY NITEL GATE, FESTAC, LAGOS",
+    "lastVisitDate": "4TH JANUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "3R PHARMACY",
+    "address": "43, ADEKUNLE BANJO STREET, SHANGNHA-MAGODO, LAGOS",
+    "lastVisitDate": "7TH FEBUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEDMART PHARMACY",
+    "address": "1, ALADELOLA STREET, IKOSI -KETU, LAGOS",
+    "lastVisitDate": "7TH FEBUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "21ST CENTURY HEALTHSHOP & PHARMACY",
+    "address": "22, CMD ROAD, SHANGONHA-MAGODO, LAGOS",
+    "lastVisitDate": "7TH FEBUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JAYKAY PHARMACY",
+    "address": "",
+    "lastVisitDate": "26TH FEBUARY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CAMCEHAN PHARMACY",
+    "address": "",
+    "lastVisitDate": "21ST MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SHARBOL PHARMACY",
+    "address": "",
+    "lastVisitDate": "21ST MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DUMMERICS PHARMACY",
+    "address": "",
+    "lastVisitDate": "21ST MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JUBILEE PHARMACY",
+    "address": "",
+    "lastVisitDate": "21ST MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEBIK PHARMACY",
+    "address": "",
+    "lastVisitDate": "21ST MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SILVER  BROTHERS PHARMACY",
+    "address": "",
+    "lastVisitDate": "27TH MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "HIGHRISE PHARMACEUTICAL LTD",
+    "address": "169, IJESHA ROAD, OGUNLANA BUSTOP, SURULERE, LAGOS",
+    "lastVisitDate": "27TH MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "DIVINE CARE PHARMACY",
+    "address": "32, ENITAN STREET, ANIMANSHANU, SURULERE, LAGOS",
+    "lastVisitDate": "24TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ISI ETIM PHARMACY",
+    "address": "58, ENITAN STREET, AGUDA, SURULERE, LAGOS",
+    "lastVisitDate": "27TH MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "LINCO STAR PHARMACY",
+    "address": "28, AGBEDI STREET, SURULERE, LAGOS",
+    "lastVisitDate": "27TH MARCH 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TEMPARK PHARMACY",
+    "address": "",
+    "lastVisitDate": "",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GLOPHARM HEALTHCARE PHARMACY",
+    "address": "49, OLOJO DRIVE, OJO, LAGOS",
+    "lastVisitDate": "9TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MEGA PHARMA",
+    "address": "13, OLOJO DRIVE, OJO, LAGOS",
+    "lastVisitDate": "9TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CONCEPT PHARMACY",
+    "address": "4, COSTAIN ROAD, OFF OLOJO DRIVE, OJO ALABA, LAGOS",
+    "lastVisitDate": "9TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ERASSONS PHARMACY & STROES LTD.",
+    "address": "295, OLD OJO ROAD, OLUTI BUS STOP, NEAR ABAJA BUS STOP, LAGOS",
+    "lastVisitDate": "24TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CUS PHARMACY & CHEMICAL CO. LTD.",
+    "address": "55, OLD OJO ROAD, OPPOSITE FIRST GATE, AMUMO ODOFIN, LAGOS",
+    "lastVisitDate": "24TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHIMAT PHARMACY",
+    "address": "BEFORE CLOSE 1 JUNCTION, SATELLITE TOWN, LAGOS",
+    "lastVisitDate": "24TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NICYNTH PHARMACY & STORES",
+    "address": "54, OLD OJO ROAD, AMUWO ODOFIN, LAGOS",
+    "lastVisitDate": "24TH APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "JUSTEEN PHARMACEUTICALS",
+    "address": "57B, COKER ROAD, ILLUPEJU, LAGOS",
+    "lastVisitDate": "23RD APRIL 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "FEMBROOK PHARAMCY",
+    "address": "HARTLEYS-237 KOFO ABAYOMI STR, VICTORIA ISLAND, LAGOS",
+    "lastVisitDate": "15TH MAY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TOTEM PHARMACY",
+    "address": "54, ADEOLA ODEKU, VICTORIA ISLAND, LAGOS",
+    "lastVisitDate": "30TH MAY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "VATICAN BELLS PHARMACY",
+    "address": "61, OGUNLANA DRIVE, SURULERE, LAGOS",
+    "lastVisitDate": "17TH MAY 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TONIA PHARMACY & STORES",
+    "address": "8A, ADEMOLA ADETOKUNBO OPP. 1400 ESTATE, V.I., LAGOS",
+    "lastVisitDate": "13TH JUNE 2019",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Adler Products limited",
+    "address": "32, Oduyemi street, Ikeja, Lagos",
+    "lastVisitDate": "22nd January, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Biofem Pharm Nigeria limited",
+    "address": "3, Olorunnibe street, Wemabod estate, Ikeja, Lagos",
+    "lastVisitDate": "16th April, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MOPHETH PHARMACY",
+    "address": "23, ADEOLA ODEOKU VICTORIA ISLAND LAGOS",
+    "lastVisitDate": "18TH JULY 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MED EXPRESS PHARMACY",
+    "address": "NO, 7A ADEWALE KOLAWOLE CRESCENT OFF T.K STREET, MARUWA LEKKI, LAGOS",
+    "lastVisitDate": "18TH JULY 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "SUCCESS STAR GLOBAL SERVICES LTD",
+    "address": "2 EKWOMMADU CLOSE, OFF NICK-CHUCKS STREET, IKOTUN EGBE, LAGOS",
+    "lastVisitDate": "6TH AUGUST, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "ADRON Life Pharmacy",
+    "address": "Festac Lagos.",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Seed of Life Pharmacy",
+    "address": "Festac Lagos.",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GNC Pharmacy, Festival Mall, Diamond Estate,",
+    "address": "Festac Lagos.",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Health Plus, Festival Mall, Diamond Estate,",
+    "address": "Festac Lagos.",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Royal Treat Pharmacy,",
+    "address": "Festac Lagos.",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "AVAN Global Pharmacy,",
+    "address": "1st Avenue, Festac Lagos",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "MOPHETH Pharmacy,",
+    "address": "1st Avenue, Festac Lagos",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Victory Pharmacy",
+    "address": "1st Avenue, Festac Lagos",
+    "lastVisitDate": "29TH November, 2018",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Addmore Pharmaceutical",
+    "address": "249, Agege Motor Road, Beside FCMB Bank, Mushin, Lagos.",
+    "lastVisitDate": "5th December, 2018.",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Cefam Pharmaceuticals",
+    "address": "58, Isolo Road, Mushin, Lagos.",
+    "lastVisitDate": "5th December, 2018.",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Natbam Pharmacy",
+    "address": "154, Isolo Road, Mushin, Lagos.",
+    "lastVisitDate": "5th December, 2018.",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "CemCee Pharmaceuticals Ltd.",
+    "address": "58, Mushin Road, Isolo, Lagos.",
+    "lastVisitDate": "5th December, 2018.",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Torrent pharmaceuticals",
+    "address": "26, Goloba Street, Isolo, Lagos.",
+    "lastVisitDate": "5th December, 2018.",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GREENLIFE HERBAL NETWORK LTD",
+    "address": "NO 18, AGO PALACE WAY, OKOTA, LAGOS ISLAND",
+    "lastVisitDate": "16TH MARCH, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PHARMASOLUTIONS",
+    "address": "25, MONTGOMERY ROAD, YABA, LAGOS",
+    "lastVisitDate": "2ND MAY, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TRIPOD PHARMACY",
+    "address": "22/24 AGO PALACE WAY, OKOTA, LAGOS",
+    "lastVisitDate": "16TH MARCH, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PRIMEDAY PHARMACY",
+    "address": "NO 2, OLUFEMI KOLAWOLE STREET, AGO ROUNADBOUT, OKOTA, LAGOS",
+    "lastVisitDate": "16TH MARCH, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "GSK Pharma limited",
+    "address": "GSK, 1, Industrial avenue, Ilupeju, Ikeja, Lagos",
+    "lastVisitDate": "9th June, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "NEMITT PHARMACEUTICALS",
+    "address": "95, WESTERN AVENUE, SURULERE, LAGOS",
+    "lastVisitDate": "22ND JUNE, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Mecure Industries limited",
+    "address": "Block H, Plot 6,Debo industrial compound, oshodi, Lagos",
+    "lastVisitDate": "13th September, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "PALMLINE AGENCY NIGERIA LIMITED",
+    "address": "NO 11, BURMA ROAD APAPA, LAGOS",
+    "lastVisitDate": "13TH SEPTEMBER, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "TOMI'S TREAT LIMITED",
+    "address": "6, EFUNLEYE STREET, ADENIYI JONES, IKEJA, LAGOS",
+    "lastVisitDate": "30TH OCTOBER, 2017",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ashmola Pharmacy",
+    "address": "No. 155, Isawo str, Agric. Ikorodu, Lagos.",
+    "lastVisitDate": "29TH August, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Mega Mart",
+    "address": "142/144 Isawo str, Agric. Ikorodu",
+    "lastVisitDate": "29TH August, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Teslon Pharmacy",
+    "address": "No, 159 Isawo road, Ikorodu.",
+    "lastVisitDate": "29TH August, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Ejemen Pharmacy",
+    "address": "No. 176 Isawo str Agric. Ikorodu",
+    "lastVisitDate": "29TH August, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Pedro Medicine Store",
+    "address": "No. 3, Bawala Street, Pedro, Gbagada, Lagos.",
+    "lastVisitDate": "14TH October, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "June Joseph Pharmacy",
+    "address": "No. 43, Shogbami Street, Gbagada",
+    "lastVisitDate": "14TH October, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Cossan Pharmacy",
+    "address": "38/40, Oworo Road, Oworonshoki, Lagos",
+    "lastVisitDate": "14TH October, 2016",
+    "activityType": "Routine Surveillance"
+  },
+  {
+    "name": "Classic Pharmacy",
+    "address": "32, Agboyi Road, Ogudu Ori-Oke Bus Stop, Ogudu, Lagos",
+    "lastVisitDate": "14TH October, 2016",
+    "activityType": "Routine Surveillance"
+  }
+]
