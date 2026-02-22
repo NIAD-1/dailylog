@@ -4,6 +4,7 @@ import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./u
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
 const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran"];
 const ACTIVITY_TYPES = ["Routine Surveillance", "GSDP", "GLSI", "Consumer Complaint", "COLD CHAIN Monitoring"];
+const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Donated Items/Drugs", "Service Drugs", "Orphan Drugs"];
 
 let currentUser = null;
 let currentWeekStart = null;
@@ -86,6 +87,7 @@ function addRow() {
         facilityAddress: '',
         area: '',
         activityType: '',
+        productType: '',
         inspectors: [],
         facilityId: null
     });
@@ -114,23 +116,8 @@ function renderScheduler(root) {
             <button id="nextWeek" class="secondary week-nav-btn">▶</button>
         </div>
 
-        <div class="scheduler-table-wrap">
-            <table class="scheduler-table">
-                <thead>
-                    <tr>
-                        <th style="width:120px">📅 Date</th>
-                        <th style="width:140px">🔍 Activity</th>
-                        <th style="width:200px">🏢 Facility</th>
-                        <th style="width:180px">📍 Address</th>
-                        <th style="width:120px">📌 Area</th>
-                        <th style="width:200px">👥 Inspectors</th>
-                        <th style="width:40px"></th>
-                    </tr>
-                </thead>
-                <tbody id="schedulerBody">
-                    ${scheduledRows.map((row, i) => renderRow(row, i)).join('')}
-                </tbody>
-            </table>
+        <div id="schedulerBody">
+            ${scheduledRows.map((row, i) => renderRow(row, i)).join('')}
         </div>
 
         <div class="scheduler-actions">
@@ -146,13 +133,28 @@ function renderScheduler(root) {
 
         <!-- Add Facility Modal -->
         <div id="addFacilityModal" class="modal-backdrop" style="display:none">
-            <div class="modal-content">
+            <div class="modal-content" style="max-width:520px">
                 <div class="modal-header">
                     <h3 style="margin:0">Add New Facility</h3>
                     <button id="closeAddFacility" class="secondary" style="padding:4px 12px;font-size:18px">×</button>
                 </div>
-                <div class="row"><div class="col"><label>Facility Name</label><input id="newFacName"></div></div>
-                <div class="row" style="margin-top:12px"><div class="col"><label>Address</label><input id="newFacAddress"></div></div>
+
+                <div style="margin-bottom:12px">
+                    <label>Search Facility Name</label>
+                    <div style="display:flex;gap:8px">
+                        <input id="newFacSearch" placeholder="Type facility name to search..." style="flex:1">
+                        <button id="searchFacBtn" class="secondary" style="padding:8px 16px;white-space:nowrap">🔍 Search</button>
+                    </div>
+                    <div id="searchResults" style="margin-top:8px;max-height:180px;overflow-y:auto"></div>
+                    <div id="googleFallback" style="margin-top:6px;display:none">
+                        <a id="googleSearchLink" href="#" target="_blank" style="font-size:12px;color:var(--accent)">🌐 Search on Google Maps instead →</a>
+                    </div>
+                </div>
+
+                <hr style="border:none;border-top:1px solid #e2e8f0;margin:12px 0">
+
+                <div class="row"><div class="col"><label>Facility Name</label><input id="newFacName" placeholder="Selected or type manually..."></div></div>
+                <div class="row" style="margin-top:12px"><div class="col"><label>Address</label><input id="newFacAddress" placeholder="Auto-filled from search or type..."></div></div>
                 <div class="row" style="margin-top:12px">
                     <div class="col"><label>Activity Type</label><select id="newFacActivity">${ACTIVITY_TYPES.map(a => `<option>${a}</option>`).join('')}</select></div>
                     <div class="col"><label>Area (LGA)</label><select id="newFacArea">${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div>
@@ -177,42 +179,55 @@ function renderRow(row, index) {
     }
 
     return `
-    <tr data-row-id="${row.id}">
-        <td>
-            <select name="inspectionDate" class="sched-input" data-idx="${index}">
-                ${weekdays.map(d => `<option value="${d.value}" ${d.value === row.inspectionDate ? 'selected' : ''}>${d.label}</option>`).join('')}
-            </select>
-        </td>
-        <td>
-            <select name="activityType" class="sched-input" data-idx="${index}">
-                <option value="">Select...</option>
-                ${ACTIVITY_TYPES.map(a => `<option ${a === row.activityType ? 'selected' : ''}>${a}</option>`).join('')}
-            </select>
-        </td>
-        <td>
-            <select name="facilityName" class="sched-input facility-select" data-idx="${index}">
-                <option value="">Select facility...</option>
-            </select>
-            <div class="facility-meta" data-idx="${index}"></div>
-        </td>
-        <td>
-            <input name="facilityAddress" class="sched-input" data-idx="${index}" value="${row.facilityAddress}" placeholder="Address">
-        </td>
-        <td>
-            <select name="area" class="sched-input" data-idx="${index}">
-                <option value="">Select...</option>
-                ${LAGOS_LGAs.map(a => `<option ${a === row.area ? 'selected' : ''}>${a}</option>`).join('')}
-            </select>
-        </td>
-        <td>
-            <select name="inspectors" class="sched-input inspector-select" data-idx="${index}" multiple>
-                ${INSPECTORS_LIST.map(name => `<option value="${name}" ${row.inspectors.includes(name) ? 'selected' : ''}>${name}</option>`).join('')}
-            </select>
-        </td>
-        <td>
-            <button class="remove-row-btn danger" data-idx="${index}" style="padding:4px 10px;font-size:16px" title="Remove">×</button>
-        </td>
-    </tr>`;
+    <div class="inspection-card" data-row-id="${row.id}">
+        <div class="inspection-card-header">
+            <span class="inspection-number">Inspection ${index + 1}</span>
+            <button class="remove-row-btn danger" data-idx="${index}" style="padding:2px 10px;font-size:14px" title="Remove">×</button>
+        </div>
+        <div class="inspection-card-grid">
+            <div>
+                <label class="sched-label">📅 Date</label>
+                <select name="inspectionDate" class="sched-input" data-idx="${index}">
+                    ${weekdays.map(d => `<option value="${d.value}" ${d.value === row.inspectionDate ? 'selected' : ''}>${d.label}</option>`).join('')}
+                </select>
+            </div>
+            <div>
+                <label class="sched-label">🔍 Activity</label>
+                <select name="activityType" class="sched-input" data-idx="${index}">
+                    <option value="">Select...</option>
+                    ${ACTIVITY_TYPES.map(a => `<option ${a === row.activityType ? 'selected' : ''}>${a}</option>`).join('')}
+                </select>
+                <select name="productType" class="sched-input product-type-select" data-idx="${index}" style="margin-top:4px;display:${row.activityType === 'Routine Surveillance' ? 'block' : 'none'}">
+                    <option value="">Product type...</option>
+                    ${PRODUCT_TYPES.map(p => `<option ${p === row.productType ? 'selected' : ''}>${p}</option>`).join('')}
+                </select>
+            </div>
+            <div>
+                <label class="sched-label">🏢 Facility</label>
+                <select name="facilityName" class="sched-input facility-select" data-idx="${index}">
+                    <option value="">Select facility...</option>
+                </select>
+                <div class="facility-meta" data-idx="${index}"></div>
+            </div>
+            <div>
+                <label class="sched-label">📍 Address</label>
+                <input name="facilityAddress" class="sched-input" data-idx="${index}" value="${row.facilityAddress}" placeholder="Auto-filled or type...">
+            </div>
+            <div>
+                <label class="sched-label">📌 Area (LGA)</label>
+                <select name="area" class="sched-input" data-idx="${index}">
+                    <option value="">Select...</option>
+                    ${LAGOS_LGAs.map(a => `<option ${a === row.area ? 'selected' : ''}>${a}</option>`).join('')}
+                </select>
+            </div>
+            <div>
+                <label class="sched-label">👥 Inspectors</label>
+                <select name="inspectors" class="sched-input inspector-select" data-idx="${index}" multiple>
+                    ${INSPECTORS_LIST.map(name => `<option value="${name}" ${row.inspectors.includes(name) ? 'selected' : ''}>${name}</option>`).join('')}
+                </select>
+            </div>
+        </div>
+    </div>`;
 }
 
 function filterFacilitiesForRow(activityType) {
@@ -284,6 +299,15 @@ function bindSchedulerEvents(root) {
         select.addEventListener('change', () => {
             const idx = parseInt(select.dataset.idx);
             scheduledRows[idx].activityType = select.value;
+            // Show/hide product type dropdown
+            const ptSelect = document.querySelector(`select[name="productType"][data-idx="${idx}"]`);
+            if (ptSelect) {
+                ptSelect.style.display = select.value === 'Routine Surveillance' ? 'block' : 'none';
+                if (select.value !== 'Routine Surveillance') {
+                    ptSelect.value = '';
+                    scheduledRows[idx].productType = '';
+                }
+            }
             populateFacilityDropdown(idx, select.value);
         });
         // Initialize if activity already selected
@@ -291,6 +315,14 @@ function bindSchedulerEvents(root) {
         if (scheduledRows[idx].activityType) {
             populateFacilityDropdown(idx, scheduledRows[idx].activityType);
         }
+    });
+
+    // Bind product type changes
+    document.querySelectorAll('select[name="productType"]').forEach(select => {
+        select.addEventListener('change', () => {
+            const idx = parseInt(select.dataset.idx);
+            scheduledRows[idx].productType = select.value;
+        });
     });
 
     // Bind facility selection changes
@@ -330,6 +362,61 @@ function bindSchedulerEvents(root) {
         document.getElementById('addFacilityModal').style.display = 'none';
     });
     document.getElementById('saveNewFacility').addEventListener('click', () => handleAddFacility(root));
+
+    // Facility search
+    document.getElementById('searchFacBtn').addEventListener('click', () => searchFacility());
+    document.getElementById('newFacSearch').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); searchFacility(); }
+    });
+}
+
+async function searchFacility() {
+    const searchInput = document.getElementById('newFacSearch');
+    const resultsDiv = document.getElementById('searchResults');
+    const googleFallback = document.getElementById('googleFallback');
+    const googleLink = document.getElementById('googleSearchLink');
+    const term = searchInput.value.trim();
+
+    if (!term) { resultsDiv.innerHTML = '<p class="muted" style="font-size:12px">Type a name and click Search</p>'; return; }
+
+    resultsDiv.innerHTML = '<p style="font-size:12px;color:var(--accent)">🔍 Searching...</p>';
+    googleFallback.style.display = 'block';
+    googleLink.href = `https://www.google.com/maps/search/${encodeURIComponent(term + ' Lagos Nigeria')}`;
+
+    try {
+        // Query Nominatim (free OSM geocoder) for Lagos area
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(term + ' Lagos Nigeria')}&format=json&addressdetails=1&limit=6&bounded=1&viewbox=2.7,6.75,4.1,6.38`;
+        const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        const results = await resp.json();
+
+        if (results.length === 0) {
+            resultsDiv.innerHTML = '<p class="muted" style="font-size:12px">No results found. Try Google Maps below.</p>';
+            return;
+        }
+
+        resultsDiv.innerHTML = results.map((r, i) => `
+            <div class="search-result-card" data-idx="${i}" style="cursor:pointer;padding:8px 10px;border:1px solid #e2e8f0;border-radius:4px;margin-bottom:4px;transition:background 0.2s"
+                 onmouseover="this.style.background='#f0fff4'" onmouseout="this.style.background='white'"
+                 data-name="${(r.display_name || '').split(',')[0].replace(/"/g, '&quot;')}"
+                 data-address="${(r.display_name || '').replace(/"/g, '&quot;')}">
+                <div style="font-size:13px;font-weight:600;color:var(--primary-text)">${(r.display_name || '').split(',')[0]}</div>
+                <div style="font-size:11px;color:var(--secondary-text);margin-top:2px">${r.display_name}</div>
+            </div>
+        `).join('');
+
+        // Bind click events to results
+        resultsDiv.querySelectorAll('.search-result-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.getElementById('newFacName').value = card.dataset.name;
+                document.getElementById('newFacAddress').value = card.dataset.address;
+                resultsDiv.innerHTML = `<p style="font-size:12px;color:#2e7d32">✅ Selected: <strong>${card.dataset.name}</strong></p>`;
+            });
+        });
+
+    } catch (e) {
+        console.error('Search error:', e);
+        resultsDiv.innerHTML = '<p class="muted" style="font-size:12px">Search failed. Use Google Maps link below.</p>';
+    }
 }
 
 function populateFacilityDropdown(idx, activityType) {
@@ -405,6 +492,9 @@ function saveAllRowData() {
         if (addrInput) row.facilityAddress = addrInput.value;
         if (areaSelect) row.area = areaSelect.value;
         if (actSelect) row.activityType = actSelect.value;
+
+        const ptSelect = document.querySelector(`select[name="productType"][data-idx="${idx}"]`);
+        if (ptSelect) row.productType = ptSelect.value;
 
         // Get inspectors from Choices
         const inspChoices = choicesInstances['inspector_' + idx];
@@ -490,6 +580,7 @@ async function handleSubmit(root) {
                 facilityAddress: row.facilityAddress,
                 area: row.area,
                 activityType: row.activityType,
+                productType: row.productType || '',
                 inspectors: row.inspectors.join(', '),
                 facilityId: row.facilityId
             }))

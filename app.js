@@ -4,6 +4,7 @@ import { navigate, clearRoot } from "./ui.js";
 import { startReportWizard, setWizardUser } from "./wizard.js";
 import { bindDashboard, setDashboardUserRole } from "./dashboard.js";
 import { renderSchedulerPage, setSchedulerUser } from "./scheduler.js";
+import { renderMapPage } from "./map.js";
 
 const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
@@ -19,9 +20,10 @@ const pageWelcome = `
     </p>
   </div>
   
-  <div class="controls" style="display: flex; gap: 24px; justify-content: center; margin-top: 48px;">
+  <div class="controls" style="display: flex; gap: 16px; justify-content: center; margin-top: 48px; flex-wrap: wrap;">
     <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
     <button id="openScheduler" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">Schedule Inspections</button>
+    <button id="openMap" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🗺️ Inspection Map</button>
     <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
   </div>
 </section>
@@ -101,7 +103,7 @@ initAuth(db, (user, role) => {
     authReady = true;
     const page = window.location.hash.substring(1);
 
-    if (['dashboard', 'kpi-settings', 'scheduler'].includes(page) && (role === 'admin' || page === 'scheduler')) {
+    if (['dashboard', 'kpi-settings', 'scheduler', 'map'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map')) {
       navigate(page, false);
     } else if (['report', 'success'].includes(page) && user) {
       navigate(page, false);
@@ -131,6 +133,10 @@ function updateAuthUI(user, role) {
   const schedulerBtn = document.getElementById('openScheduler');
   if (schedulerBtn) {
     schedulerBtn.style.display = user ? 'block' : 'none';
+  }
+  const mapBtn = document.getElementById('openMap');
+  if (mapBtn) {
+    mapBtn.style.display = user ? 'block' : 'none';
   }
 }
 
@@ -163,6 +169,9 @@ function renderPage(page) {
   if (page === 'scheduler') {
     renderSchedulerPage(root);
   }
+  if (page === 'map') {
+    renderMapPage(root);
+  }
   if (page === 'dashboard') {
     if (currentUserRole === 'admin') {
       bindDashboard(root);
@@ -179,6 +188,11 @@ function bindWelcome() {
   if (schedulerBtn) {
     schedulerBtn.style.display = currentUser ? 'block' : 'none';
     schedulerBtn.onclick = () => navigate('scheduler');
+  }
+  const mapBtn = document.getElementById('openMap');
+  if (mapBtn) {
+    mapBtn.style.display = currentUser ? 'block' : 'none';
+    mapBtn.onclick = () => navigate('map');
   }
   const dashboardBtn = document.getElementById('openDashboard');
   if (dashboardBtn) {

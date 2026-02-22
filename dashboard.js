@@ -473,6 +473,10 @@ async function generateWeeklySummary() {
             const errorData = await response.json();
             console.error("Gemini API Error:", errorData);
 
+            if (response.status === 429) {
+                throw new Error("Weekly AI Limit Reached. Please wait 1-2 minutes and try again (Free Tier Quota).");
+            }
+
             // If model not found, try to list available models to help debug
             if (response.status === 404 || (errorData.error && errorData.error.message.includes('not found'))) {
                 try {
