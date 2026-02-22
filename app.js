@@ -128,6 +128,10 @@ function updateAuthUI(user, role) {
   if (dashboardBtn) {
     dashboardBtn.style.display = role === 'admin' ? 'block' : 'none';
   }
+  const schedulerBtn = document.getElementById('openScheduler');
+  if (schedulerBtn) {
+    schedulerBtn.style.display = user ? 'block' : 'none';
+  }
 }
 
 window.addEventListener('popstate', (event) => {
