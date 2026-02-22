@@ -730,3 +730,56 @@ select[multiple] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Facility pin markers */
+.facility-pin {
+  background: none !important;
+  border: none !important;
+}
+
+.pin-dot {
+  width: 10px;
+  height: 10px;
+  background: #2e7d32;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Custom cluster markers */
+.marker-cluster-small {
+  background-color: rgba(76, 175, 80, 0.6) !important;
+}
+
+.marker-cluster-small div {
+  background-color: rgba(76, 175, 80, 0.8) !important;
+}
+
+.marker-cluster-medium {
+  background-color: rgba(56, 142, 60, 0.6) !important;
+}
+
+.marker-cluster-medium div {
+  background-color: rgba(56, 142, 60, 0.8) !important;
+}
+
+.marker-cluster-large {
+  background-color: rgba(27, 94, 32, 0.6) !important;
+}
+
+.marker-cluster-large div {
+  background-color: rgba(27, 94, 32, 0.8) !important;
+}
+
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  line-height: 30px;
+}

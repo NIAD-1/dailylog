@@ -232,62 +232,117 @@ function initMap(facilities, activityFilter) {
         'Labels': labelsLayer
     }, { position: 'topright' }).addTo(mapInstance);
 
-    // Add LGA circle markers with counts
+    // Add subtle LGA boundary circles (background reference)
     Object.entries(LGA_COORDINATES).forEach(([lga, coords]) => {
         const count = lgaCounts[lga] || 0;
         const color = getHeatColor(count, maxCount);
-        const radius = Math.max(15, Math.min(40, 15 + (count / maxCount) * 25));
 
-        // Circle marker
-        const circle = L.circleMarker(coords, {
-            radius: radius,
+        L.circle(coords, {
+            radius: 1500,
             fillColor: color,
             color: '#2e7d32',
-            weight: 2,
-            opacity: 0.9,
-            fillOpacity: 0.75
-        }).addTo(mapInstance);
-
-        // Tooltip on hover
-        circle.bindTooltip(`<strong>${lga}</strong><br>${count} facilities`, {
+            weight: 1,
+            opacity: 0.3,
+            fillOpacity: 0.15
+        }).addTo(mapInstance).bindTooltip(`<strong>${lga}</strong><br>${count} facilities`, {
             permanent: false,
             direction: 'top',
             className: 'map-tooltip'
         });
+    });
 
-        // Popup on click with facility list
-        const facilityList = (lgaFacilities[lga] || [])
-            .slice(0, 10)
-            .map(f => `<li>${f.name}${f.lastVisitDate ? ` <small>(${f.lastVisitDate})</small>` : ''}</li>`)
-            .join('');
-        const moreCount = (lgaFacilities[lga] || []).length - 10;
+    // Add individual facility markers with clustering
+    const markers = L.markerClusterGroup({
+        maxClusterRadius: 40,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function (cluster) {
+            const count = cluster.getChildCount();
+            let size = 'small';
+            if (count > 50) size = 'large';
+            else if (count > 10) size = 'medium';
+            return L.divIcon({
+                html: `<div><span>${count}</span></div>`,
+                className: `marker-cluster marker-cluster-${size}`,
+                iconSize: L.point(40, 40)
+            });
+        }
+    });
 
-        // Google Street View link
-        const streetViewUrl = `https://www.google.com/maps/@${coords[0]},${coords[1]},17z/data=!3m1!1e3`;
+    // Plot each facility as its own marker
+    filtered.forEach(f => {
+        const addr = (f.address || '').toLowerCase();
+        const name = (f.name || '').toLowerCase();
+        let lgaMatch = null;
 
-        circle.bindPopup(`
-            <div style="max-width:280px">
-                <h4 style="margin:0 0 4px 0;color:#2e7d32">${lga}</h4>
-                <p style="margin:0 0 8px 0;font-size:12px;color:#666">${count} facilities</p>
-                <ul style="margin:0;padding:0 0 0 16px;font-size:12px;max-height:150px;overflow-y:auto">
-                    ${facilityList}
-                    ${moreCount > 0 ? `<li style="color:#666">...and ${moreCount} more</li>` : ''}
-                </ul>
-                <a href="${streetViewUrl}" target="_blank" style="display:inline-block;margin-top:8px;font-size:11px;color:#2e7d32;font-weight:600">📍 View on Google Maps →</a>
+        // Find matching LGA
+        for (const lga of Object.keys(LGA_COORDINATES)) {
+            if (addr.includes(lga.toLowerCase()) || name.includes(lga.toLowerCase())) {
+                lgaMatch = lga;
+                break;
+            }
+        }
+
+        if (!lgaMatch) {
+            const areaAliases = {
+                'ikeja': 'Ikeja', 'vi': 'Eti-Osa', 'victoria island': 'Eti-Osa',
+                'lekki': 'Eti-Osa', 'ikoyi': 'Eti-Osa', 'ajah': 'Eti-Osa',
+                'isolo': 'Oshodi-Isolo', 'oshodi': 'Oshodi-Isolo',
+                'mushin': 'Mushin', 'surulere': 'Surulere',
+                'yaba': 'Lagos Mainland', 'ebute metta': 'Lagos Mainland',
+                'maryland': 'Kosofe', 'ketu': 'Kosofe', 'ojota': 'Kosofe',
+                'festac': 'Amuwo-Odofin', 'mile 2': 'Amuwo-Odofin',
+                'apapa': 'Apapa', 'ajegunle': 'Ajeromi-Ifelodun',
+                'ikorodu': 'Ikorodu', 'agege': 'Agege',
+                'ipaja': 'Alimosho', 'egbeda': 'Alimosho', 'idimu': 'Alimosho',
+                'igando': 'Alimosho', 'alimosho': 'Alimosho',
+                'ojo': 'Ojo', 'badagry': 'Badagry', 'epe': 'Epe',
+                'shomolu': 'Shomolu', 'gbagada': 'Shomolu', 'bariga': 'Shomolu',
+                'ogba': 'Ifako-Ijaiye', 'ifako': 'Ifako-Ijaiye',
+                'lagos island': 'Lagos Island', 'marina': 'Lagos Island',
+                'broad street': 'Lagos Island', 'idumota': 'Lagos Island'
+            };
+            for (const [alias, lga] of Object.entries(areaAliases)) {
+                if (addr.includes(alias) || name.includes(alias)) {
+                    lgaMatch = lga;
+                    break;
+                }
+            }
+        }
+
+        if (!lgaMatch) return; // Skip unmapped facilities
+
+        const center = LGA_COORDINATES[lgaMatch];
+        // Scatter around LGA center with random offset (±0.015 degrees ≈ 1.5km)
+        const lat = center[0] + (Math.random() - 0.5) * 0.03;
+        const lng = center[1] + (Math.random() - 0.5) * 0.03;
+
+        const googleUrl = `https://www.google.com/maps/search/${encodeURIComponent(f.name + ' Lagos Nigeria')}`;
+
+        const marker = L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: 'facility-pin',
+                html: '<div class="pin-dot"></div>',
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+            })
+        });
+
+        marker.bindPopup(`
+            <div style="max-width:260px">
+                <h4 style="margin:0 0 4px 0;color:#2e7d32;font-size:13px">${f.name}</h4>
+                <p style="margin:0 0 4px 0;font-size:11px;color:#666">${f.address || 'No address'}</p>
+                <p style="margin:0 0 4px 0;font-size:11px"><span style="background:#e8f5e9;padding:2px 6px;border-radius:3px;color:#2e7d32;font-weight:600">${f.activityType}</span></p>
+                ${f.lastVisitDate ? `<p style="margin:0 0 4px 0;font-size:11px;color:#888">Last visit: ${f.lastVisitDate}</p>` : '<p style="margin:0 0 4px 0;font-size:11px;color:#ff9800">🟢 Never visited</p>'}
+                <a href="${googleUrl}" target="_blank" style="font-size:11px;color:#2e7d32;font-weight:600">📍 Find on Google Maps →</a>
             </div>
         `);
 
-        // Count label on the circle
-        if (count > 0) {
-            const label = L.divIcon({
-                className: 'lga-count-label',
-                html: `<span>${count}</span>`,
-                iconSize: [30, 20],
-                iconAnchor: [15, 10]
-            });
-            L.marker(coords, { icon: label, interactive: false }).addTo(mapInstance);
-        }
+        markers.addLayer(marker);
     });
+
+    mapInstance.addLayer(markers);
 
     // LGA breakdown grid
     const breakdownHTML = Object.keys(LGA_COORDINATES)

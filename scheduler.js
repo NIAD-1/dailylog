@@ -203,6 +203,13 @@ function renderRow(row, index) {
                 </select>
             </div>
             <div>
+                <label class="sched-label">📌 Area (LGA)</label>
+                <select name="area" class="sched-input area-select" data-idx="${index}">
+                    <option value="">All areas...</option>
+                    ${LAGOS_LGAs.map(a => `<option ${a === row.area ? 'selected' : ''}>${a}</option>`).join('')}
+                </select>
+            </div>
+            <div>
                 <label class="sched-label">🏢 Facility</label>
                 <select name="facilityName" class="sched-input facility-select" data-idx="${index}">
                     <option value="">Select facility...</option>
@@ -211,14 +218,7 @@ function renderRow(row, index) {
             </div>
             <div>
                 <label class="sched-label">📍 Address</label>
-                <input name="facilityAddress" class="sched-input" data-idx="${index}" value="${row.facilityAddress}" placeholder="Auto-filled or type...">
-            </div>
-            <div>
-                <label class="sched-label">📌 Area (LGA)</label>
-                <select name="area" class="sched-input" data-idx="${index}">
-                    <option value="">Select...</option>
-                    ${LAGOS_LGAs.map(a => `<option ${a === row.area ? 'selected' : ''}>${a}</option>`).join('')}
-                </select>
+                <input name="facilityAddress" class="sched-input" data-idx="${index}" value="${row.facilityAddress}" placeholder="Auto-filled...">
             </div>
             <div>
                 <label class="sched-label">👥 Inspectors</label>
@@ -230,9 +230,31 @@ function renderRow(row, index) {
     </div>`;
 }
 
-function filterFacilitiesForRow(activityType) {
+function filterFacilitiesForRow(activityType, area) {
     if (!activityType) return [];
-    return facilitiesCache.filter(f => f.activityType === activityType);
+    let results = facilitiesCache.filter(f => f.activityType === activityType);
+    if (area) {
+        const areaLower = area.toLowerCase();
+        const areaAliases = {
+            'Eti-Osa': ['vi', 'victoria island', 'lekki', 'ikoyi', 'ajah', 'eti-osa'],
+            'Oshodi-Isolo': ['isolo', 'oshodi', 'oshodi-isolo'],
+            'Lagos Mainland': ['yaba', 'ebute metta', 'lagos mainland'],
+            'Kosofe': ['maryland', 'ketu', 'ojota', 'kosofe'],
+            'Amuwo-Odofin': ['festac', 'mile 2', 'amuwo-odofin'],
+            'Ajeromi-Ifelodun': ['ajegunle', 'ajeromi-ifelodun'],
+            'Alimosho': ['ipaja', 'egbeda', 'idimu', 'igando', 'alimosho'],
+            'Shomolu': ['gbagada', 'bariga', 'shomolu'],
+            'Ifako-Ijaiye': ['ogba', 'ifako', 'ifako-ijaiye'],
+            'Lagos Island': ['marina', 'broad street', 'idumota', 'lagos island']
+        };
+        const aliases = areaAliases[area] || [areaLower];
+        results = results.filter(f => {
+            const addr = (f.address || '').toLowerCase();
+            const name = (f.name || '').toLowerCase();
+            return aliases.some(a => addr.includes(a) || name.includes(a));
+        });
+    }
+    return results;
 }
 
 function bindSchedulerEvents(root) {
@@ -308,13 +330,27 @@ function bindSchedulerEvents(root) {
                     scheduledRows[idx].productType = '';
                 }
             }
-            populateFacilityDropdown(idx, select.value);
+            const area = scheduledRows[idx].area || '';
+            populateFacilityDropdown(idx, select.value, area);
         });
         // Initialize if activity already selected
         const idx = parseInt(select.dataset.idx);
         if (scheduledRows[idx].activityType) {
-            populateFacilityDropdown(idx, scheduledRows[idx].activityType);
+            const area = scheduledRows[idx].area || '';
+            populateFacilityDropdown(idx, scheduledRows[idx].activityType, area);
         }
+    });
+
+    // Bind area changes to re-filter facilities
+    document.querySelectorAll('select[name="area"]').forEach(select => {
+        select.addEventListener('change', () => {
+            const idx = parseInt(select.dataset.idx);
+            scheduledRows[idx].area = select.value;
+            const activity = scheduledRows[idx].activityType || '';
+            if (activity) {
+                populateFacilityDropdown(idx, activity, select.value);
+            }
+        });
     });
 
     // Bind product type changes
@@ -419,7 +455,7 @@ async function searchFacility() {
     }
 }
 
-function populateFacilityDropdown(idx, activityType) {
+function populateFacilityDropdown(idx, activityType, area) {
     const select = document.querySelector(`select[name="facilityName"][data-idx="${idx}"]`);
     if (!select) return;
 
@@ -429,8 +465,9 @@ function populateFacilityDropdown(idx, activityType) {
         delete choicesInstances['facility_' + idx];
     }
 
-    const filtered = filterFacilitiesForRow(activityType);
-    select.innerHTML = `<option value="">Select facility (${filtered.length} available)...</option>`
+    const filtered = filterFacilitiesForRow(activityType, area);
+    const areaLabel = area ? ` in ${area}` : '';
+    select.innerHTML = `<option value="">Select facility (${filtered.length}${areaLabel})...</option>`
         + filtered.map(f => `<option value="${f.id}">${f.name}</option>`).join('')
         + `<option value="__ADD_NEW__">➕ Add new facility...</option>`;
 
