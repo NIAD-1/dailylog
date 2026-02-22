@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, serverTimestamp } from "./db.js";
+import { db, doc, getDoc, setDoc, serverTimestamp, collection, writeBatch } from "./db.js";
 import { initAuth, signIn, logOut, currentUser, currentUserRole } from "./auth.js";
 import { navigate, clearRoot } from "./ui.js";
 import { startReportWizard, setWizardUser } from "./wizard.js";
@@ -103,7 +103,7 @@ initAuth(db, (user, role) => {
     authReady = true;
     const page = window.location.hash.substring(1);
 
-    if (['dashboard', 'kpi-settings', 'scheduler', 'map'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map')) {
+    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map')) {
       navigate(page, false);
     } else if (['report', 'success'].includes(page) && user) {
       navigate(page, false);
@@ -172,6 +172,14 @@ function renderPage(page) {
   if (page === 'map') {
     renderMapPage(root);
   }
+  if (page === 'import') {
+    if (currentUserRole === 'admin') {
+      renderImportPage(root);
+    } else {
+      alert('Access denied. Only admins can import facilities.');
+      navigate('welcome');
+    }
+  }
   if (page === 'dashboard') {
     if (currentUserRole === 'admin') {
       bindDashboard(root);
@@ -234,6 +242,83 @@ async function bindKpiSettings() {
     } catch (error) {
       console.error("Error saving settings:", error);
       alert("An error occurred. Could not save settings.");
+    }
+  };
+}
+
+async function renderImportPage(root) {
+  root.innerHTML = `
+  <section class="card" style="max-width:600px;margin:auto">
+    <h2 style="color:var(--accent)">📦 Import Facilities</h2>
+    <p class="muted">Import facility data from <code>facilities-data.json</code> into Firestore.</p>
+    <div style="display:flex;gap:16px;margin:16px 0">
+      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
+        <strong id="impTotal" style="display:block;font-size:24px;color:var(--accent)">—</strong>Total
+      </div>
+      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
+        <strong id="impGlsi" style="display:block;font-size:24px;color:var(--accent)">—</strong>GLSI
+      </div>
+      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
+        <strong id="impGsdp" style="display:block;font-size:24px;color:var(--accent)">—</strong>GSDP
+      </div>
+      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
+        <strong id="impRs" style="display:block;font-size:24px;color:var(--accent)">—</strong>RS
+      </div>
+    </div>
+    <button id="importBtn" disabled style="padding:12px 24px;font-size:16px">Loading data...</button>
+    <button id="backFromImport" class="secondary" style="padding:12px 24px;margin-left:12px">← Back</button>
+    <div id="importLog" style="background:#f5f5f5;padding:16px;border-radius:8px;margin-top:16px;max-height:300px;overflow-y:auto;font-family:monospace;font-size:13px;white-space:pre-wrap"></div>
+  </section>`;
+
+  document.getElementById('backFromImport').onclick = () => navigate('welcome');
+
+  const logEl = document.getElementById('importLog');
+  const btn = document.getElementById('importBtn');
+  const log = (msg) => { logEl.textContent += msg + '\n'; logEl.scrollTop = logEl.scrollHeight; };
+
+  let facilities = [];
+  try {
+    const resp = await fetch('./facilities-data.json');
+    facilities = await resp.json();
+    document.getElementById('impTotal').textContent = facilities.length;
+    document.getElementById('impGlsi').textContent = facilities.filter(f => f.activityType === 'GLSI').length;
+    document.getElementById('impGsdp').textContent = facilities.filter(f => f.activityType === 'GSDP').length;
+    document.getElementById('impRs').textContent = facilities.filter(f => f.activityType === 'Routine Surveillance').length;
+    btn.textContent = `Import ${facilities.length} Facilities`;
+    btn.disabled = false;
+    log(`✅ Loaded ${facilities.length} facilities from JSON`);
+  } catch (e) {
+    log(`❌ Error loading JSON: ${e.message}`);
+  }
+
+  btn.onclick = async () => {
+    btn.disabled = true;
+    btn.textContent = 'Importing...';
+    try {
+      const BATCH_SIZE = 450;
+      let imported = 0;
+      for (let i = 0; i < facilities.length; i += BATCH_SIZE) {
+        const batch = writeBatch(db);
+        const chunk = facilities.slice(i, i + BATCH_SIZE);
+        for (const f of chunk) {
+          const docRef = doc(collection(db, 'facilities'));
+          batch.set(docRef, {
+            name: f.name || '', address: f.address || '', activityType: f.activityType || '',
+            contactPerson: f.contactPerson || '', email: f.email || '', fileNumber: f.fileNumber || '',
+            lastVisitDate: f.lastVisitDate || '', lastObservation: f.lastObservation || '',
+            status: f.status || 'Active', visitCount: 0
+          });
+        }
+        await batch.commit();
+        imported += chunk.length;
+        log(`📦 Batch ${Math.ceil((i + 1) / BATCH_SIZE)}: imported ${imported}/${facilities.length}`);
+      }
+      log(`\n🎉 Done! ${imported} facilities imported to Firestore.`);
+      btn.textContent = '✅ Import Complete';
+    } catch (e) {
+      log(`\n❌ Error: ${e.message}`);
+      btn.textContent = 'Retry Import';
+      btn.disabled = false;
     }
   };
 }
