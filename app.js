@@ -5,6 +5,7 @@ import { startReportWizard, setWizardUser } from "./wizard.js";
 import { bindDashboard, setDashboardUserRole } from "./dashboard.js";
 import { renderSchedulerPage, setSchedulerUser } from "./scheduler.js";
 import { renderMapPage } from "./map.js";
+import { renderWeeklySummaryPage } from "./weekly.js";
 
 const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
@@ -24,6 +25,7 @@ const pageWelcome = `
     <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
     <button id="openScheduler" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">Schedule Inspections</button>
     <button id="openMap" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🗺️ Inspection Map</button>
+    <button id="openWeekly" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📊 Weekly Summary</button>
     <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
   </div>
 </section>
@@ -50,6 +52,13 @@ const pageKpiSettings = `
             <label>Teams Webhook URL (Power Automate)</label>
             <input type="text" id="webhookUrl" placeholder="https://prod-...">
             <p class="muted small">Used to create folders in Teams for Routine Surveillance reports.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label>Weekly Summary Webhook URL</label>
+            <input type="text" id="weeklyWebhookUrl" placeholder="https://prod-... (Teams channel for weekly summaries)">
+            <p class="muted small">Webhook for posting weekly activity summaries to Teams.</p>
         </div>
     </div>
 
@@ -103,7 +112,7 @@ initAuth(db, (user, role) => {
     authReady = true;
     const page = window.location.hash.substring(1);
 
-    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map')) {
+    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import', 'weekly'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map' || page === 'weekly')) {
       navigate(page, false);
     } else if (['report', 'success'].includes(page) && user) {
       navigate(page, false);
@@ -137,6 +146,10 @@ function updateAuthUI(user, role) {
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
     mapBtn.style.display = user ? 'block' : 'none';
+  }
+  const weeklyBtn = document.getElementById('openWeekly');
+  if (weeklyBtn) {
+    weeklyBtn.style.display = user ? 'block' : 'none';
   }
 }
 
@@ -172,6 +185,9 @@ function renderPage(page) {
   if (page === 'map') {
     renderMapPage(root);
   }
+  if (page === 'weekly') {
+    renderWeeklySummaryPage(root);
+  }
   if (page === 'import') {
     if (currentUserRole === 'admin') {
       renderImportPage(root);
@@ -202,6 +218,11 @@ function bindWelcome() {
     mapBtn.style.display = currentUser ? 'block' : 'none';
     mapBtn.onclick = () => navigate('map');
   }
+  const weeklyBtn = document.getElementById('openWeekly');
+  if (weeklyBtn) {
+    weeklyBtn.style.display = currentUser ? 'block' : 'none';
+    weeklyBtn.onclick = () => navigate('weekly');
+  }
   const dashboardBtn = document.getElementById('openDashboard');
   if (dashboardBtn) {
     dashboardBtn.style.display = currentUserRole === 'admin' ? 'block' : 'none';
@@ -223,6 +244,7 @@ async function bindKpiSettings() {
     document.getElementById('receivedGlsi').value = data.receivedGlsi || '';
     document.getElementById('receivedComplaints').value = data.receivedComplaints || '';
     document.getElementById('webhookUrl').value = data.webhookUrl || '';
+    document.getElementById('weeklyWebhookUrl').value = data.weeklyWebhookUrl || '';
   }
 
   document.getElementById('saveKpiSettings').onclick = async () => {
@@ -232,6 +254,7 @@ async function bindKpiSettings() {
       receivedGlsi: parseInt(document.getElementById('receivedGlsi').value) || 0,
       receivedComplaints: parseInt(document.getElementById('receivedComplaints').value) || 0,
       webhookUrl: document.getElementById('webhookUrl').value.trim(),
+      weeklyWebhookUrl: document.getElementById('weeklyWebhookUrl').value.trim(),
       updatedAt: serverTimestamp()
     };
 
