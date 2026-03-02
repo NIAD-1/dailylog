@@ -61,6 +61,14 @@ export async function renderMapPage(root) {
                     <option value="GLSI">GLSI</option>
                 </select>
             </div>
+            <div class="map-filter-group">
+                <label style="margin:0;font-size:11px">
+                    <input type="checkbox" id="showInspections" checked style="margin-right:4px">🟠 Show Logged Inspections
+                </label>
+                <label style="margin:0;font-size:11px;margin-left:12px">
+                    <input type="checkbox" id="showFacilities" checked style="margin-right:4px">🟢 Show Facilities
+                </label>
+            </div>
             <div class="map-stats" id="mapStats">Loading...</div>
         </div>
 
@@ -78,14 +86,13 @@ export async function renderMapPage(root) {
 
     document.getElementById('backFromMap').addEventListener('click', () => navigate('welcome'));
 
-    // Load facilities
+    // Load facilities (pre-loaded database)
     let facilities = [];
     try {
         const snap = await getDocs(collection(db, 'facilities'));
         snap.forEach(d => facilities.push({ id: d.id, ...d.data() }));
     } catch (e) {
         console.error('Error loading facilities for map:', e);
-        // Fallback: try loading from JSON
         try {
             const resp = await fetch('./facilities-data.json');
             facilities = await resp.json();
@@ -94,17 +101,44 @@ export async function renderMapPage(root) {
         }
     }
 
-    initMap(facilities, 'all');
+    // Load live inspection reports (logged by users)
+    let reports = [];
+    try {
+        const snap = await getDocs(collection(db, 'facilityReports'));
+        snap.forEach(d => reports.push({ id: d.id, ...d.data() }));
+    } catch (e) {
+        console.error('Error loading reports for map:', e);
+    }
 
-    document.getElementById('mapActivityFilter').addEventListener('change', (e) => {
-        initMap(facilities, e.target.value);
+    // Update stats
+    document.getElementById('mapStats').innerHTML = `
+        <span class="map-stat"><strong>${facilities.length}</strong> Facilities</span>
+        <span class="map-stat"><strong>${reports.length}</strong> Inspections</span>
+    `;
+
+    const getFilters = () => ({
+        activity: document.getElementById('mapActivityFilter').value,
+        showInspections: document.getElementById('showInspections').checked,
+        showFacilities: document.getElementById('showFacilities').checked
     });
+
+    const refresh = () => initMap(facilities, reports, getFilters());
+
+    refresh();
+
+    document.getElementById('mapActivityFilter').addEventListener('change', refresh);
+    document.getElementById('showInspections').addEventListener('change', refresh);
+    document.getElementById('showFacilities').addEventListener('change', refresh);
 }
 
-function initMap(facilities, activityFilter) {
-    const filtered = activityFilter === 'all'
+function initMap(facilities, reports, filters) {
+    const { activity, showInspections, showFacilities } = filters;
+    const filtered = activity === 'all'
         ? facilities
-        : facilities.filter(f => f.activityType === activityFilter);
+        : facilities.filter(f => f.activityType === activity);
+    const filteredReports = activity === 'all'
+        ? reports
+        : reports.filter(r => r.activityType === activity);
 
     // Count per LGA (using address text matching)
     const lgaCounts = {};
@@ -175,14 +209,6 @@ function initMap(facilities, activityFilter) {
 
     const maxCount = Math.max(...Object.values(lgaCounts).filter(v => typeof v === 'number'), 1);
     const totalFacilities = filtered.length;
-    const mappedFacilities = totalFacilities - (lgaCounts['_unassigned'] || 0);
-
-    // Update stats
-    document.getElementById('mapStats').innerHTML = `
-        <span class="map-stat"><strong>${totalFacilities}</strong> Facilities</span>
-        <span class="map-stat"><strong>${mappedFacilities}</strong> Mapped</span>
-        <span class="map-stat"><strong>${Object.keys(LGA_COORDINATES).filter(l => lgaCounts[l] > 0).length}</strong>/20 LGAs</span>
-    `;
 
     // Initialize or reset map
     if (mapInstance) {
@@ -342,7 +368,104 @@ function initMap(facilities, activityFilter) {
         markers.addLayer(marker);
     });
 
-    mapInstance.addLayer(markers);
+    if (showFacilities) {
+        mapInstance.addLayer(markers);
+    }
+
+    // ─── Orange pins: Logged inspection reports ───────────────────────────────
+    if (showInspections && filteredReports.length > 0) {
+        const reportCluster = L.markerClusterGroup({
+            maxClusterRadius: 40,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            iconCreateFunction: function (cluster) {
+                const count = cluster.getChildCount();
+                let size = count > 50 ? 'large' : count > 10 ? 'medium' : 'small';
+                return L.divIcon({
+                    html: `<div><span>${count}</span></div>`,
+                    className: `marker-cluster-report marker-cluster-report-${size}`,
+                    iconSize: L.point(40, 40)
+                });
+            }
+        });
+
+        const AREA_ALIASES = {
+            'ikeja': 'Ikeja', 'vi': 'Eti-Osa', 'victoria island': 'Eti-Osa',
+            'lekki': 'Eti-Osa', 'ikoyi': 'Eti-Osa', 'ajah': 'Eti-Osa',
+            'isolo': 'Oshodi-Isolo', 'oshodi': 'Oshodi-Isolo',
+            'mushin': 'Mushin', 'surulere': 'Surulere',
+            'yaba': 'Lagos Mainland', 'ebute metta': 'Lagos Mainland',
+            'maryland': 'Kosofe', 'ketu': 'Kosofe', 'ojota': 'Kosofe',
+            'festac': 'Amuwo-Odofin', 'mile 2': 'Amuwo-Odofin',
+            'apapa': 'Apapa', 'ajegunle': 'Ajeromi-Ifelodun',
+            'ikorodu': 'Ikorodu', 'agege': 'Agege',
+            'ipaja': 'Alimosho', 'egbeda': 'Alimosho', 'idimu': 'Alimosho',
+            'igando': 'Alimosho', 'alimosho': 'Alimosho',
+            'ojo': 'Ojo', 'badagry': 'Badagry', 'epe': 'Epe',
+            'shomolu': 'Shomolu', 'gbagada': 'Shomolu', 'bariga': 'Shomolu',
+            'ogba': 'Ifako-Ijaiye', 'ifako': 'Ifako-Ijaiye',
+            'lagos island': 'Lagos Island', 'marina': 'Lagos Island',
+            'broad street': 'Lagos Island', 'idumota': 'Lagos Island'
+        };
+
+        filteredReports.forEach(r => {
+            const addr = (r.facilityAddress || r.area || '').toLowerCase();
+            const name = (r.facilityName || '').toLowerCase();
+            let lgaMatch = r.area && LGA_COORDINATES[r.area] ? r.area : null;
+
+            if (!lgaMatch) {
+                for (const lga of Object.keys(LGA_COORDINATES)) {
+                    if (addr.includes(lga.toLowerCase()) || name.includes(lga.toLowerCase())) {
+                        lgaMatch = lga; break;
+                    }
+                }
+            }
+            if (!lgaMatch) {
+                for (const [alias, lga] of Object.entries(AREA_ALIASES)) {
+                    if (addr.includes(alias) || name.includes(alias)) {
+                        lgaMatch = lga; break;
+                    }
+                }
+            }
+            if (!lgaMatch) return;
+
+            const center = LGA_COORDINATES[lgaMatch];
+            const lat = center[0] + (Math.random() - 0.5) * 0.03;
+            const lng = center[1] + (Math.random() - 0.5) * 0.03;
+
+            const dateStr = r.inspectionDate?.toDate
+                ? r.inspectionDate.toDate().toLocaleDateString()
+                : r.inspectionDate || '—';
+            const inspectors = Array.isArray(r.inspectorNames) ? r.inspectorNames.join(', ') : (r.inspectorNames || '—');
+            const googleUrl = `https://www.google.com/maps/search/${encodeURIComponent((r.facilityName || '') + ' Lagos Nigeria')}`;
+
+            const rMarker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'report-pin',
+                    html: '<div class="report-dot"></div>',
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                })
+            });
+
+            rMarker.bindPopup(`
+                <div style="max-width:260px">
+                    <div style="background:#fff3e0;padding:4px 8px;border-radius:3px;margin-bottom:6px;font-size:10px;font-weight:700;color:#e65100;letter-spacing:0.5px">✅ LOGGED INSPECTION</div>
+                    <h4 style="margin:0 0 4px 0;color:#e65100;font-size:13px">${r.facilityName || 'Unknown'}</h4>
+                    <p style="margin:0 0 3px 0;font-size:11px;color:#666">${r.facilityAddress || r.area || '—'}</p>
+                    <p style="margin:0 0 3px 0;font-size:11px"><span style="background:#fff3e0;padding:2px 6px;border-radius:3px;color:#e65100;font-weight:600">${r.activityType || '—'}</span></p>
+                    <p style="margin:0 0 3px 0;font-size:11px;color:#555">📅 ${dateStr}</p>
+                    <p style="margin:0 0 3px 0;font-size:11px;color:#555">👤 ${inspectors}</p>
+                    ${r.actionTaken ? `<p style="margin:0 0 3px 0;font-size:11px;color:#555">⚡ ${r.actionTaken}</p>` : ''}
+                    <a href="${googleUrl}" target="_blank" style="font-size:11px;color:#e65100;font-weight:600">📍 Find on Google Maps →</a>
+                </div>
+            `);
+
+            reportCluster.addLayer(rMarker);
+        });
+
+        mapInstance.addLayer(reportCluster);
+    }
 
     // LGA breakdown grid
     const breakdownHTML = Object.keys(LGA_COORDINATES)

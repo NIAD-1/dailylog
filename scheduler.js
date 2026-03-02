@@ -8,7 +8,8 @@ const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Donated
 
 let currentUser = null;
 let currentWeekStart = null;
-let scheduledRows = [];
+let teamRows = { A: [], B: [] };  // Independent rows for each team
+let activeTeam = 'A';
 let facilitiesCache = [];
 let choicesInstances = {};
 
@@ -60,28 +61,29 @@ async function loadFacilities() {
 export async function renderSchedulerPage(root) {
     clearRoot(root);
     currentWeekStart = getWeekMonday();
-    scheduledRows = [];
+    teamRows = { A: [], B: [] };
+    activeTeam = 'A';
     choicesInstances = {};
 
-    // Load facilities
-    const loadingHTML = `<section class="card" style="text-align:center;padding:60px"><p>Loading facilities...</p></section>`;
-    root.innerHTML = loadingHTML;
+    root.innerHTML = `<section class="card" style="text-align:center;padding:60px"><p>Loading facilities...</p></section>`;
     await loadFacilities();
 
-    // Add one default row
-    addRow();
+    // One default row per team
+    addRow('A');
+    addRow('B');
     renderScheduler(root);
 }
 
-function addRow() {
+function addRow(team) {
+    team = team || activeTeam;
+    const rows = teamRows[team];
     const day = new Date(currentWeekStart);
-    day.setDate(day.getDate() + scheduledRows.length);
-    // Keep within Mon-Fri
+    day.setDate(day.getDate() + rows.length);
     if (day.getDay() === 0 || day.getDay() === 6) {
         day.setDate(currentWeekStart.getDate());
     }
-    scheduledRows.push({
-        id: 'row_' + Date.now() + '_' + scheduledRows.length,
+    rows.push({
+        id: 'row_' + Date.now() + '_' + rows.length,
         inspectionDate: toISODate(day),
         facilityName: '',
         facilityAddress: '',
@@ -94,12 +96,10 @@ function addRow() {
 }
 
 function renderScheduler(root) {
-    // Clean up old Choices instances
-    Object.values(choicesInstances).forEach(c => {
-        try { c.destroy(); } catch (e) { }
-    });
+    Object.values(choicesInstances).forEach(c => { try { c.destroy(); } catch (e) { } });
     choicesInstances = {};
 
+    const scheduledRows = teamRows[activeTeam];
     const weekLabel = formatWeekRange(currentWeekStart);
     const inspectorCount = new Set(scheduledRows.flatMap(r => r.inspectors)).size;
 
@@ -116,19 +116,25 @@ function renderScheduler(root) {
             <button id="nextWeek" class="secondary week-nav-btn">▶</button>
         </div>
 
-        <div id="schedulerBody">
+        <!-- Team tabs -->
+        <div class="team-tabs" style="margin-top:16px">
+            <button class="team-tab ${activeTeam === 'A' ? 'active' : ''}" id="tabTeamA">🔵 Team A (${teamRows.A.length})</button>
+            <button class="team-tab ${activeTeam === 'B' ? 'active' : ''}" id="tabTeamB">🟢 Team B (${teamRows.B.length})</button>
+        </div>
+
+        <div id="schedulerBody" style="margin-top:12px">
             ${scheduledRows.map((row, i) => renderRow(row, i)).join('')}
         </div>
 
         <div class="scheduler-actions">
-            <button id="addRowBtn" class="secondary" style="font-size:13px;padding:8px 16px">+ Add Inspection</button>
+            <button id="addRowBtn" class="secondary" style="font-size:13px;padding:8px 16px">+ Add Inspection (Team ${activeTeam})</button>
             <div class="scheduler-summary">
-                ${scheduledRows.length} inspection(s) · ${inspectorCount} inspector(s) assigned
+                Team ${activeTeam}: ${scheduledRows.length} inspection(s) · ${inspectorCount} inspector(s)
             </div>
         </div>
 
         <div style="margin-top:24px;display:flex;gap:12px;justify-content:flex-end">
-            <button id="submitSchedule" class="success" style="padding:12px 32px">Submit Week Schedule</button>
+            <button id="submitSchedule" class="success" style="padding:12px 32px">Submit Team ${activeTeam} Schedule</button>
         </div>
 
         <!-- Add Facility Modal -->
@@ -261,30 +267,46 @@ function bindSchedulerEvents(root) {
     // Back button
     document.getElementById('backToWelcome').addEventListener('click', () => navigate('welcome'));
 
+    // Tab switching
+    document.getElementById('tabTeamA').addEventListener('click', () => {
+        if (activeTeam === 'A') return;
+        saveAllRowData();
+        activeTeam = 'A';
+        renderScheduler(root);
+    });
+    document.getElementById('tabTeamB').addEventListener('click', () => {
+        if (activeTeam === 'B') return;
+        saveAllRowData();
+        activeTeam = 'B';
+        renderScheduler(root);
+    });
+
     // Week navigation
     document.getElementById('prevWeek').addEventListener('click', () => {
+        saveAllRowData();
         currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-        scheduledRows.forEach((r, i) => {
+        ['A', 'B'].forEach(team => teamRows[team].forEach((r, i) => {
             const d = new Date(currentWeekStart);
             d.setDate(d.getDate() + Math.min(i, 4));
             r.inspectionDate = toISODate(d);
-        });
+        }));
         renderScheduler(root);
     });
     document.getElementById('nextWeek').addEventListener('click', () => {
+        saveAllRowData();
         currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-        scheduledRows.forEach((r, i) => {
+        ['A', 'B'].forEach(team => teamRows[team].forEach((r, i) => {
             const d = new Date(currentWeekStart);
             d.setDate(d.getDate() + Math.min(i, 4));
             r.inspectionDate = toISODate(d);
-        });
+        }));
         renderScheduler(root);
     });
 
     // Add row
     document.getElementById('addRowBtn').addEventListener('click', () => {
         saveAllRowData();
-        addRow();
+        addRow(activeTeam);
         renderScheduler(root);
     });
 
@@ -292,9 +314,10 @@ function bindSchedulerEvents(root) {
     document.querySelectorAll('.remove-row-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const idx = parseInt(btn.dataset.idx);
-            if (scheduledRows.length <= 1) { alert('You need at least one inspection.'); return; }
+            const rows = teamRows[activeTeam];
+            if (rows.length <= 1) { alert('You need at least one inspection.'); return; }
             saveAllRowData();
-            scheduledRows.splice(idx, 1);
+            rows.splice(idx, 1);
             renderScheduler(root);
         });
     });
@@ -386,7 +409,7 @@ function bindSchedulerEvents(root) {
         if (input.name === 'activityType' || input.name === 'facilityName' || input.name === 'inspectors') return;
         input.addEventListener('change', () => {
             const idx = parseInt(input.dataset.idx);
-            scheduledRows[idx][input.name] = input.value;
+            teamRows[activeTeam][idx][input.name] = input.value;
         });
     });
 
@@ -519,7 +542,8 @@ function showFacilityMeta(idx, facility) {
 }
 
 function saveAllRowData() {
-    scheduledRows.forEach((row, idx) => {
+    const rows = teamRows[activeTeam];
+    rows.forEach((row, idx) => {
         const dateSelect = document.querySelector(`select[name="inspectionDate"][data-idx="${idx}"]`);
         const addrInput = document.querySelector(`input[name="facilityAddress"][data-idx="${idx}"]`);
         const areaSelect = document.querySelector(`select[name="area"][data-idx="${idx}"]`);
@@ -533,7 +557,6 @@ function saveAllRowData() {
         const ptSelect = document.querySelector(`select[name="productType"][data-idx="${idx}"]`);
         if (ptSelect) row.productType = ptSelect.value;
 
-        // Get inspectors from Choices
         const inspChoices = choicesInstances['inspector_' + idx];
         if (inspChoices) {
             row.inspectors = inspChoices.getValue(true);
@@ -558,20 +581,18 @@ async function handleAddFacility(root) {
         const docRef = await addDoc(collection(db, 'facilities'), newFacility);
         facilitiesCache.push({ id: docRef.id, ...newFacility });
 
-        // Close modal
         const modal = document.getElementById('addFacilityModal');
         const rowIdx = parseInt(modal.dataset.rowIdx || '0');
         modal.style.display = 'none';
 
-        // Clear form
         document.getElementById('newFacName').value = '';
         document.getElementById('newFacAddress').value = '';
 
-        // Refresh the facility dropdown for that row
         saveAllRowData();
-        scheduledRows[rowIdx].facilityName = name;
-        scheduledRows[rowIdx].facilityAddress = address;
-        scheduledRows[rowIdx].facilityId = docRef.id;
+        const rows = teamRows[activeTeam];
+        rows[rowIdx].facilityName = name;
+        rows[rowIdx].facilityAddress = address;
+        rows[rowIdx].facilityId = docRef.id;
         renderScheduler(root);
 
         alert(`Facility "${name}" added successfully!`);
@@ -585,8 +606,8 @@ async function handleSubmit(root) {
     saveAllRowData();
 
     // Validate
-    for (let i = 0; i < scheduledRows.length; i++) {
-        const row = scheduledRows[i];
+    for (let i = 0; i < teamRows[activeTeam].length; i++) {
+        const row = teamRows[activeTeam][i];
         if (!row.activityType) { alert(`Row ${i + 1}: Please select an activity type.`); return; }
         if (!row.facilityName) { alert(`Row ${i + 1}: Please select a facility.`); return; }
         if (row.inspectors.length === 0) { alert(`Row ${i + 1}: Please assign at least one inspector.`); return; }
@@ -597,21 +618,20 @@ async function handleSubmit(root) {
     submitBtn.disabled = true;
 
     try {
-        // Fetch webhook URL
         const settingsRef = doc(db, 'settings', 'kpiTargets');
         const settingsSnap = await getDoc(settingsRef);
         const webhookUrl = settingsSnap.exists() ? settingsSnap.data().schedulerWebhookUrl : null;
 
-        // Save to Firestore
         const scheduleId = 'SCH-' + new Date().getFullYear() + '-' + Date.now();
         const scheduleDoc = {
             scheduleId,
+            team: activeTeam,
             weekStart: currentWeekStart.toISOString(),
             submittedBy: currentUser ? (currentUser.displayName || currentUser.email) : 'Unknown',
             submittedByUid: currentUser ? currentUser.uid : null,
             status: 'Pending',
             createdAt: serverTimestamp(),
-            inspections: scheduledRows.map(row => ({
+            inspections: teamRows[activeTeam].map(row => ({
                 inspectionDate: row.inspectionDate,
                 facilityName: row.facilityName,
                 facilityAddress: row.facilityAddress,
@@ -645,7 +665,7 @@ async function handleSubmit(root) {
         root.innerHTML = `
         <section class="card" style="text-align:center;padding:60px">
             <h2 style="color:var(--accent)">✅ Schedule Submitted</h2>
-            <p style="font-size:18px;margin:16px 0">${scheduledRows.length} inspection(s) for the week of ${formatWeekRange(currentWeekStart)}</p>
+            <p style="font-size:18px;margin:16px 0">Team ${activeTeam}: ${teamRows[activeTeam].length} inspection(s) for the week of ${formatWeekRange(currentWeekStart)}</p>
             <p class="muted">Schedule ID: <strong>${scheduleId}</strong></p>
             <p class="muted">Status: <strong>Pending Approval</strong></p>
             <div style="margin-top:32px;display:flex;gap:16px;justify-content:center">
