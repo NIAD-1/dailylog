@@ -485,6 +485,13 @@ async function handleSubmitWizard(root) {
             if (folderActivities.includes(reportData.activityType)) {
                 await triggerTeamsWebhook(reportData);
             }
+
+            // Trigger dedicated Consultative Meeting webhook
+            // This updates the SharePoint list with meeting-specific inspectors
+            // so the approval chain uses the RIGHT people (not the original inspection team)
+            if (reportData.activityType === 'Consultative Meeting') {
+                await triggerConsultativeMeetingWebhook(reportData);
+            }
         });
 
         await Promise.all(promises);
@@ -560,6 +567,83 @@ async function triggerTeamsWebhook(report) {
 
     } catch (error) {
         console.error("Error in triggerTeamsWebhook:", error);
+    }
+}
+
+// ─── Consultative Meeting Webhook ────────────────────────────────────────────
+// Fires when a Consultative Meeting is logged in the wizard.
+// Sends meeting-specific inspectors to Power Automate so it can update the
+// SharePoint facility list — SEPARATE from the original inspection team.
+// Power Automate Flow A:  receives this → updates MeetingInspectors column on the SharePoint list row
+// Power Automate Flow B:  triggered by file upload to Consultative_Meeting subfolder →
+//                         reads MeetingInspectors from SharePoint → starts approval chain → Mada
+async function triggerConsultativeMeetingWebhook(report) {
+    try {
+        const settingsRef = doc(db, 'settings', 'kpiTargets');
+        const settingsSnap = await getDoc(settingsRef);
+        if (!settingsSnap.exists()) return;
+
+        // Use a dedicated webhook URL for consultative meeting flow
+        // Falls back to the main webhook URL if not separately configured
+        const webhookUrl = settingsSnap.data().consultativeMeetingWebhookUrl
+            || settingsSnap.data().webhookUrl;
+        if (!webhookUrl) return;
+
+        const dateObj = new Date(report.inspectionDate);
+        const meetingDate = dateObj.toISOString().split('T')[0];
+        const year = dateObj.getFullYear().toString();
+        const month = dateObj.toLocaleString('default', { month: 'long' }).toUpperCase();
+
+        // Sanitize facility name exactly as done for folder creation
+        const sanitizedFacilityName = (report.facilityName || '')
+            .trim()
+            .replace(/[."*:<>?/\\|]/g, '')
+            .replace(/\.+$/, '')
+            .trim();
+
+        const inspectors = Array.isArray(report.inspectorNames)
+            ? report.inspectorNames
+            : [report.inspectorNames || ''];
+
+        const payload = {
+            // PA uses this to distinguish from folder-creation webhook
+            actionType: 'consultativeMeeting',
+
+            // Facility info — used to find the right SharePoint list row
+            facilityName: sanitizedFacilityName,
+            area: report.area || '',
+            year,
+            month,
+            meetingDate,
+
+            // Meeting-specific attendees — stored in SharePoint MeetingInspectors column
+            // PA Flow B reads this when the Consultative_Meeting file is uploaded
+            meetingInspectors: inspectors.join(', '),          // comma string for SharePoint column
+            meetingInspectorsArray: inspectors,                 // array for adaptive card loop
+            meetingInspectorCount: inspectors.length,
+
+            // Additional context for the approval card
+            remarks: report.actionTaken || '',
+            consultativeMeetingCategory: report.consultativeMeetingCategory || '',
+            consultativeProductType: report.consultativeProductType || '',
+
+            // Deadline: 3 working days from meeting date
+            deadline: (() => {
+                const d = new Date(dateObj);
+                d.setDate(d.getDate() + 3);
+                d.setHours(23, 59, 59, 0);
+                return d.toISOString();
+            })()
+        };
+
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(err => console.error("Consultative meeting webhook failed:", err));
+
+    } catch (error) {
+        console.error("Error in triggerConsultativeMeetingWebhook:", error);
     }
 }
 

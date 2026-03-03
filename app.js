@@ -61,6 +61,13 @@ const pageKpiSettings = `
             <p class="muted small">Webhook for posting weekly activity summaries to Teams.</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <label>Consultative Meeting Webhook URL</label>
+            <input type="text" id="consultativeMeetingWebhookUrl" placeholder="https://prod-... (PA flow for consultative meeting approval chain)">
+            <p class="muted small">When a Consultative Meeting is logged, this updates the SharePoint list with meeting-specific inspectors for the approval chain.</p>
+        </div>
+    </div>
 
     <h3 style="margin-top: 24px;">KPI Targets</h3>
     <div class="row">
@@ -245,6 +252,7 @@ async function bindKpiSettings() {
     document.getElementById('receivedComplaints').value = data.receivedComplaints || '';
     document.getElementById('webhookUrl').value = data.webhookUrl || '';
     document.getElementById('weeklyWebhookUrl').value = data.weeklyWebhookUrl || '';
+    document.getElementById('consultativeMeetingWebhookUrl').value = data.consultativeMeetingWebhookUrl || '';
   }
 
   document.getElementById('saveKpiSettings').onclick = async () => {
@@ -255,6 +263,7 @@ async function bindKpiSettings() {
       receivedComplaints: parseInt(document.getElementById('receivedComplaints').value) || 0,
       webhookUrl: document.getElementById('webhookUrl').value.trim(),
       weeklyWebhookUrl: document.getElementById('weeklyWebhookUrl').value.trim(),
+      consultativeMeetingWebhookUrl: document.getElementById('consultativeMeetingWebhookUrl').value.trim(),
       updatedAt: serverTimestamp()
     };
 
