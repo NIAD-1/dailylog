@@ -598,7 +598,15 @@ function saveCurrentFacilityData() {
         'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood'
     ];
 
+    fields.forEach(fieldName => {
+        const el = container.querySelector(`[name="${fieldName}"]`);
+        if (el) {
+            data[fieldName] = el.value;
+        }
+    });
+
     // Override facilityName and facilityAddress from consultative meeting fields
+    // (must be AFTER fields.forEach so it doesn't get overwritten by the hidden regular inputs)
     if (consultativeFacilitySelect) {
         if (consultativeFacilitySelect.value === '__ADD_NEW__') {
             // Use manually entered name + address
@@ -611,12 +619,6 @@ function saveCurrentFacilityData() {
             data.facilityAddress = addrInput ? addrInput.value.trim() : '';
         }
     }
-    fields.forEach(fieldName => {
-        const el = container.querySelector(`[name="${fieldName}"]`);
-        if (el) {
-            data[fieldName] = el.value;
-        }
-    });
 
     data.mopUpCount = (parseInt(data.mopUpDrugs) || 0) + (parseInt(data.mopUpCosmetics) || 0) + (parseInt(data.mopUpMedicalDevices) || 0) + (parseInt(data.mopUpFood) || 0);
     data.holdCount = (parseInt(data.holdDrugs) || 0) + (parseInt(data.holdCosmetics) || 0) + (parseInt(data.holdMedicalDevices) || 0) + (parseInt(data.holdFood) || 0);
