@@ -10,6 +10,7 @@ const CLOUDINARY_UPLOAD_PRESET = 'Daily-Activity';
 let wizardState = {};
 let currentUser = null;
 let facilityCategoryCache = {}; // Cache: { 'Routine Surveillance': ['Facility A', ...], ... }
+let facilityDetailCache = {};   // Cache: { 'Routine Surveillance': [{ name, address }, ...], ... }
 
 // ─── Load unique facility names for a given activity category ────────────────
 // Queries both 'facilities' (imported database) and 'facilityReports' (logged activities)
@@ -18,7 +19,8 @@ async function loadFacilitiesForCategory(category) {
     // Return cached result if available
     if (facilityCategoryCache[category]) return facilityCategoryCache[category];
 
-    const names = new Set();
+    const nameSet = new Set();
+    const detailMap = {};  // { facilityName: address }
 
     try {
         // Determine which activityType to query
@@ -30,8 +32,13 @@ async function loadFacilitiesForCategory(category) {
         const facQ = query(collection(db, 'facilities'), where('activityType', '==', queryType));
         const facSnap = await getDocs(facQ);
         facSnap.forEach(d => {
-            const name = d.data().facilityName;
-            if (name) names.add(name.trim());
+            const data = d.data();
+            const name = (data.facilityName || data.name || '').trim();
+            if (name) {
+                nameSet.add(name);
+                // Prefer address from the facilities database
+                if (!detailMap[name]) detailMap[name] = (data.address || data.facilityAddress || '').trim();
+            }
         });
 
         // 2. Query logged facility reports
@@ -39,7 +46,7 @@ async function loadFacilitiesForCategory(category) {
         const repSnap = await getDocs(repQ);
         repSnap.forEach(d => {
             const data = d.data();
-            const name = data.facilityName;
+            const name = (data.facilityName || '').trim();
             if (!name) return;
 
             // For 'Monitoring', only include if productTypes overlap
@@ -47,18 +54,22 @@ async function loadFacilitiesForCategory(category) {
                 const pts = data.productTypes || [];
                 const monitoringTypes = ['Service Drugs', 'Orphan Drugs', 'Donated Items/Drugs'];
                 if (pts.some(pt => monitoringTypes.includes(pt))) {
-                    names.add(name.trim());
+                    nameSet.add(name);
+                    if (!detailMap[name]) detailMap[name] = (data.facilityAddress || '').trim();
                 }
             } else {
-                names.add(name.trim());
+                nameSet.add(name);
+                if (!detailMap[name]) detailMap[name] = (data.facilityAddress || '').trim();
             }
         });
     } catch (error) {
         console.error('Error loading facilities for category:', category, error);
     }
 
-    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    const sorted = [...nameSet].sort((a, b) => a.localeCompare(b));
+    const details = sorted.map(name => ({ name, address: detailMap[name] || '' }));
     facilityCategoryCache[category] = sorted;
+    facilityDetailCache[category] = details;
     return sorted;
 }
 
@@ -162,8 +173,8 @@ function renderStep_FacilityForm() {
             <textarea name="inspectorNameOther" placeholder="For 'Others', specify names here..." style="display:none; margin-top:8px; width: 100%;" rows="3"></textarea>
           </div>` : ''}
         <div class="row"><div class="col"><label>Date</label><input type="date" name="inspectionDate" required></div><div class="col"><label>Area</label><select name="area">${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div></div>
-        <div class="row"><div class="col"><label>Facility Name</label><input name="facilityName" required></div><div class="col"><label>Facility Address</label><input name="facilityAddress" required></div></div>
         <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
+        <div class="row" id="regularFacilityRow"><div class="col"><label>Facility Name</label><input name="facilityName" required></div><div class="col"><label>Facility Address</label><input name="facilityAddress" required></div></div>
         <div name="conditional" style="margin-top:8px"></div>
         <div style="margin-top:8px"><label>Action Taken / Remarks</label><textarea name="actionTaken" rows="4"></textarea></div>
       </div>
@@ -274,7 +285,7 @@ function bindStep_FacilityForm(root) {
 
         // Hide the regular Facility Name & Address row when Consultative Meeting is chosen
         // (the CM section has its own searchable facility dropdown)
-        const facilityRow = container.querySelector('input[name="facilityName"]')?.closest('.row');
+        const facilityRow = container.querySelector('#regularFacilityRow');
         if (facilityRow) {
             facilityRow.style.display = val === 'Consultative Meeting' ? 'none' : '';
         }
@@ -353,6 +364,17 @@ function bindStep_FacilityForm(root) {
                         <select name="consultativeFacilityName"><option value="">Select category first...</option></select>
                         <p class="muted small" id="facilityLoadingMsg" style="display:none;">Loading facilities...</p>
                     </div>
+                    <div class="col">
+                        <label>Facility Address</label>
+                        <input name="consultativeFacilityAddress" placeholder="Auto-filled when facility is selected..." readonly style="background:#f0f0f0;">
+                    </div>
+                </div>
+                <div id="addNewFacilitySection" style="display:none; background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <label style="font-size: 14px; font-weight: 600; margin-bottom: 8px; display:block;">Add New Facility</label>
+                    <div class="row">
+                        <div class="col"><label class="small">Facility Name</label><input name="newConsultativeFacilityName" placeholder="Enter facility name..."></div>
+                        <div class="col"><label class="small">Facility Address</label><input name="newConsultativeFacilityAddress" placeholder="Enter facility address..."></div>
+                    </div>
                 </div>
                 <div class="row" style="margin-top:12px">
                     <div class="col"><label>Sanction given?</label><select name="sanctionGiven"><option value="false">No</option><option value="true">Yes</option></select></div>
@@ -390,6 +412,9 @@ function bindStep_FacilityForm(root) {
             const oldFacilityChoices = getChoicesInstance('consultativeFacilityName');
             if (oldFacilityChoices) oldFacilityChoices.instance.destroy();
 
+            const addressInput = conditional.querySelector('input[name="consultativeFacilityAddress"]');
+            const addNewSection = conditional.querySelector('#addNewFacilitySection');
+
             categorySelect.addEventListener('change', async () => {
                 const selectedCategory = categorySelect.value;
 
@@ -402,6 +427,10 @@ function bindStep_FacilityForm(root) {
                     subCategoryContainer.style.display = 'none';
                 }
 
+                // Reset address + add-new section
+                if (addressInput) { addressInput.value = ''; addressInput.readOnly = true; addressInput.style.background = '#f0f0f0'; }
+                if (addNewSection) addNewSection.style.display = 'none';
+
                 // Load facilities for the selected category
                 if (selectedCategory) {
                     facilityLoadingMsg.style.display = 'block';
@@ -411,7 +440,8 @@ function bindStep_FacilityForm(root) {
                     const facilityNames = await loadFacilitiesForCategory(selectedCategory);
 
                     consultativeFacilitySelect.innerHTML = '<option value="">Select facility...</option>' +
-                        facilityNames.map(f => `<option value="${f}">${f}</option>`).join('');
+                        facilityNames.map(f => `<option value="${f}">${f}</option>`).join('') +
+                        '<option value="__ADD_NEW__">➕ Add new facility…</option>';
 
                     const choices = new Choices(consultativeFacilitySelect, {
                         removeItemButton: false,
@@ -430,6 +460,30 @@ function bindStep_FacilityForm(root) {
                     facilityLoadingMsg.style.display = 'none';
                 } else {
                     consultativeFacilitySelect.innerHTML = '<option value="">Select category first...</option>';
+                }
+            });
+
+            // Auto-populate address when facility is selected, or show add-new section
+            consultativeFacilitySelect.addEventListener('change', () => {
+                const selectedName = consultativeFacilitySelect.value;
+
+                if (selectedName === '__ADD_NEW__') {
+                    // Show manual entry fields
+                    if (addNewSection) addNewSection.style.display = 'block';
+                    if (addressInput) { addressInput.value = ''; addressInput.readOnly = false; addressInput.style.background = ''; }
+                } else {
+                    // Hide manual entry fields
+                    if (addNewSection) addNewSection.style.display = 'none';
+
+                    // Auto-populate address from cache
+                    const category = categorySelect.value;
+                    const details = facilityDetailCache[category] || [];
+                    const match = details.find(d => d.name === selectedName);
+                    if (addressInput) {
+                        addressInput.value = match ? match.address : '';
+                        addressInput.readOnly = true;
+                        addressInput.style.background = '#f0f0f0';
+                    }
                 }
             });
         }
@@ -503,10 +557,19 @@ function saveCurrentFacilityData() {
     // Check for facility name: use the consultative meeting dropdown if present, otherwise the regular input
     const consultativeFacilitySelect = container.querySelector('select[name="consultativeFacilityName"]');
     const facilityNameInput = container.querySelector('input[name="facilityName"]');
+    const newFacNameInput = container.querySelector('input[name="newConsultativeFacilityName"]');
 
     if (consultativeFacilitySelect) {
-        // Consultative Meeting mode — facility name comes from the searchable dropdown
-        if (!consultativeFacilitySelect.value) {
+        // Consultative Meeting mode
+        const isAddNew = consultativeFacilitySelect.value === '__ADD_NEW__';
+        if (isAddNew) {
+            // Validate manual entry fields
+            if (!newFacNameInput || !newFacNameInput.value.trim()) {
+                alert('Please enter a facility name.');
+                if (newFacNameInput) newFacNameInput.focus();
+                return false;
+            }
+        } else if (!consultativeFacilitySelect.value) {
             alert('Please select a facility from the dropdown.');
             return false;
         }
@@ -535,9 +598,18 @@ function saveCurrentFacilityData() {
         'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood'
     ];
 
-    // Override facilityName from consultative meeting dropdown if present
-    if (consultativeFacilitySelect && consultativeFacilitySelect.value) {
-        data.facilityName = consultativeFacilitySelect.value;
+    // Override facilityName and facilityAddress from consultative meeting fields
+    if (consultativeFacilitySelect) {
+        if (consultativeFacilitySelect.value === '__ADD_NEW__') {
+            // Use manually entered name + address
+            data.facilityName = newFacNameInput ? newFacNameInput.value.trim() : '';
+            const newAddrInput = container.querySelector('input[name="newConsultativeFacilityAddress"]');
+            data.facilityAddress = newAddrInput ? newAddrInput.value.trim() : '';
+        } else if (consultativeFacilitySelect.value) {
+            data.facilityName = consultativeFacilitySelect.value;
+            const addrInput = container.querySelector('input[name="consultativeFacilityAddress"]');
+            data.facilityAddress = addrInput ? addrInput.value.trim() : '';
+        }
     }
     fields.forEach(fieldName => {
         const el = container.querySelector(`[name="${fieldName}"]`);
@@ -742,8 +814,8 @@ async function triggerConsultativeMeetingWebhook(report) {
             : [report.inspectorNames || ''];
 
         const payload = {
-            // PA uses this to distinguish from folder-creation webhook
-            actionType: 'consultativeMeeting',
+            // PA uses this to identify the activity type (matches the field name in the other webhook)
+            activity: 'Consultative Meeting',
 
             // Facility info — used to find the right SharePoint list row
             facilityName: sanitizedFacilityName,
