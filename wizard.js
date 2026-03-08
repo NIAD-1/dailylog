@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp, doc, getDoc } from "./db.js";
+import { db, collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, where } from "./db.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
@@ -9,6 +9,58 @@ const CLOUDINARY_UPLOAD_PRESET = 'Daily-Activity';
 
 let wizardState = {};
 let currentUser = null;
+let facilityCategoryCache = {}; // Cache: { 'Routine Surveillance': ['Facility A', ...], ... }
+
+// ─── Load unique facility names for a given activity category ────────────────
+// Queries both 'facilities' (imported database) and 'facilityReports' (logged activities)
+// Merges, deduplicates, and returns a sorted array of facility names.
+async function loadFacilitiesForCategory(category) {
+    // Return cached result if available
+    if (facilityCategoryCache[category]) return facilityCategoryCache[category];
+
+    const names = new Set();
+
+    try {
+        // Determine which activityType to query
+        // 'Monitoring' maps to RS reports with specific product types
+        const isMonitoring = category === 'Monitoring';
+        const queryType = isMonitoring ? 'Routine Surveillance' : category;
+
+        // 1. Query imported facilities database
+        const facQ = query(collection(db, 'facilities'), where('activityType', '==', queryType));
+        const facSnap = await getDocs(facQ);
+        facSnap.forEach(d => {
+            const name = d.data().facilityName;
+            if (name) names.add(name.trim());
+        });
+
+        // 2. Query logged facility reports
+        const repQ = query(collection(db, 'facilityReports'), where('activityType', '==', queryType));
+        const repSnap = await getDocs(repQ);
+        repSnap.forEach(d => {
+            const data = d.data();
+            const name = data.facilityName;
+            if (!name) return;
+
+            // For 'Monitoring', only include if productTypes overlap
+            if (isMonitoring) {
+                const pts = data.productTypes || [];
+                const monitoringTypes = ['Service Drugs', 'Orphan Drugs', 'Donated Items/Drugs'];
+                if (pts.some(pt => monitoringTypes.includes(pt))) {
+                    names.add(name.trim());
+                }
+            } else {
+                names.add(name.trim());
+            }
+        });
+    } catch (error) {
+        console.error('Error loading facilities for category:', category, error);
+    }
+
+    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    facilityCategoryCache[category] = sorted;
+    return sorted;
+}
 
 export const setWizardUser = (user) => {
     currentUser = user;
@@ -211,9 +263,21 @@ function bindStep_FacilityForm(root) {
         if (oldChoices) {
             oldChoices.instance.destroy();
         }
+        // Remove old consultativeFacilityName instance if exists
+        const oldFacChoices = getChoicesInstance('consultativeFacilityName');
+        if (oldFacChoices) {
+            oldFacChoices.instance.destroy();
+        }
 
         let conditionalHTML = '';
         const val = activitySelect.value;
+
+        // Hide the regular Facility Name & Address row when Consultative Meeting is chosen
+        // (the CM section has its own searchable facility dropdown)
+        const facilityRow = container.querySelector('input[name="facilityName"]')?.closest('.row');
+        if (facilityRow) {
+            facilityRow.style.display = val === 'Consultative Meeting' ? 'none' : '';
+        }
 
         const mopUpHTML = `
             <div class="row" style="margin-top:8px">
@@ -267,8 +331,28 @@ function bindStep_FacilityForm(root) {
         } else if (val === 'Consultative Meeting') {
             conditionalHTML = `
                 <div class="row">
-                    <div class="col"><label>Meeting Category</label><select name="consultativeMeetingCategory"><option value="">Select a category...</option><option value="Surveillance">Surveillance</option><option value="Consumer Complaint">Consumer Complaint</option></select></div>
-                    <div class="col" id="consultativeSubCategoryContainer" style="display: none;"><label>Product Type</label><select name="consultativeProductType"></select></div>
+                    <div class="col">
+                        <label>Activity Category</label>
+                        <select name="consultativeMeetingCategory">
+                            <option value="">Select activity category...</option>
+                            <option value="Routine Surveillance">Routine Surveillance</option>
+                            <option value="GLSI">GLSI</option>
+                            <option value="Consumer Complaint">Consumer Complaint</option>
+                            <option value="GSDP">GSDP</option>
+                            <option value="Monitoring">Monitoring of Service Drugs, Orphan Drugs & Donated Items</option>
+                        </select>
+                    </div>
+                    <div class="col" id="consultativeSubCategoryContainer" style="display: none;">
+                        <label>Product Type</label>
+                        <select name="consultativeProductType"></select>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:12px">
+                    <div class="col">
+                        <label>Facility Name</label>
+                        <select name="consultativeFacilityName"><option value="">Select category first...</option></select>
+                        <p class="muted small" id="facilityLoadingMsg" style="display:none;">Loading facilities...</p>
+                    </div>
                 </div>
                 <div class="row" style="margin-top:12px">
                     <div class="col"><label>Sanction given?</label><select name="sanctionGiven"><option value="false">No</option><option value="true">Yes</option></select></div>
@@ -297,17 +381,55 @@ function bindStep_FacilityForm(root) {
         if (categorySelect) {
             const subCategoryContainer = conditional.querySelector('#consultativeSubCategoryContainer');
             const subCategorySelect = conditional.querySelector('[name="consultativeProductType"]');
+            const consultativeFacilitySelect = conditional.querySelector('[name="consultativeFacilityName"]');
+            const facilityLoadingMsg = conditional.querySelector('#facilityLoadingMsg');
             const surveillanceProducts = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals"];
             const complaintProducts = ["Food", "Drugs", "Medical Devices", "Herbals"];
 
-            categorySelect.addEventListener('change', () => {
+            // Destroy old Choices instance for facility dropdown if exists
+            const oldFacilityChoices = getChoicesInstance('consultativeFacilityName');
+            if (oldFacilityChoices) oldFacilityChoices.instance.destroy();
+
+            categorySelect.addEventListener('change', async () => {
                 const selectedCategory = categorySelect.value;
-                if (selectedCategory) {
-                    const options = selectedCategory === 'Surveillance' ? surveillanceProducts : complaintProducts;
+
+                // Handle product type sub-dropdown
+                if (selectedCategory && ['Routine Surveillance', 'Consumer Complaint'].includes(selectedCategory)) {
+                    const options = selectedCategory === 'Routine Surveillance' ? surveillanceProducts : complaintProducts;
                     subCategorySelect.innerHTML = options.map(p => `<option value="${p}">${p}</option>`).join('');
                     subCategoryContainer.style.display = 'block';
                 } else {
                     subCategoryContainer.style.display = 'none';
+                }
+
+                // Load facilities for the selected category
+                if (selectedCategory) {
+                    facilityLoadingMsg.style.display = 'block';
+                    const oldChoices = getChoicesInstance('consultativeFacilityName');
+                    if (oldChoices) oldChoices.instance.destroy();
+
+                    const facilityNames = await loadFacilitiesForCategory(selectedCategory);
+
+                    consultativeFacilitySelect.innerHTML = '<option value="">Select facility...</option>' +
+                        facilityNames.map(f => `<option value="${f}">${f}</option>`).join('');
+
+                    const choices = new Choices(consultativeFacilitySelect, {
+                        removeItemButton: false,
+                        placeholder: true,
+                        placeholderValue: 'Search facility...',
+                        searchEnabled: true,
+                        shouldSort: false
+                    });
+                    addChoicesInstance('consultativeFacilityName', choices);
+
+                    // Restore saved value if available
+                    if (currentData.consultativeFacilityName) {
+                        choices.setChoiceByValue(currentData.consultativeFacilityName);
+                    }
+
+                    facilityLoadingMsg.style.display = 'none';
+                } else {
+                    consultativeFacilitySelect.innerHTML = '<option value="">Select category first...</option>';
                 }
             });
         }
@@ -378,8 +500,17 @@ function saveCurrentFacilityData() {
     const container = document.getElementById('facilityFormContainer');
     const data = {};
 
+    // Check for facility name: use the consultative meeting dropdown if present, otherwise the regular input
+    const consultativeFacilitySelect = container.querySelector('select[name="consultativeFacilityName"]');
     const facilityNameInput = container.querySelector('input[name="facilityName"]');
-    if (!facilityNameInput.value.trim()) {
+
+    if (consultativeFacilitySelect) {
+        // Consultative Meeting mode — facility name comes from the searchable dropdown
+        if (!consultativeFacilitySelect.value) {
+            alert('Please select a facility from the dropdown.');
+            return false;
+        }
+    } else if (facilityNameInput && !facilityNameInput.value.trim()) {
         alert('Facility Name is required.');
         facilityNameInput.focus();
         return false;
@@ -403,6 +534,11 @@ function saveCurrentFacilityData() {
         'mopUp', 'mopUpDrugs', 'mopUpCosmetics', 'mopUpMedicalDevices', 'mopUpFood',
         'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood'
     ];
+
+    // Override facilityName from consultative meeting dropdown if present
+    if (consultativeFacilitySelect && consultativeFacilitySelect.value) {
+        data.facilityName = consultativeFacilitySelect.value;
+    }
     fields.forEach(fieldName => {
         const el = container.querySelector(`[name="${fieldName}"]`);
         if (el) {
@@ -625,6 +761,7 @@ async function triggerConsultativeMeetingWebhook(report) {
             // Additional context for the approval card
             remarks: report.actionTaken || '',
             consultativeMeetingCategory: report.consultativeMeetingCategory || '',
+            consultativeCategory: report.consultativeMeetingCategory || '', // used by PA to know which SP path
             consultativeProductType: report.consultativeProductType || '',
 
             // Deadline: 3 working days from meeting date
