@@ -447,8 +447,7 @@ function bindStep_FacilityForm(root) {
                         removeItemButton: false,
                         placeholder: true,
                         placeholderValue: 'Search facility...',
-                        searchEnabled: true,
-                        shouldSort: false
+                        searchEnabled: true
                     });
                     addChoicesInstance('consultativeFacilityName', choices);
 
