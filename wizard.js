@@ -15,9 +15,9 @@ let facilityDetailCache = {};   // Cache: { 'Routine Surveillance': [{ name, add
 // ─── Load unique facility names for a given activity category ────────────────
 // Queries both 'facilities' (imported database) and 'facilityReports' (logged activities)
 // Merges, deduplicates, and returns a sorted array of facility names.
-async function loadFacilitiesForCategory(category) {
-    // Return cached result if available
-    if (facilityCategoryCache[category]) return facilityCategoryCache[category];
+async function loadFacilitiesForCategory(category, forceRefresh = false) {
+    // Return cached result if available and not forced to refresh
+    if (!forceRefresh && facilityCategoryCache[category]) return facilityCategoryCache[category];
 
     const nameSet = new Set();
     const detailMap = {};  // { facilityName: address }
@@ -437,7 +437,7 @@ function bindStep_FacilityForm(root) {
                     const oldChoices = getChoicesInstance('consultativeFacilityName');
                     if (oldChoices) oldChoices.instance.destroy();
 
-                    const facilityNames = await loadFacilitiesForCategory(selectedCategory);
+                    const facilityNames = await loadFacilitiesForCategory(selectedCategory, true);
 
                     consultativeFacilitySelect.innerHTML = '<option value="">Select facility...</option>' +
                         facilityNames.map(f => `<option value="${f}">${f}</option>`).join('') +
@@ -815,6 +815,22 @@ async function triggerConsultativeMeetingWebhook(report) {
             ? report.inspectorNames
             : [report.inspectorNames || ''];
 
+        // Build a temporary report object to get the correct root folder
+        // based on the consultative category (e.g., RS → /ROUTINE SURVEILLANCE/DRUGS)
+        const folderReport = {
+            activityType: report.consultativeMeetingCategory || 'Routine Surveillance',
+            productTypes: report.consultativeProductType ? [report.consultativeProductType] : []
+        };
+        const folderConfig = getFolderConfig(folderReport);
+
+        // Generate report ID for folder naming
+        const timestamp = Date.now();
+        const activityCode = getActivityCode('Consultative Meeting');
+        const reportId = `${activityCode}-${year}-${timestamp}`;
+
+        // Consultative meetings always get these two subfolders
+        const cmSubfolders = ['Consultative_Meeting', 'Extra_Data'];
+
         const payload = {
             // PA uses this to identify the activity type (matches the field name in the other webhook)
             activity: 'Consultative Meeting',
@@ -837,6 +853,13 @@ async function triggerConsultativeMeetingWebhook(report) {
             consultativeMeetingCategory: report.consultativeMeetingCategory || '',
             consultativeCategory: report.consultativeMeetingCategory || '', // used by PA to know which SP path
             consultativeProductType: report.consultativeProductType || '',
+
+            // Folder creation info — used by Flow A when facility doesn't exist in SharePoint
+            reportId,
+            rootFolder: folderConfig.rootFolder,
+            subfolders: cmSubfolders,
+            inspectors: inspectors.join(', '),
+            inspectionDate: meetingDate,
 
             // Deadline: 3 working days from meeting date
             deadline: (() => {
