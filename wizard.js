@@ -22,13 +22,12 @@ async function loadFacilitiesForCategory(category, forceRefresh = false) {
     const nameSet = new Set();
     const detailMap = {};  // { facilityName: address }
 
-    try {
-        // Determine which activityType to query
-        // 'Monitoring' maps to RS reports with specific product types
-        const isMonitoring = category === 'Monitoring';
-        const queryType = isMonitoring ? 'Routine Surveillance' : category;
+    // Determine which activityType to query
+    const isMonitoring = category === 'Monitoring';
+    const queryType = isMonitoring ? 'Routine Surveillance' : category;
 
-        // 1. Query imported facilities database
+    // 1. Query imported facilities database
+    try {
         const facQ = query(collection(db, 'facilities'), where('activityType', '==', queryType));
         const facSnap = await getDocs(facQ);
         facSnap.forEach(d => {
@@ -36,12 +35,16 @@ async function loadFacilitiesForCategory(category, forceRefresh = false) {
             const name = (data.facilityName || data.name || '').trim();
             if (name) {
                 nameSet.add(name);
-                // Prefer address from the facilities database
                 if (!detailMap[name]) detailMap[name] = (data.address || data.facilityAddress || '').trim();
             }
         });
+    } catch (error) {
+        console.error('Error loading from facilities collection:', error);
+        alert('Warning: Could not load master facilities list (likely a permissions issue for non-admins).');
+    }
 
-        // 2. Query logged facility reports
+    // 2. Query logged facility reports
+    try {
         const repQ = query(collection(db, 'facilityReports'), where('activityType', '==', queryType));
         const repSnap = await getDocs(repQ);
         repSnap.forEach(d => {
@@ -49,7 +52,6 @@ async function loadFacilitiesForCategory(category, forceRefresh = false) {
             const name = (data.facilityName || '').trim();
             if (!name) return;
 
-            // For 'Monitoring', only include if productTypes overlap
             if (isMonitoring) {
                 const pts = data.productTypes || [];
                 const monitoringTypes = ['Service Drugs', 'Orphan Drugs', 'Donated Items/Drugs'];
@@ -63,7 +65,8 @@ async function loadFacilitiesForCategory(category, forceRefresh = false) {
             }
         });
     } catch (error) {
-        console.error('Error loading facilities for category:', category, error);
+        console.error('Error loading from facilityReports collection:', error);
+        alert('Warning: Could not load past logged facilities (likely a permissions issue for non-admins).');
     }
 
     const sorted = [...nameSet].sort((a, b) => a.localeCompare(b));
