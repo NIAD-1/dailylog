@@ -385,7 +385,8 @@ function bindStep_FacilityForm(root) {
                 </div>
             `;
         } else if (val === 'GSDP') {
-            conditionalHTML = `<div style="margin-top:8px"><label>GSDP Sub-Activity</label><select name="gsdpSubActivity"><option>GDP</option><option>CEVI</option></select></div>`;
+            conditionalHTML = `<div style="margin-top:8px"><label>GSDP Sub-Activity</label><select name="gsdpSubActivity"><option>GDP</option><option>CEVI</option></select></div>
+                <div style="margin-top:8px"><label>Company Email (M.D / Superintendent Pharmacist)</label><input name="companyEmail" type="email" placeholder="Must be M.D or Superintendent Pharmacist email" required></div>`;
         } else if (val === 'Laboratory Analysis') {
             conditionalHTML = `<div style="margin-top:8px"><label>How many samples taken?</label><input name="Samplescount" type="number" min="0" value="0"></div>`;
         }
@@ -595,7 +596,7 @@ function saveCurrentFacilityData() {
 
     const fields = [
         'inspectionDate', 'area', 'facilityName', 'facilityAddress', 'activityType', 'actionTaken',
-        'sanctionGiven', 'gsdpSubActivity', 'Samplescount', 'consultativeMeetingCategory', 'consultativeProductType',
+        'sanctionGiven', 'gsdpSubActivity', 'companyEmail', 'Samplescount', 'consultativeMeetingCategory', 'consultativeProductType',
         'mopUp', 'mopUpDrugs', 'mopUpCosmetics', 'mopUpMedicalDevices', 'mopUpFood',
         'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood'
     ];
@@ -675,6 +676,7 @@ async function handleSubmitWizard(root) {
                     food: parseInt(facilityData.holdCounts?.food || facilityData.holdFood || 0)
                 },
                 gsdpSubActivity: facilityData.gsdpSubActivity || '',
+                companyEmail: facilityData.companyEmail || '',
                 Samples: parseInt(facilityData.Samplescount || 0) > 0,
                 Samplescount: parseInt(facilityData.Samplescount || 0),
                 consultativeMeetingCategory: facilityData.consultativeMeetingCategory || '',
@@ -767,7 +769,8 @@ async function triggerTeamsWebhook(report) {
             rootFolder: folderConfig.rootFolder,
             subfolders: folderConfig.subfolders,
             deadline: deadline.toISOString(),
-            gsdpSubActivity: report.gsdpSubActivity || null
+            gsdpSubActivity: report.gsdpSubActivity || null,
+            companyEmail: report.companyEmail || null
         };
 
         // Fire and forget
@@ -934,7 +937,11 @@ function getFolderConfig(report) {
             return {
                 rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES',
                 productType: null,
-                subfolders: ['GSDP/Inspection_Report', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'CEVI/Inspection_Report']
+                subfolders: [
+                    'GSDP/Inspection_Report', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'GSDP/Risk_Categorization',
+                    'CEVI/Inspection_Report', 'CEVI/Compliance_Directives', 'CEVI/CAPA_Template', 'CEVI/Risk_Categorization',
+                    'Company_Submissions'
+                ]
             };
 
         case 'GLSI':
