@@ -250,13 +250,13 @@
                 <form id="uploadForm">
                     <div class="upload-area" id="drop-zone">
                         <span class="upload-icon">📄</span>
-                        <p class="upload-text">Drag & drop your CAPA Document here</p>
-                        <p class="upload-subtext">or click to browse files (.doc, .docx, .pdf)</p>
-                        <input type="file" id="fileInput" name="file" accept=".doc,.docx,.pdf" required>
+                        <p class="upload-text">Drag & drop your CAPA Document(s) here</p>
+                        <p class="upload-subtext">or click to browse files (You can select multiple files!)</p>
+                        <input type="file" id="fileInput" name="file" accept=".doc,.docx,.pdf,.jpg,.jpeg,.png" multiple required>
                     </div>
 
                     <div class="selected-file" id="filePreview">
-                        <span class="file-name" id="fileNameDisplay">document.pdf</span>
+                        <span class="file-name" id="fileNameDisplay">0 files selected</span>
                         <span style="cursor:pointer;" id="removeFile">✖</span>
                     </div>
 
@@ -278,7 +278,7 @@
     <script>
         // --- CONFIGURATION ---
         // You will paste your Power Automate generic HTTP Webhook URL here later!
-        const WEBHOOK_URL = "https://defaultc9a3c7f29c4d4d169756d04bb4a060.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fb79cafeecbf4f119e261c80f7f9534a/triggers/manual/paths/invoke?api-version=1"; 
+        const WEBHOOK_URL = "https://defaultc9a3c7f29c4d4d169756d04bb4a060.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fb79cafeecbf4f119e261c80f7f9534a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=mSqJ3eFs7Hczjnx2SkYqy8e_RRut4wmRqcVpll8CNeo"; 
 
         // 1. Get Facility from URL Parameter (e.g., ?facility=Global Oneword)
         const urlParams = new URLSearchParams(window.location.search);
@@ -304,7 +304,11 @@
 
         fileInput.addEventListener('change', function() {
             if(this.files && this.files.length > 0) {
-                fileNameDisplay.innerText = this.files[0].name;
+                if (this.files.length === 1) {
+                    fileNameDisplay.innerText = this.files[0].name;
+                } else {
+                    fileNameDisplay.innerText = this.files.length + " files selected";
+                }
                 filePreview.style.display = "flex";
             } else {
                 filePreview.style.display = "none";
@@ -320,13 +324,27 @@
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if(WEBHOOK_URL === "POST_WEBHOOK_URL_HERE") {
+            if(WEBHOOK_URL.includes("POST_WEBHOOK_URL_HERE")) {
                 alert("The webhook URL is not configured yet! Waiting for Power Automate step.");
                 return;
             }
 
-            const file = fileInput.files[0];
-            if(!file) return;
+            const files = fileInput.files;
+            if(!files || files.length === 0) return;
+
+            if (files.length > 20) {
+                alert("You can only upload up to 20 documents at once.");
+                return;
+            }
+
+            let totalMemory = 0;
+            for(let i = 0; i < files.length; i++) {
+                totalMemory += files[i].size;
+            }
+            if (totalMemory > 50 * 1024 * 1024) { // Protect Power Automate 100MB buffer
+                alert("Total document size is too large (Maximum 50MB). Please select fewer files or compress them.");
+                return;
+            }
 
             // UI Loading state
             submitBtn.disabled = true;
@@ -336,15 +354,22 @@
             statusMessage.style.display = "none";
 
             try {
-                // Convert file to Base64
-                const base64Data = await getBase64(file);
+                let filesArray = [];
+
+                for(let i = 0; i < files.length; i++) {
+                    let f = files[i];
+                    let base64Data = await getBase64(f);
+                    filesArray.push({
+                        fileName: f.name,
+                        fileMimeType: f.type,
+                        fileContentBase64: base64Data.split(',')[1] // Strip the data:image/prefix
+                    });
+                }
                 
                 // Construct secure JSON payload
                 const payload = {
                     facilityName: facilityName,
-                    fileName: file.name,
-                    fileMimeType: file.type,
-                    fileContentBase64: base64Data.split(',')[1] // Strip the data:image/prefix
+                    files: filesArray
                 };
 
                 // POST to Power Automate Webhook
@@ -355,18 +380,18 @@
                 });
 
                 if(response.ok) {
-                    statusMessage.innerText = "Upload successful! NAFDAC has received your document.";
+                    statusMessage.innerText = "Upload successful! NAFDAC has received your documents.";
                     statusMessage.className = "status-message status-success";
                     statusMessage.style.display = "block";
                     filePreview.style.display = "none";
                     fileInput.value = "";
                 } else {
-                    throw new Error("Server rejected the file.");
+                    throw new Error("Server rejected the file (Check your URL signature token!).");
                 }
 
             } catch (error) {
                 console.error(error);
-                statusMessage.innerText = "Upload failed. Please try again or contact support.";
+                statusMessage.innerText = "Upload failed. Please ensure your Power Automate HTTP URL is completely perfectly copied, including the &sig=... secret at the end!";
                 statusMessage.className = "status-message status-error";
                 statusMessage.style.display = "block";
             } finally {
