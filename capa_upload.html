@@ -280,9 +280,11 @@
         // You will paste your Power Automate generic HTTP Webhook URL here later!
         const WEBHOOK_URL = "https://defaultc9a3c7f29c4d4d169756d04bb4a060.f5.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fb79cafeecbf4f119e261c80f7f9534a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=mSqJ3eFs7Hczjnx2SkYqy8e_RRut4wmRqcVpll8CNeo"; 
 
-        // 1. Get Facility from URL Parameter (e.g., ?facility=Global Oneword)
+        // 1. Get Facility, Year, and Month from URL Parameters
         const urlParams = new URLSearchParams(window.location.search);
         const facilityName = urlParams.get('facility');
+        const activityYear = urlParams.get('year') || new Date().getFullYear().toString();
+        const activityMonth = urlParams.get('month') || "MARCH";
 
         const sectionUpload = document.getElementById('upload-section');
         const sectionError = document.getElementById('error-no-facility');
@@ -369,6 +371,8 @@
                 // Construct secure JSON payload
                 const payload = {
                     facilityName: facilityName,
+                    activityYear: activityYear,
+                    activityMonth: activityMonth,
                     files: filesArray
                 };
 
