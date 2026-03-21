@@ -282,9 +282,16 @@
 
         // 1. Get Facility, Year, and Month from URL Parameters
         const urlParams = new URLSearchParams(window.location.search);
-        const facilityName = urlParams.get('facility');
-        const activityYear = urlParams.get('year') || new Date().getFullYear().toString();
-        const activityMonth = urlParams.get('month') || "MARCH";
+        let facilityName = urlParams.get('facility');
+        if (facilityName) facilityName = facilityName.trim();
+        
+        let activityYear = urlParams.get('year');
+        if (activityYear) activityYear = activityYear.trim();
+        else activityYear = new Date().getFullYear().toString();
+        
+        let activityMonth = urlParams.get('month');
+        if (activityMonth) activityMonth = activityMonth.trim();
+        else activityMonth = "MARCH";
 
         const sectionUpload = document.getElementById('upload-section');
         const sectionError = document.getElementById('error-no-facility');
