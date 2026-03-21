@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAFDAC CAPA Upload Portal</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2E7D32;
+            --primary-dark: #1B5E20;
+            --surface: #ffffff;
+            --background: #f4f6f8;
+            --text-main: #1F2937;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+            --error: #DC2626;
+            --success: #059669;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .portal-container {
+            background-color: var(--surface);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .facility-badge {
+            background-color: #F3F4F6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .facility-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .facility-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #FAFAFA;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary-green);
+            background-color: #F1F8F1;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 15px;
+            color: var(--text-main);
+            margin: 0 0 8px;
+            font-weight: 500;
+        }
+
+        .upload-subtext {
+            font-size: 13px;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .selected-file {
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1E3A8A;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 24px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2);
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .submit-btn:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+            color: var(--text-light);
+            box-shadow: none;
+        }
+
+        .status-message {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: #DEF7EC;
+            color: var(--success);
+            border: 1px solid #84E1BC;
+        }
+
+        .status-error {
+            background-color: #FDF2F2;
+            color: var(--error);
+            border: 1px solid #F8B4B4;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            background-color: #FAFAFA;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="portal-container">
+        <div class="header">
+            <h1>NAFDAC CAPA Portal</h1>
+            <p>Secure Document Submission Gateway</p>
+        </div>
+
+        <div class="content">
+            <div id="error-no-facility" class="status-message status-error" style="display:block;">
+                Invalid link. Please use the exact link provided in your Compliance Directive email.
+            </div>
+
+            <div id="upload-section" style="display:none;">
+                <div class="facility-badge">
+                    <p class="facility-title">Target Facility</p>
+                    <p class="facility-name" id="display-facility">Loading...</p>
+                </div>
+
+                <form id="uploadForm">
+                    <div class="upload-area" id="drop-zone">
+                        <span class="upload-icon">📄</span>
+                        <p class="upload-text">Drag & drop your CAPA Document here</p>
+                        <p class="upload-subtext">or click to browse files (.doc, .docx, .pdf)</p>
+                        <input type="file" id="fileInput" name="file" accept=".doc,.docx,.pdf" required>
+                    </div>
+
+                    <div class="selected-file" id="filePreview">
+                        <span class="file-name" id="fileNameDisplay">document.pdf</span>
+                        <span style="cursor:pointer;" id="removeFile">✖</span>
+                    </div>
+
+                    <div class="status-message" id="statusMessage"></div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="btnText">Upload Document</span>
+                        <span class="loader" id="btnLoader"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 National Agency for Food and Drug Administration and Control
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // You will paste your Power Automate generic HTTP Webhook URL here later!
+        const WEBHOOK_URL = "POST_WEBHOOK_URL_HERE"; 
+
+        // 1. Get Facility from URL Parameter (e.g., ?facility=Global Oneword)
+        const urlParams = new URLSearchParams(window.location.search);
+        const facilityName = urlParams.get('facility');
+
+        const sectionUpload = document.getElementById('upload-section');
+        const sectionError = document.getElementById('error-no-facility');
+        const displayFacility = document.getElementById('display-facility');
+
+        // Verify if a facility was passed
+        if(facilityName && facilityName.trim() !== "") {
+            sectionUpload.style.display = "block";
+            sectionError.style.display = "none";
+            displayFacility.innerText = facilityName;
+        }
+
+        // 2. Handle File UI
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const removeFile = document.getElementById('removeFile');
+        const submitBtn = document.getElementById('submitBtn');
+
+        fileInput.addEventListener('change', function() {
+            if(this.files && this.files.length > 0) {
+                fileNameDisplay.innerText = this.files[0].name;
+                filePreview.style.display = "flex";
+            } else {
+                filePreview.style.display = "none";
+            }
+        });
+
+        removeFile.addEventListener('click', function() {
+            fileInput.value = "";
+            filePreview.style.display = "none";
+        });
+
+        // 3. Handle Form Submission
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if(WEBHOOK_URL === "POST_WEBHOOK_URL_HERE") {
+                alert("The webhook URL is not configured yet! Waiting for Power Automate step.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if(!file) return;
+
+            // UI Loading state
+            submitBtn.disabled = true;
+            document.getElementById('btnText').style.display = "none";
+            document.getElementById('btnLoader').style.display = "inline-block";
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.style.display = "none";
+
+            try {
+                // Convert file to Base64
+                const base64Data = await getBase64(file);
+                
+                // Construct secure JSON payload
+                const payload = {
+                    facilityName: facilityName,
+                    fileName: file.name,
+                    fileMimeType: file.type,
+                    fileContentBase64: base64Data.split(',')[1] // Strip the data:image/prefix
+                };
+
+                // POST to Power Automate Webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if(response.ok) {
+                    statusMessage.innerText = "Upload successful! NAFDAC has received your document.";
+                    statusMessage.className = "status-message status-success";
+                    statusMessage.style.display = "block";
+                    filePreview.style.display = "none";
+                    fileInput.value = "";
+                } else {
+                    throw new Error("Server rejected the file.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                statusMessage.innerText = "Upload failed. Please try again or contact support.";
+                statusMessage.className = "status-message status-error";
+                statusMessage.style.display = "block";
+            } finally {
+                // Reset UI
+                submitBtn.disabled = false;
+                document.getElementById('btnText').style.display = "inline";
+                document.getElementById('btnLoader').style.display = "none";
+            }
+        });
+
+        // Helper: File to Base64
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+</body>
+</html>
