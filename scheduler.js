@@ -609,7 +609,7 @@ async function handleSubmit(root) {
     for (let i = 0; i < teamRows[activeTeam].length; i++) {
         const row = teamRows[activeTeam][i];
         if (!row.activityType) { alert(`Row ${i + 1}: Please select an activity type.`); return; }
-        if (!row.facilityName) { alert(`Row ${i + 1}: Please select a facility.`); return; }
+        if (!row.facilityName && !row.area) { alert(`Row ${i + 1}: Please select either a specific Facility or an Area (LGA).`); return; }
         if (row.inspectors.length === 0) { alert(`Row ${i + 1}: Please assign at least one inspector.`); return; }
     }
 
@@ -633,8 +633,8 @@ async function handleSubmit(root) {
             createdAt: serverTimestamp(),
             inspections: teamRows[activeTeam].map(row => ({
                 inspectionDate: row.inspectionDate,
-                facilityName: row.facilityName,
-                facilityAddress: row.facilityAddress,
+                facilityName: row.facilityName || 'Various Facilities',
+                facilityAddress: row.facilityAddress || 'Various Addresses',
                 area: row.area,
                 activityType: row.activityType,
                 productType: row.productType || '',

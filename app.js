@@ -68,6 +68,13 @@ const pageKpiSettings = `
             <p class="muted small">When a Consultative Meeting is logged, this updates the SharePoint list with meeting-specific inspectors for the approval chain.</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <label>Scheduler Webhook URL</label>
+            <input type="text" id="schedulerWebhookUrl" placeholder="https://prod-... (PA flow for routing inspections to Dr. Regina)">
+            <p class="muted small">Fires when an inspector submits a schedule for approval.</p>
+        </div>
+    </div>
 
     <h3 style="margin-top: 24px;">KPI Targets</h3>
     <div class="row">
@@ -253,6 +260,7 @@ async function bindKpiSettings() {
     document.getElementById('webhookUrl').value = data.webhookUrl || '';
     document.getElementById('weeklyWebhookUrl').value = data.weeklyWebhookUrl || '';
     document.getElementById('consultativeMeetingWebhookUrl').value = data.consultativeMeetingWebhookUrl || '';
+    document.getElementById('schedulerWebhookUrl').value = data.schedulerWebhookUrl || '';
   }
 
   document.getElementById('saveKpiSettings').onclick = async () => {
@@ -264,6 +272,7 @@ async function bindKpiSettings() {
       webhookUrl: document.getElementById('webhookUrl').value.trim(),
       weeklyWebhookUrl: document.getElementById('weeklyWebhookUrl').value.trim(),
       consultativeMeetingWebhookUrl: document.getElementById('consultativeMeetingWebhookUrl').value.trim(),
+      schedulerWebhookUrl: document.getElementById('schedulerWebhookUrl').value.trim(),
       updatedAt: serverTimestamp()
     };
 
