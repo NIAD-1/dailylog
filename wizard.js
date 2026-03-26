@@ -688,6 +688,30 @@ async function handleSubmitWizard(root) {
             // Add to Firestore
             await addDoc(collection(db, 'facilityReports'), reportData);
 
+            // Sync with master facilities database
+            try {
+                const facName = (reportData.facilityName || "").trim();
+                if (facName) {
+                    const facQuery = query(collection(db, "facilities"), where("name", "==", facName));
+                    const facSnap = await getDocs(facQuery);
+                    
+                    if (facSnap.empty) {
+                        // Create new facility master record so it appears in search
+                        await addDoc(collection(db, "facilities"), {
+                            name: facName,
+                            address: reportData.facilityAddress || "",
+                            activityTypes: [reportData.activityType],
+                            totalVisits: 1,
+                            status: "Active",
+                            lastVisitDate: reportData.inspectionDate ? reportData.inspectionDate.toISOString().split("T")[0] : "",
+                            source: "wizard"
+                        });
+                    }
+                }
+            } catch (facErr) {
+                console.error("Error syncing with facility database:", facErr);
+            }
+
             // Trigger Teams Webhook for activities that need folder creation
             const folderActivities = [
                 'Routine Surveillance',

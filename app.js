@@ -6,6 +6,8 @@ import { bindDashboard, setDashboardUserRole } from "./dashboard.js";
 import { renderSchedulerPage, setSchedulerUser } from "./scheduler.js";
 import { renderMapPage } from "./map.js";
 import { renderWeeklySummaryPage } from "./weekly.js";
+import { renderFacilityProfilePage, setFacilityProfileUser } from "./facility-profile.js";
+import { renderComplaintLoggerPage, renderSanctionLoggerPage } from "./smart-loggers.js";
 
 const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
@@ -24,6 +26,9 @@ const pageWelcome = `
   <div class="controls" style="display: flex; gap: 16px; justify-content: center; margin-top: 48px; flex-wrap: wrap;">
     <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
     <button id="openScheduler" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">Schedule Inspections</button>
+    <button id="openFacilities" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🏢 Facility Database</button>
+    <button id="openLogComplaint" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📋 Log Complaint</button>
+    <button id="openLogSanction" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">💰 Log Sanction</button>
     <button id="openMap" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🗺️ Inspection Map</button>
     <button id="openWeekly" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📊 Weekly Summary</button>
     <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
@@ -121,12 +126,13 @@ initAuth(db, (user, role) => {
   setWizardUser(user);
   setSchedulerUser(user);
   setDashboardUserRole(role);
+  setFacilityProfileUser(user, role);
 
   if (!authReady) {
     authReady = true;
     const page = window.location.hash.substring(1);
 
-    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import', 'weekly'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map' || page === 'weekly')) {
+    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import', 'weekly', 'facilities', 'log-complaint', 'log-sanction'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map' || page === 'weekly' || page === 'facilities' || page === 'log-complaint' || page === 'log-sanction')) {
       navigate(page, false);
     } else if (['report', 'success'].includes(page) && user) {
       navigate(page, false);
@@ -156,6 +162,10 @@ function updateAuthUI(user, role) {
   const schedulerBtn = document.getElementById('openScheduler');
   if (schedulerBtn) {
     schedulerBtn.style.display = user ? 'block' : 'none';
+  }
+  const facilityBtn = document.getElementById('openFacilities');
+  if (facilityBtn) {
+    facilityBtn.style.display = user ? 'block' : 'none';
   }
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
@@ -199,8 +209,22 @@ function renderPage(page) {
   if (page === 'map') {
     renderMapPage(root);
   }
+  if (page === 'facilities') {
+    renderFacilityProfilePage(root);
+  }
   if (page === 'weekly') {
     renderWeeklySummaryPage(root);
+  }
+  if (page === 'log-complaint') {
+    renderComplaintLoggerPage(root);
+  }
+  if (page === 'log-sanction') {
+    if (currentUserRole === 'admin') {
+      renderSanctionLoggerPage(root);
+    } else {
+      alert('Access denied. Only admins can log sanctions.');
+      navigate('welcome');
+    }
   }
   if (page === 'import') {
     if (currentUserRole === 'admin') {
@@ -226,6 +250,11 @@ function bindWelcome() {
   if (schedulerBtn) {
     schedulerBtn.style.display = currentUser ? 'block' : 'none';
     schedulerBtn.onclick = () => navigate('scheduler');
+  }
+  const facilityBtn = document.getElementById('openFacilities');
+  if (facilityBtn) {
+    facilityBtn.style.display = currentUser ? 'block' : 'none';
+    facilityBtn.onclick = () => navigate('facilities');
   }
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
@@ -288,73 +317,87 @@ async function bindKpiSettings() {
 }
 
 async function renderImportPage(root) {
+  const COLLECTIONS = [
+    { key: 'facilities', file: 'etl_output/master_facilities.json', label: 'Facilities', icon: '🏢' },
+    { key: 'inspections', file: 'etl_output/inspections.json', label: 'Inspections', icon: '📋' },
+    { key: 'sanctions', file: 'etl_output/sanctions.json', label: 'Sanctions', icon: '💰' },
+    { key: 'complaints', file: 'etl_output/complaints.json', label: 'Complaints', icon: '📞' },
+    { key: 'documents', file: 'etl_output/documents.json', label: 'Documents', icon: '📄' },
+    { key: 'file_registry', file: 'etl_output/file_registry.json', label: 'File Registry', icon: '📁' },
+  ];
+
   root.innerHTML = `
-  <section class="card" style="max-width:600px;margin:auto">
-    <h2 style="color:var(--accent)">📦 Import Facilities</h2>
-    <p class="muted">Import facility data from <code>facilities-data.json</code> into Firestore.</p>
-    <div style="display:flex;gap:16px;margin:16px 0">
-      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
-        <strong id="impTotal" style="display:block;font-size:24px;color:var(--accent)">—</strong>Total
-      </div>
-      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
-        <strong id="impGlsi" style="display:block;font-size:24px;color:var(--accent)">—</strong>GLSI
-      </div>
-      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
-        <strong id="impGsdp" style="display:block;font-size:24px;color:var(--accent)">—</strong>GSDP
-      </div>
-      <div style="background:#e8f5e9;padding:12px 20px;border-radius:8px;text-align:center;flex:1">
-        <strong id="impRs" style="display:block;font-size:24px;color:var(--accent)">—</strong>RS
-      </div>
+  <section class="card" style="max-width:700px;margin:auto">
+    <h2 style="color:var(--accent)">📦 Import Unified Facility Database</h2>
+    <p class="muted">Import all ETL output data from <code>etl_output/</code> into Firestore.</p>
+    <div id="impStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0">
+      ${COLLECTIONS.map(c => `
+        <div style="background:#f8faf8;padding:12px 16px;border-radius:8px;text-align:center;border:1px solid #e2e8f0">
+          <div style="font-size:20px;margin-bottom:4px">${c.icon}</div>
+          <strong id="imp_${c.key}" style="display:block;font-size:22px;color:var(--accent)">—</strong>
+          <span style="font-size:12px;color:#718096">${c.label}</span>
+        </div>`).join("")}
     </div>
-    <button id="importBtn" disabled style="padding:12px 24px;font-size:16px">Loading data...</button>
-    <button id="backFromImport" class="secondary" style="padding:12px 24px;margin-left:12px">← Back</button>
-    <div id="importLog" style="background:#f5f5f5;padding:16px;border-radius:8px;margin-top:16px;max-height:300px;overflow-y:auto;font-family:monospace;font-size:13px;white-space:pre-wrap"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button id="importAllBtn" disabled style="padding:12px 24px;font-size:16px;flex:1">Loading data...</button>
+      <button id="backFromImport" class="secondary" style="padding:12px 24px">← Back</button>
+    </div>
+    <div id="importLog" style="background:#f5f5f5;padding:16px;border-radius:8px;margin-top:16px;max-height:350px;overflow-y:auto;font-family:monospace;font-size:13px;white-space:pre-wrap"></div>
   </section>`;
 
   document.getElementById('backFromImport').onclick = () => navigate('welcome');
 
   const logEl = document.getElementById('importLog');
-  const btn = document.getElementById('importBtn');
+  const btn = document.getElementById('importAllBtn');
   const log = (msg) => { logEl.textContent += msg + '\n'; logEl.scrollTop = logEl.scrollHeight; };
 
-  let facilities = [];
-  try {
-    const resp = await fetch('./facilities-data.json');
-    facilities = await resp.json();
-    document.getElementById('impTotal').textContent = facilities.length;
-    document.getElementById('impGlsi').textContent = facilities.filter(f => f.activityType === 'GLSI').length;
-    document.getElementById('impGsdp').textContent = facilities.filter(f => f.activityType === 'GSDP').length;
-    document.getElementById('impRs').textContent = facilities.filter(f => f.activityType === 'Routine Surveillance').length;
-    btn.textContent = `Import ${facilities.length} Facilities`;
-    btn.disabled = false;
-    log(`✅ Loaded ${facilities.length} facilities from JSON`);
-  } catch (e) {
-    log(`❌ Error loading JSON: ${e.message}`);
+  // Load all JSON files
+  const datasets = {};
+  let totalRecords = 0;
+  for (const c of COLLECTIONS) {
+    try {
+      const resp = await fetch(`./${c.file}`);
+      const data = await resp.json();
+      datasets[c.key] = data;
+      document.getElementById(`imp_${c.key}`).textContent = data.length;
+      totalRecords += data.length;
+      log(`✅ ${c.label}: ${data.length} records loaded`);
+    } catch (e) {
+      log(`⚠️  ${c.label}: ${e.message}`);
+      datasets[c.key] = [];
+    }
   }
+
+  btn.textContent = `Import All (${totalRecords} records)`;
+  btn.disabled = false;
 
   btn.onclick = async () => {
     btn.disabled = true;
     btn.textContent = 'Importing...';
+    log('\n─── Starting Import ───');
+
     try {
-      const BATCH_SIZE = 450;
-      let imported = 0;
-      for (let i = 0; i < facilities.length; i += BATCH_SIZE) {
-        const batch = writeBatch(db);
-        const chunk = facilities.slice(i, i + BATCH_SIZE);
-        for (const f of chunk) {
-          const docRef = doc(collection(db, 'facilities'));
-          batch.set(docRef, {
-            name: f.name || '', address: f.address || '', activityType: f.activityType || '',
-            contactPerson: f.contactPerson || '', email: f.email || '', fileNumber: f.fileNumber || '',
-            lastVisitDate: f.lastVisitDate || '', lastObservation: f.lastObservation || '',
-            status: f.status || 'Active', visitCount: 0
-          });
+      const BATCH_SIZE = 400;
+
+      for (const c of COLLECTIONS) {
+        const data = datasets[c.key];
+        if (!data || data.length === 0) continue;
+
+        let imported = 0;
+        for (let i = 0; i < data.length; i += BATCH_SIZE) {
+          const batch = writeBatch(db);
+          const chunk = data.slice(i, i + BATCH_SIZE);
+          for (const record of chunk) {
+            const docRef = doc(collection(db, c.key));
+            batch.set(docRef, record);
+          }
+          await batch.commit();
+          imported += chunk.length;
         }
-        await batch.commit();
-        imported += chunk.length;
-        log(`📦 Batch ${Math.ceil((i + 1) / BATCH_SIZE)}: imported ${imported}/${facilities.length}`);
+        log(`${c.icon} ${c.label}: ${imported} records imported`);
       }
-      log(`\n🎉 Done! ${imported} facilities imported to Firestore.`);
+
+      log('\n🎉 All collections imported successfully!');
       btn.textContent = '✅ Import Complete';
     } catch (e) {
       log(`\n❌ Error: ${e.message}`);

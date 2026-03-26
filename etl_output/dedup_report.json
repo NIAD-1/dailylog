@@ -1,0 +1,1310 @@
+[
+  {
+    "action": "merged",
+    "incoming": "Chard Pharmacy",
+    "matched_to": "Chard",
+    "match_key": "CHARD"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pharm Affairs Pharmacy & Supermarket",
+    "matched_to": "PHARM AFFAIRS & SUPERMARKET",
+    "match_key": "PHARM AFFAIRS & SUPERMARKET"
+  },
+  {
+    "action": "merged",
+    "incoming": "ENAVEC PHARMACEUTICAL",
+    "matched_to": "ENAVEC PHARMACY",
+    "match_key": "ENAVEC"
+  },
+  {
+    "action": "merged",
+    "incoming": "DORGLORY PHARM",
+    "matched_to": "DORGLORY PHARMACY",
+    "match_key": "DORGLORY"
+  },
+  {
+    "action": "merged",
+    "incoming": "Addmore Pharmaceutical",
+    "matched_to": "ADDMORE PHARMACY",
+    "match_key": "ADDMORE"
+  },
+  {
+    "action": "merged",
+    "incoming": "NEMITT PHARMACEUTICALS LIMITED",
+    "matched_to": "NEMITT PHARMACEUTICALS",
+    "match_key": "NEMITTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "ADLER PRODUCTS LTD.",
+    "matched_to": "Adler Products limited",
+    "match_key": "ADLER PRODUCTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "CHIZZY PHARMACY LTD.",
+    "matched_to": "CHIZZY PHARMACEUTICAL",
+    "match_key": "CHIZZY"
+  },
+  {
+    "action": "merged",
+    "incoming": "HERBINCO PHARMACY LTD",
+    "matched_to": "HERBINCO PHARMACY",
+    "match_key": "HERBINCO"
+  },
+  {
+    "action": "merged",
+    "incoming": "KRIS DANIELS PHARM LTD",
+    "matched_to": "KRIS DANIELS PHARMACY",
+    "match_key": "KRIS DANIELS"
+  },
+  {
+    "action": "merged",
+    "incoming": "MECURE INDUSTRIES LTD",
+    "matched_to": "Mecure Industries limited",
+    "match_key": "MECURE INDUSTRIES"
+  },
+  {
+    "action": "merged",
+    "incoming": "LUGZ PHARMACEUTICAL",
+    "matched_to": "LUGZ PHARMACY",
+    "match_key": "LUGZ"
+  },
+  {
+    "action": "merged",
+    "incoming": "SURPLUS PHARMACY LTD.",
+    "matched_to": "SURPLUS PHARMACY",
+    "match_key": "SURPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "MEDVACC PHARMACY LTD",
+    "matched_to": "Medvacc Pharmacy",
+    "match_key": "MEDVACC"
+  },
+  {
+    "action": "merged",
+    "incoming": "MED EXPRESS",
+    "matched_to": "MED EXPRESS PHARMACY",
+    "match_key": "MED EXPRESS"
+  },
+  {
+    "action": "merged",
+    "incoming": "GLOBAL HEALTHCARE LTD",
+    "matched_to": "GLOBAL HEALTHCARE",
+    "match_key": "GLOBAL HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "MED EXPRESS",
+    "matched_to": "MED EXPRESS PHARMACY",
+    "match_key": "MED EXPRESS"
+  },
+  {
+    "action": "merged",
+    "incoming": "AGARY PHARMACEUTICALS LTD",
+    "matched_to": "AGARY PHARMACEUTICALS",
+    "match_key": "AGARYS"
+  },
+  {
+    "action": "merged",
+    "incoming": "CHILINK PHARM LTD.",
+    "matched_to": "CHILINK PHARMACY",
+    "match_key": "CHILINK"
+  },
+  {
+    "action": "merged",
+    "incoming": "JAWA NIG LTD",
+    "matched_to": "JAWA INTL LIMITED",
+    "match_key": "JAWA"
+  },
+  {
+    "action": "merged",
+    "incoming": "EMINENT DRUGS",
+    "matched_to": "EMINENT DRUGS LIMITED",
+    "match_key": "EMINENT DRUGS"
+  },
+  {
+    "action": "merged",
+    "incoming": "HILLY PHARM LTD",
+    "matched_to": "Hilly Pharmacy",
+    "match_key": "HILLY"
+  },
+  {
+    "action": "merged",
+    "incoming": "HERBINCO PHARMACY LTD",
+    "matched_to": "HERBINCO PHARMACY",
+    "match_key": "HERBINCO"
+  },
+  {
+    "action": "merged",
+    "incoming": "CHEV INTERNATIONAL LTD",
+    "matched_to": "Chev Pharmacy",
+    "match_key": "CHEV"
+  },
+  {
+    "action": "merged",
+    "incoming": "JAYBION NIG LTD.",
+    "matched_to": "JAYBION PHARMACY",
+    "match_key": "JAYBION"
+  },
+  {
+    "action": "merged",
+    "incoming": "MALVEN MEDICS",
+    "matched_to": "MALVEN MEDICS LIMITED",
+    "match_key": "MALVEN MEDICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "ICE REMEDIES",
+    "matched_to": "ICE REMEDIES LIMITED",
+    "match_key": "ICE REMEDIES"
+  },
+  {
+    "action": "merged",
+    "incoming": "KARMA MART LIMITED",
+    "matched_to": "Karma Mart",
+    "match_key": "KARMA MART"
+  },
+  {
+    "action": "merged",
+    "incoming": "COSOKO WORLD LINK NIGERIA LIMITED",
+    "matched_to": "COSOKO WORLD LINK NIGERIA LTD",
+    "match_key": "COSOKO WORLD LINKERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "PHARMACARE PLACE",
+    "matched_to": "PHARMACARE PLACE PHARMACY",
+    "match_key": "PHARMACARE PLACE"
+  },
+  {
+    "action": "merged",
+    "incoming": "FOREVER LIVING PRODUCTS NIGERIA LIMITED",
+    "matched_to": "FOREVER LIVING PRODUCTS NIGERIA",
+    "match_key": "FOREVER LIVING PRODUCTSERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "BRAND CONCEPT STORES LIMITED",
+    "matched_to": "BRAND CONCEPT STORES",
+    "match_key": "BRAND CONCEPT STORES"
+  },
+  {
+    "action": "merged",
+    "incoming": "HAANO INDUSTRIES LTD",
+    "matched_to": "HAANO INDUSTRIES LIMITED",
+    "match_key": "HAANO INDUSTRIES"
+  },
+  {
+    "action": "merged",
+    "incoming": "NKOYO CHEMIST LTD",
+    "matched_to": "NKOYO CHEMIST",
+    "match_key": "NKOYO CHEMIST"
+  },
+  {
+    "action": "merged",
+    "incoming": "NKOYO CHEMIST LTD",
+    "matched_to": "NKOYO CHEMIST",
+    "match_key": "NKOYO CHEMIST"
+  },
+  {
+    "action": "merged",
+    "incoming": "PAXO PHARMACEUTICAL LTD",
+    "matched_to": "PAXO PHARMACEUTICAL LIMITED",
+    "match_key": "PAXO"
+  },
+  {
+    "action": "merged",
+    "incoming": "AMACO  RESOURCES LTD",
+    "matched_to": "AMACO RESOURCES LIMITED",
+    "match_key": "AMACO RESOURCES"
+  },
+  {
+    "action": "merged",
+    "incoming": "NEMITT PHARMACEUTICALS LTD",
+    "matched_to": "NEMITT PHARMACEUTICALS",
+    "match_key": "NEMITTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "OLIVORA COSMETICS LTD",
+    "matched_to": "OLIVORA COSMETICS LIMITED",
+    "match_key": "OLIVORA COSMETICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "DERM PHARMACEUTICALS LTD",
+    "matched_to": "DERM PHARMACEUTICALS",
+    "match_key": "DERMS"
+  },
+  {
+    "action": "merged",
+    "incoming": "DERM PHARMACEUTICALS LTD",
+    "matched_to": "DERM PHARMACEUTICALS",
+    "match_key": "DERMS"
+  },
+  {
+    "action": "merged",
+    "incoming": "FRESHBORN INDUSTRIES LIMITED",
+    "matched_to": "FRESHBORN INDUSTRIES LTD",
+    "match_key": "FRESHBORN INDUSTRIES"
+  },
+  {
+    "action": "merged",
+    "incoming": "GIMBA PHARMACY LTD",
+    "matched_to": "GIMBA PHARMACY",
+    "match_key": "GIMBA"
+  },
+  {
+    "action": "merged",
+    "incoming": "UZORMARK GLOBAL SERVICES",
+    "matched_to": "Uzormark Global Services LTD",
+    "match_key": "UZORMARK GLOBAL SERVICES"
+  },
+  {
+    "action": "merged",
+    "incoming": "NUEL PHARM LTD",
+    "matched_to": "NUEL PHARMACEUTICAL LTD",
+    "match_key": "NUEL"
+  },
+  {
+    "action": "merged",
+    "incoming": "ONIFAM LABORATORIES",
+    "matched_to": "ONIFAM LABORATORIES LTD.",
+    "match_key": "ONIFAM LABORATORIES"
+  },
+  {
+    "action": "merged",
+    "incoming": "NECTAR BEAUTY HUB",
+    "matched_to": "NECTAR BEAUTY HUB LIMITED",
+    "match_key": "NECTAR BEAUTY HUB"
+  },
+  {
+    "action": "merged",
+    "incoming": "PHARMA REACH PHARMACY",
+    "matched_to": "Pharma Reach",
+    "match_key": "PHARMA REACH"
+  },
+  {
+    "action": "merged",
+    "incoming": "ADLER PRODUCTS LTD",
+    "matched_to": "Adler Products limited",
+    "match_key": "ADLER PRODUCTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "SYLKEN LIMITED",
+    "matched_to": "Sylken Pharmacy",
+    "match_key": "SYLKEN"
+  },
+  {
+    "action": "merged",
+    "incoming": "EKULO INTERNATIONAL LTD",
+    "matched_to": "EKULO INTERNATIONAL LIMITED",
+    "match_key": "EKULO"
+  },
+  {
+    "action": "merged",
+    "incoming": "SABEST PHARMACY LIMITED",
+    "matched_to": "SABEST PHARMACY",
+    "match_key": "SABEST"
+  },
+  {
+    "action": "merged",
+    "incoming": "NEMITT PHARMACEUTICALS LTD",
+    "matched_to": "NEMITT PHARMACEUTICALS",
+    "match_key": "NEMITTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "MINISO LIFESTYLE NIGERIA LTD",
+    "matched_to": "MINISO LIFESTYLE NIGERIA LIMITED",
+    "match_key": "MINISO LIFESTYLEERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "HUBMART STORES LTD",
+    "matched_to": "HUBMART STORES LIMITED",
+    "match_key": "HUBMART STORES"
+  },
+  {
+    "action": "merged",
+    "incoming": "RODA COMMERCIAL VENTURES LTD",
+    "matched_to": "RODA COMMERCIAL VENTURES",
+    "match_key": "RODA COMMERCIAL VENTURES"
+  },
+  {
+    "action": "merged",
+    "incoming": "MEDPLUS LIMITED",
+    "matched_to": "MEDPLUS PHARMACY",
+    "match_key": "MEDPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "AMESI COMMERCIAL ENTERPRISES LIMITED",
+    "matched_to": "AMESI COMMERCIAL ENTERPRISE LIMITED",
+    "match_key": "AMESI COMMERCIAL"
+  },
+  {
+    "action": "merged",
+    "incoming": "ESSENZA INTERNATIONAL LTD",
+    "matched_to": "ESSENZA INTERNATIONAL LIMITED",
+    "match_key": "ESSENZA"
+  },
+  {
+    "action": "merged",
+    "incoming": "ETHICS PHARM",
+    "matched_to": "ETHICS PHARMACY",
+    "match_key": "ETHICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "BISMID AGBENI COSMETICS",
+    "matched_to": "BISMID AGBENI COSMETICS LIMITED",
+    "match_key": "BISMID AGBENI COSMETICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "GLOBAL HEALTHCARE LTD",
+    "matched_to": "GLOBAL HEALTHCARE",
+    "match_key": "GLOBAL HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "FLORA TRUWORTHS LTD",
+    "matched_to": "FLORA TRUWORTHS PHARMACY",
+    "match_key": "FLORA TRUWORTHS"
+  },
+  {
+    "action": "merged",
+    "incoming": "SENSOR MERCHANT NIG LTD",
+    "matched_to": "SENSOR MERCHANT NIG LIMITED",
+    "match_key": "SENSOR MERCHANT"
+  },
+  {
+    "action": "merged",
+    "incoming": "HEALTHPLUS",
+    "matched_to": "HEALTHPLUS PHARMACY",
+    "match_key": "HEALTHPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "ETHICS PHARM",
+    "matched_to": "ETHICS PHARMACY",
+    "match_key": "ETHICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "BISMID AGBENI COSMETICS",
+    "matched_to": "BISMID AGBENI COSMETICS LIMITED",
+    "match_key": "BISMID AGBENI COSMETICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "GLOBAL HEALTHCARE LTD",
+    "matched_to": "GLOBAL HEALTHCARE",
+    "match_key": "GLOBAL HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "FLORA TRUWORTHS LTD",
+    "matched_to": "FLORA TRUWORTHS PHARMACY",
+    "match_key": "FLORA TRUWORTHS"
+  },
+  {
+    "action": "merged",
+    "incoming": "SENSOR MERCHANT NIG LTD",
+    "matched_to": "SENSOR MERCHANT NIG LIMITED",
+    "match_key": "SENSOR MERCHANT"
+  },
+  {
+    "action": "merged",
+    "incoming": "HEALTHPLUS",
+    "matched_to": "HEALTHPLUS PHARMACY",
+    "match_key": "HEALTHPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "ETHICS PHARM",
+    "matched_to": "ETHICS PHARMACY",
+    "match_key": "ETHICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "BISMID AGBENI COSMETICS",
+    "matched_to": "BISMID AGBENI COSMETICS LIMITED",
+    "match_key": "BISMID AGBENI COSMETICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "FLORA TRUWORTHS LTD",
+    "matched_to": "FLORA TRUWORTHS PHARMACY",
+    "match_key": "FLORA TRUWORTHS"
+  },
+  {
+    "action": "merged",
+    "incoming": "SENSOR MERCHANT NIG LTD",
+    "matched_to": "SENSOR MERCHANT NIG LIMITED",
+    "match_key": "SENSOR MERCHANT"
+  },
+  {
+    "action": "merged",
+    "incoming": "HEALTHPLUS",
+    "matched_to": "HEALTHPLUS PHARMACY",
+    "match_key": "HEALTHPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "ETHICS PHARM",
+    "matched_to": "ETHICS PHARMACY",
+    "match_key": "ETHICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "BISMID AGBENI COSMETICS",
+    "matched_to": "BISMID AGBENI COSMETICS LIMITED",
+    "match_key": "BISMID AGBENI COSMETICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "GLOBAL HEALTHCARE LTD",
+    "matched_to": "GLOBAL HEALTHCARE",
+    "match_key": "GLOBAL HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "FLORA TRUWORTHS LTD",
+    "matched_to": "FLORA TRUWORTHS PHARMACY",
+    "match_key": "FLORA TRUWORTHS"
+  },
+  {
+    "action": "merged",
+    "incoming": "NEMITT PHARMACEUTICALS LTD",
+    "matched_to": "NEMITT PHARMACEUTICALS",
+    "match_key": "NEMITTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "NEMITT PHARMACEUTICALS LTD",
+    "matched_to": "NEMITT PHARMACEUTICALS",
+    "match_key": "NEMITTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "UZORMARK GLOBAL SERVICES",
+    "matched_to": "Uzormark Global Services LTD",
+    "match_key": "UZORMARK GLOBAL SERVICES"
+  },
+  {
+    "action": "merged",
+    "incoming": "SENSOR MERCHANT NIG LTD",
+    "matched_to": "SENSOR MERCHANT NIG LIMITED",
+    "match_key": "SENSOR MERCHANT"
+  },
+  {
+    "action": "merged",
+    "incoming": "HEALTHPLUS",
+    "matched_to": "HEALTHPLUS PHARMACY",
+    "match_key": "HEALTHPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "NECTAR BEAUTY HUB",
+    "matched_to": "NECTAR BEAUTY HUB LIMITED",
+    "match_key": "NECTAR BEAUTY HUB"
+  },
+  {
+    "action": "merged",
+    "incoming": "KaliKama International Ltd",
+    "matched_to": "KALIKAMA INTERNATIONAL LIMITED",
+    "match_key": "KALIKAMA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Chi Company LTD",
+    "matched_to": "CHI COMPANY LIMITED",
+    "match_key": "CHI"
+  },
+  {
+    "action": "merged",
+    "incoming": "Hubmart Stores Ltd",
+    "matched_to": "HUBMART STORES LIMITED",
+    "match_key": "HUBMART STORES"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pharmacare Place",
+    "matched_to": "PHARMACARE PLACE PHARMACY",
+    "match_key": "PHARMACARE PLACE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Oasis Supermarket Ltd",
+    "matched_to": "OASIS SUPERMARKET LIMITED",
+    "match_key": "OASIS SUPERMARKET"
+  },
+  {
+    "action": "merged",
+    "incoming": "Globus Supermarket Ltd",
+    "matched_to": "GLOBUS SUPERMARKET LIMITED",
+    "match_key": "GLOBUS SUPERMARKET"
+  },
+  {
+    "action": "merged",
+    "incoming": "Best Safe Way Buying Ltd",
+    "matched_to": "BEST SAFE WAY BUYING LIMITED",
+    "match_key": "BEST SAFE WAY BUYING"
+  },
+  {
+    "action": "merged",
+    "incoming": "Earth and Beyond Nigeria Ltd",
+    "matched_to": "EARTH AND BEYOND NIGERIA LIMITED",
+    "match_key": "EARTH AND BEYONDERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Shaley Nigeria Ltd",
+    "matched_to": "SHALEY NIGERIA LIMITED",
+    "match_key": "SHALEYERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "H.B Agriculture Ltd",
+    "matched_to": "H.B AGRICULTURE LIMITED",
+    "match_key": "H.B AGRICULTURE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pupit Rotation Ltd",
+    "matched_to": "PUPIT ROTATION LIMITED",
+    "match_key": "PUPIT ROTATION"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sayed Farms Ltd",
+    "matched_to": "SAYED FARMS LIMITED",
+    "match_key": "SAYED FARMS"
+  },
+  {
+    "action": "merged",
+    "incoming": "House of Tara International Ltd",
+    "matched_to": "HOUSE OF TARA INTERNATIONAL LIMITED",
+    "match_key": "HOUSE OF TARA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Essenza International Ltd",
+    "matched_to": "ESSENZA INTERNATIONAL LIMITED",
+    "match_key": "ESSENZA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Olivora Cosmetics Ltd",
+    "matched_to": "OLIVORA COSMETICS LIMITED",
+    "match_key": "OLIVORA COSMETICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Bramasakti Nigeria Ltd",
+    "matched_to": "BRAMASAKTI NIGERIA LIMITED",
+    "match_key": "BRAMASAKTIERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Prime Grocers International Ltd",
+    "matched_to": "PRIME GROCERS INTERNATIONAL",
+    "match_key": "PRIME GROCERS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Africa Retail Solutions Ltd",
+    "matched_to": "AFRICA RETAIL SOLUTIONS LIMITED",
+    "match_key": "AFRICA RETAIL SOLUTIONS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Kivi Foods Limited",
+    "matched_to": "KIVI FOODS LTD",
+    "match_key": "KIVI FOODS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Karma Mart Limited",
+    "matched_to": "Karma Mart",
+    "match_key": "KARMA MART"
+  },
+  {
+    "action": "merged",
+    "incoming": "C.H.F Heron Nigeria Limited",
+    "matched_to": "C.H.F HERON NIGERIA",
+    "match_key": "C.H.F HERONERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Nectar Beauty Hub",
+    "matched_to": "NECTAR BEAUTY HUB LIMITED",
+    "match_key": "NECTAR BEAUTY HUB"
+  },
+  {
+    "action": "merged",
+    "incoming": "Cyril Integrated Concept Ltd",
+    "matched_to": "CYRIL INTEGRATED CONCEPT LIMITED",
+    "match_key": "CYRIL INTEGRATED CONCEPT"
+  },
+  {
+    "action": "merged",
+    "incoming": "Best Trade Nigeria Ltd",
+    "matched_to": "BEST TRADE NIGERIA LIMITED",
+    "match_key": "BEST TRADEERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Arizona Top Brands Ltd",
+    "matched_to": "ARIZONA TOP BRANDS LIMITED",
+    "match_key": "ARIZONA TOP BRANDS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Ucheson (Oke) Nigeria Limited",
+    "matched_to": "UCHESON (OKE) NIGERIA ENTERPRISES LIMITED",
+    "match_key": "UCHESON (OKE)ERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Chuddy & Soul International Ltd.",
+    "matched_to": "CHUDDY & SOUL INTERNATIONAL LIMITED",
+    "match_key": "CHUDDY & SOUL"
+  },
+  {
+    "action": "merged",
+    "incoming": "Lanej Integrated Company Limited",
+    "matched_to": "LANEJ INTEGRATED COMPANY",
+    "match_key": "LANEJ INTEGRATED"
+  },
+  {
+    "action": "merged",
+    "incoming": "Lilian Collins Ltd.",
+    "matched_to": "LILIAN COLLINS LIMITED",
+    "match_key": "LILIAN COLLINS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Just Food Ltd.",
+    "matched_to": "JUST FOOD LIMITED",
+    "match_key": "JUST FOOD"
+  },
+  {
+    "action": "merged",
+    "incoming": "Flawless Beauty by Mimi International Ltd.",
+    "matched_to": "FLAWLESS BEAUTY BY MIMI INTERNATIONAL LIMITED",
+    "match_key": "FLAWLESS BEAUTY BY MIMI"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sumeru Enterprise Solution Limited",
+    "matched_to": "SUMERU ENTERPRISES SOLUTION LIMITED",
+    "match_key": "SUMERU SOLUTION"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sundry Market Limited",
+    "matched_to": "Sundry market",
+    "match_key": "SUNDRY MARKET"
+  },
+  {
+    "action": "merged",
+    "incoming": "Medplus Limited",
+    "matched_to": "MEDPLUS PHARMACY",
+    "match_key": "MEDPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Blend Supermarket Limited",
+    "matched_to": "BLEND SUPERMARKET",
+    "match_key": "BLEND SUPERMARKET"
+  },
+  {
+    "action": "merged",
+    "incoming": "Ideal Flavour Limited",
+    "matched_to": "IDEAL FLAVOUR LTD",
+    "match_key": "IDEAL FLAVOUR"
+  },
+  {
+    "action": "merged",
+    "incoming": "Fairest Skincare Limited",
+    "matched_to": "FAIREST SKINCARE",
+    "match_key": "FAIREST SKINCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Nuban Beauty Ltd",
+    "matched_to": "NUBAN BEAUTY",
+    "match_key": "NUBAN BEAUTY"
+  },
+  {
+    "action": "merged",
+    "incoming": "UAC Foods",
+    "matched_to": "UAC FOODS LTD",
+    "match_key": "UAC FOODS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pharmasolutions Ltd",
+    "matched_to": "PHARMASOLUTIONS",
+    "match_key": "PHARMASOLUTIONS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Tehillah Pharmacy Ltd",
+    "matched_to": "TEHILLAH PHARMACY",
+    "match_key": "TEHILLAH"
+  },
+  {
+    "action": "merged",
+    "incoming": "Kris Daniel Pharmacy",
+    "matched_to": "KRIS DANIEL",
+    "match_key": "KRIS DANIEL"
+  },
+  {
+    "action": "merged",
+    "incoming": "Jay Kay Pharmacy Ltd",
+    "matched_to": "Jay Kay Pharmacy",
+    "match_key": "JAY KAY"
+  },
+  {
+    "action": "merged",
+    "incoming": "Alpha Pharmacy Ltd",
+    "matched_to": "Alpha Pharmacy",
+    "match_key": "ALPHA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Mark Pharmaceuticals Ltd",
+    "matched_to": "MARK PHARMACEUTICALS",
+    "match_key": "MARKS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Chard Pharmacy",
+    "matched_to": "Chard",
+    "match_key": "CHARD"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pharma Reach Pharmacy",
+    "matched_to": "Pharma Reach",
+    "match_key": "PHARMA REACH"
+  },
+  {
+    "action": "merged",
+    "incoming": "Embassy Pharma & Chemical Ltd",
+    "matched_to": "EMBASSY PHARMA & CHEMICAL LIMITED",
+    "match_key": "EMBASSYA & CHEMICAL"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sam Pharmaceutical Ltd",
+    "matched_to": "SAM PHARM LTD",
+    "match_key": "SAM"
+  },
+  {
+    "action": "merged",
+    "incoming": "Jawa International Ltd",
+    "matched_to": "JAWA INTL LIMITED",
+    "match_key": "JAWA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Greenlife Pharmaceutical Ltd",
+    "matched_to": "GREENLIFE PHARMACEUTICAL LIMITED",
+    "match_key": "GREENLIFE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Afrab-Chem Ltd",
+    "matched_to": "AFRAB-CHEM LIMITED",
+    "match_key": "AFRAB-CHEM"
+  },
+  {
+    "action": "merged",
+    "incoming": "Massey Vickers",
+    "matched_to": "MASSEY VICKERS PHARMACY",
+    "match_key": "MASSEY VICKERS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Osbud Pharmacy Ltd",
+    "matched_to": "OSBUD PHARMACY",
+    "match_key": "OSBUD"
+  },
+  {
+    "action": "merged",
+    "incoming": "Global Healthcare Ltd",
+    "matched_to": "GLOBAL HEALTHCARE",
+    "match_key": "GLOBAL HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Oliva Nelson",
+    "matched_to": "OLIVA NELSON PHARMACY",
+    "match_key": "OLIVA NELSON"
+  },
+  {
+    "action": "merged",
+    "incoming": "Flora Truworths Ltd",
+    "matched_to": "FLORA TRUWORTHS PHARMACY",
+    "match_key": "FLORA TRUWORTHS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Bazreal Global Ltd",
+    "matched_to": "BAZREAL GLOBAL LIMITED",
+    "match_key": "BAZREAL GLOBAL"
+  },
+  {
+    "action": "merged",
+    "incoming": "Chanrai Healthcare",
+    "matched_to": "CHANRAI HEALTHCARE LTD",
+    "match_key": "CHANRAI HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Victory Drugs",
+    "matched_to": "VICTORY DRUGS PHARMACY",
+    "match_key": "VICTORY DRUGS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Fidson Healthcare",
+    "matched_to": "FIDSON HEALTHCARE PLC",
+    "match_key": "FIDSON HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "GloryZone Pharmacy Nigeria Ltd",
+    "matched_to": "GLORYZONE NIGERIA LTD",
+    "match_key": "GLORYZONEERIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Zim Pharm Ltd",
+    "matched_to": "ZIM PHARMACY LTD",
+    "match_key": "ZIM"
+  },
+  {
+    "action": "merged",
+    "incoming": "Estin Limited",
+    "matched_to": "Estin Pharmacy",
+    "match_key": "ESTIN"
+  },
+  {
+    "action": "merged",
+    "incoming": "Vivigold Ltd",
+    "matched_to": "VIVIGOLD PHARMACY LIMITED",
+    "match_key": "VIVIGOLD"
+  },
+  {
+    "action": "merged",
+    "incoming": "Drugmasta Mega Pharmacy Ltd",
+    "matched_to": "DRUGMASTA MEGA PHARMACY LIMITED",
+    "match_key": "DRUGMASTA MEGA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Herbinco Pharm Ltd",
+    "matched_to": "HERBINCO PHARMACY",
+    "match_key": "HERBINCO"
+  },
+  {
+    "action": "merged",
+    "incoming": "Kris Daniel Pharm Ltd",
+    "matched_to": "KRIS DANIEL",
+    "match_key": "KRIS DANIEL"
+  },
+  {
+    "action": "merged",
+    "incoming": "ChiLink Pharm Ltd",
+    "matched_to": "CHILINK PHARMACY",
+    "match_key": "CHILINK"
+  },
+  {
+    "action": "merged",
+    "incoming": "CHI Pharmaceuticals Ltd",
+    "matched_to": "CHI PHARMACEUTICALS",
+    "match_key": "CHIS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Jude Thaddy Ltd",
+    "matched_to": "JUDE THADDY PHARMACY",
+    "match_key": "JUDE THADDY"
+  },
+  {
+    "action": "merged",
+    "incoming": "BrightMex Pharm Ltd",
+    "matched_to": "BRIGHTMEX PHARMACY LIMITED",
+    "match_key": "BRIGHTMEX"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sabiz Pharmaceutical Nig. Ltd",
+    "matched_to": "SABIZ NIG. LTD",
+    "match_key": "SABIZ."
+  },
+  {
+    "action": "merged",
+    "incoming": "Charity Nwaizu Pharm. Co. Nig Ltd",
+    "matched_to": "CHARITY NWAIZU PHARM. CO. LTD",
+    "match_key": "CHARITY NWAIZU. CO."
+  },
+  {
+    "action": "merged",
+    "incoming": "Victorious Pharmacy Ltd",
+    "matched_to": "VICTORIOUS PHARMACY",
+    "match_key": "VICTORIOUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Boluke Pharmacy Ltd",
+    "matched_to": "BOLUKE PHARMACY",
+    "match_key": "BOLUKE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Aku-Udo Pharm Ltd",
+    "matched_to": "AKU-UDO PHARMACY",
+    "match_key": "AKU-UDO"
+  },
+  {
+    "action": "merged",
+    "incoming": "CA & Jo Pharmacy Ltd",
+    "matched_to": "CA & JO COMPANY LTD",
+    "match_key": "CA & JO"
+  },
+  {
+    "action": "merged",
+    "incoming": "Ladamos Pharmacy Nig Ltd",
+    "matched_to": "LADAMOS PHARMACY",
+    "match_key": "LADAMOS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Vixa Pharmaceuticals Company Ltd",
+    "matched_to": "VIXA PHARMACEUTICALS",
+    "match_key": "VIXAS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Mecure Industries Ltd",
+    "matched_to": "Mecure Industries limited",
+    "match_key": "MECURE INDUSTRIES"
+  },
+  {
+    "action": "merged",
+    "incoming": "BJ Choice Pharm Ltd",
+    "matched_to": "BJ CHOICE PHARM",
+    "match_key": "BJ CHOICE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Paken Ventures Ltd",
+    "matched_to": "PAKEN VENTURES",
+    "match_key": "PAKEN VENTURES"
+  },
+  {
+    "action": "merged",
+    "incoming": "Henbosco Pharmacy Ltd",
+    "matched_to": "HENBOSCO PHARMACY",
+    "match_key": "HENBOSCO"
+  },
+  {
+    "action": "merged",
+    "incoming": "Goodcare Pharmaceutical Ltd",
+    "matched_to": "GOODCARE PHARMACEUTICAL",
+    "match_key": "GOODCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Kojos Pharmacy Ltd",
+    "matched_to": "KOJOS PHARMACY",
+    "match_key": "KOJOS"
+  },
+  {
+    "action": "merged",
+    "incoming": "United ABC Pharmaceutical Ltd",
+    "matched_to": "UNITED ABC PHARMACEUTICAL",
+    "match_key": "UNITED ABC"
+  },
+  {
+    "action": "merged",
+    "incoming": "Santus Pharmacy & Stores",
+    "matched_to": "SANTUS PHARMACY & STORES LTD.",
+    "match_key": "SANTUS & STORES"
+  },
+  {
+    "action": "merged",
+    "incoming": "United Africa Laboratory Ltd",
+    "matched_to": "UNITED AFRICA LABORATORY LIMITED",
+    "match_key": "UNITED AFRICA LABORATORY"
+  },
+  {
+    "action": "merged",
+    "incoming": "Famous Nig Pharm Chemist Ltd",
+    "matched_to": "FAMOUS NIG CHEMIST",
+    "match_key": "FAMOUS CHEMIST"
+  },
+  {
+    "action": "merged",
+    "incoming": "Chev Pharmaceuticals Ltd",
+    "matched_to": "CHEV PHARMACEUTICALS",
+    "match_key": "CHEVS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Obitex Divine Pharmaceuticals Ltd",
+    "matched_to": "OBITEX DIVINE PHARMACEUTICALS",
+    "match_key": "OBITEX DIVINES"
+  },
+  {
+    "action": "merged",
+    "incoming": "De Good God Pharm",
+    "matched_to": "DE GOOD GOD PHARMACY",
+    "match_key": "DE GOOD GOD"
+  },
+  {
+    "action": "merged",
+    "incoming": "Surplus Pharm",
+    "matched_to": "SURPLUS PHARMACY",
+    "match_key": "SURPLUS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Domino Pharm",
+    "matched_to": "DOMINO PHARMACY LTD.",
+    "match_key": "DOMINO"
+  },
+  {
+    "action": "merged",
+    "incoming": "Drug Field Pharmaceuticals Ltd",
+    "matched_to": "DRUG FIELD PHARMACEUTICALS",
+    "match_key": "DRUG FIELDS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Agary Pharmaceuticals Ltd",
+    "matched_to": "AGARY PHARMACEUTICALS",
+    "match_key": "AGARYS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Teka Pharmaceuticals Nig Ltd",
+    "matched_to": "TEKA PHARMACEUTICALS",
+    "match_key": "TEKAS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Derm Pharmaceuticals Ltd",
+    "matched_to": "DERM PHARMACEUTICALS",
+    "match_key": "DERMS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Mark Pharmaceuticals Ltd",
+    "matched_to": "MARK PHARMACEUTICALS",
+    "match_key": "MARKS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Shalina Healthcare Nig Ltd",
+    "matched_to": "SHALINA HEALTHCARE",
+    "match_key": "SHALINA HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Hugo Drugs Ltd",
+    "matched_to": "HUGO DRUGS LIMITED",
+    "match_key": "HUGO DRUGS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Clarion Healthcare Ltd",
+    "matched_to": "CLARION HEALTHCARE",
+    "match_key": "CLARION HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Emmastev Pharm",
+    "matched_to": "EMMASTEV PHARMACY",
+    "match_key": "EMMASTEV"
+  },
+  {
+    "action": "merged",
+    "incoming": "Justinak Pharmacy Ltd",
+    "matched_to": "JUSTINAK PHARMACY",
+    "match_key": "JUSTINAK"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sunlight Links Ltd",
+    "matched_to": "SUNLIGHT LINKS PHARMACY LTD",
+    "match_key": "SUNLIGHT LINKS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Interpharm GMBH Nig Ltd",
+    "matched_to": "INTERPHARM GMBH",
+    "match_key": "INTERPHARM GMBH"
+  },
+  {
+    "action": "merged",
+    "incoming": "Marcson Healthcare Ltd",
+    "matched_to": "MARCSON HEALTHCARE",
+    "match_key": "MARCSON HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "KCH Consumer Healthcare",
+    "matched_to": "KCH CONSUMER HEALTHCARE LTD",
+    "match_key": "KCH CONSUMER HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Tricare Pharmaceutical LTD",
+    "matched_to": "TRICARE PHARM.",
+    "match_key": "TRICARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Roche Products Ltd",
+    "matched_to": "Roche Products",
+    "match_key": "ROCHE PRODUCTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Med Express",
+    "matched_to": "MED EXPRESS PHARMACY",
+    "match_key": "MED EXPRESS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Global Healthcare Ltd",
+    "matched_to": "GLOBAL HEALTHCARE",
+    "match_key": "GLOBAL HEALTHCARE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pemason Pharm Ltd",
+    "matched_to": "PEMASON PHARMACY LTD",
+    "match_key": "PEMASON"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pacmai International Ltd",
+    "matched_to": "PACMAI INTL LTD",
+    "match_key": "PACMAI"
+  },
+  {
+    "action": "merged",
+    "incoming": "Eminent Drugs Ltd",
+    "matched_to": "EMINENT DRUGS LIMITED",
+    "match_key": "EMINENT DRUGS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pangene Biotech Ltd",
+    "matched_to": "PANGENE BIOTECH",
+    "match_key": "PANGENE BIOTECH"
+  },
+  {
+    "action": "merged",
+    "incoming": "Standard Generics",
+    "matched_to": "STANDARD GENERICS LTD",
+    "match_key": "STANDARD GENERICS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Pharmabox Ventures Ltd",
+    "matched_to": "PHARMABOX VENTURES LIMITED",
+    "match_key": "PHARMABOX VENTURES"
+  },
+  {
+    "action": "merged",
+    "incoming": "Boucia Ltd",
+    "matched_to": "BOUCIA LIMITED",
+    "match_key": "BOUCIA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Bazreal Global Ltd",
+    "matched_to": "BAZREAL GLOBAL LIMITED",
+    "match_key": "BAZREAL GLOBAL"
+  },
+  {
+    "action": "merged",
+    "incoming": "Jawa International Ltd",
+    "matched_to": "JAWA INTL LIMITED",
+    "match_key": "JAWA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Kenix Pharmaceutical",
+    "matched_to": "KENIX PHARMACY",
+    "match_key": "KENIX"
+  },
+  {
+    "action": "merged",
+    "incoming": "Sepat Pharmaceutical Ltd",
+    "matched_to": "SEPAT PHARM LTD",
+    "match_key": "SEPAT"
+  },
+  {
+    "action": "merged",
+    "incoming": "Adler Products Ltd",
+    "matched_to": "Adler Products limited",
+    "match_key": "ADLER PRODUCTS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Ecomed Pharma",
+    "matched_to": "Ecomed  Pharma Ltd",
+    "match_key": "ECOMEDA"
+  },
+  {
+    "action": "merged",
+    "incoming": "Myfil Pharm Ltd",
+    "matched_to": "Myfil Pharmacy",
+    "match_key": "MYFIL"
+  },
+  {
+    "action": "merged",
+    "incoming": "World Wide Commercial Ventures Ltd",
+    "matched_to": "World Wide Commercial Ventures",
+    "match_key": "WORLD WIDE COMMERCIAL VENTURES"
+  },
+  {
+    "action": "merged",
+    "incoming": "CHI Pharmaceuticals Ltd",
+    "matched_to": "CHI PHARMACEUTICALS",
+    "match_key": "CHIS"
+  },
+  {
+    "action": "merged",
+    "incoming": "Expharlab Ltd",
+    "matched_to": "EXPHARLAB LIMITED",
+    "match_key": "EXPHARLAB"
+  },
+  {
+    "action": "merged",
+    "incoming": "Greenlife Pharmaceutical Ltd",
+    "matched_to": "GREENLIFE PHARMACEUTICAL LIMITED",
+    "match_key": "GREENLIFE"
+  },
+  {
+    "action": "merged",
+    "incoming": "Tah Pharmaceutical Ltd",
+    "matched_to": "TAH PHARM LTD",
+    "match_key": "TAH"
+  }
+]
