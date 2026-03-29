@@ -1,4 +1,5 @@
 import { db, collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, where } from "./db.js";
+import { resolveFacility } from "./facility-utils.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
@@ -692,21 +693,16 @@ async function handleSubmitWizard(root) {
             try {
                 const facName = (reportData.facilityName || "").trim();
                 if (facName) {
-                    const facQuery = query(collection(db, "facilities"), where("name", "==", facName));
-                    const facSnap = await getDocs(facQuery);
+                    const resolved = await resolveFacility(facName, reportData.facilityAddress, "wizard");
+                    // Link the report to the found/created ID
+                    reportData.facilityId = resolved.facilityId;
                     
-                    if (facSnap.empty) {
-                        // Create new facility master record so it appears in search
-                        await addDoc(collection(db, "facilities"), {
-                            name: facName,
-                            address: reportData.facilityAddress || "",
-                            activityTypes: [reportData.activityType],
-                            totalVisits: 1,
-                            status: "Active",
-                            lastVisitDate: reportData.inspectionDate ? reportData.inspectionDate.toISOString().split("T")[0] : "",
-                            source: "wizard"
-                        });
-                    }
+                    // Update visit count on the master record
+                    await setDoc(doc(db, "facilities", resolved.docId), {
+                        totalVisits: (resolved.isNew ? 1 : (await getDoc(doc(db, "facilities", resolved.docId))).data()?.totalVisits || 0) + 1,
+                        lastVisitDate: reportData.inspectionDate ? reportData.inspectionDate.toISOString().split("T")[0] : "",
+                        activityTypes: (resolved.isNew ? [] : (await getDoc(doc(db, "facilities", resolved.docId))).data()?.activityTypes || []).concat(reportData.activityType)
+                    }, { merge: true });
                 }
             } catch (facErr) {
                 console.error("Error syncing with facility database:", facErr);

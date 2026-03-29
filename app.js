@@ -167,6 +167,14 @@ function updateAuthUI(user, role) {
   if (facilityBtn) {
     facilityBtn.style.display = user ? 'block' : 'none';
   }
+  const complaintBtn = document.getElementById('openLogComplaint');
+  if (complaintBtn) {
+    complaintBtn.style.display = user ? 'block' : 'none';
+  }
+  const sanctionBtn = document.getElementById('openLogSanction');
+  if (sanctionBtn) {
+    sanctionBtn.style.display = role === 'admin' ? 'block' : 'none';
+  }
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
     mapBtn.style.display = user ? 'block' : 'none';
@@ -256,6 +264,16 @@ function bindWelcome() {
     facilityBtn.style.display = currentUser ? 'block' : 'none';
     facilityBtn.onclick = () => navigate('facilities');
   }
+  const complaintBtn = document.getElementById('openLogComplaint');
+  if (complaintBtn) {
+    complaintBtn.style.display = currentUser ? 'block' : 'none';
+    complaintBtn.onclick = () => navigate('log-complaint');
+  }
+  const sanctionBtn = document.getElementById('openLogSanction');
+  if (sanctionBtn) {
+    sanctionBtn.style.display = currentUserRole === 'admin' ? 'block' : 'none';
+    sanctionBtn.onclick = () => navigate('log-sanction');
+  }
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
     mapBtn.style.display = currentUser ? 'block' : 'none';
@@ -269,8 +287,8 @@ function bindWelcome() {
   const dashboardBtn = document.getElementById('openDashboard');
   if (dashboardBtn) {
     dashboardBtn.style.display = currentUserRole === 'admin' ? 'block' : 'none';
+    dashboardBtn.onclick = () => navigate('dashboard');
   }
-  dashboardBtn.onclick = () => navigate('dashboard');
 }
 
 function bindSuccess() { document.getElementById('backToWelcome').onclick = () => navigate('welcome'); }

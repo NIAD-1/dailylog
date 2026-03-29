@@ -1,10 +1,13 @@
-import { db, collection, getDocs, query, where, doc, getDoc, setDoc, addDoc } from "./db.js";
+import { db, collection, getDocs, query, where, doc, getDoc, setDoc, addDoc, writeBatch } from "./db.js";
+import { normalizeFacilityName, fuzzyMatch, normalizeAddress } from "./facility-utils.js";
 import { clearRoot } from "./ui.js";
 
 let allFacilities = [];
 let facilityCache = {};
 let currentUserRole = null;
-let dirState = { letter: 'All', activity: 'All', zone: 'All', status: 'All', year: 'All' };
+let dirState = { letter: "A", activity: "All", zone: "All", status: "All", year: "All" };
+let selectedFacilities = new Set();
+let isMergeMode = false;
 
 export const setFacilityProfileUser = (user, role) => {
     currentUserRole = role;
@@ -55,11 +58,15 @@ export async function renderFacilityProfilePage(root) {
     searchInput.disabled = true;
     searchInput.placeholder = "Loading facility database...";
     const facilities = await loadAllFacilities();
+    
+    // Filter out logically deleted or merged facilities from the UI
+    const activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
+    
     searchInput.disabled = false;
     searchInput.placeholder = "Search facilities by name, address, or file number...";
-    countDiv.textContent = `${facilities.length.toLocaleString()} facilities`;
+    countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
 
-    renderOverview(profileArea, facilities);
+    renderOverview(profileArea, activeFacilities);
 
     let debounce = null;
     searchInput.addEventListener("input", () => {
@@ -69,10 +76,10 @@ export async function renderFacilityProfilePage(root) {
             if (q.length < 2) {
                 resultsDiv.innerHTML = "";
                 resultsDiv.classList.remove("visible");
-                renderOverview(profileArea, facilities);
+                renderOverview(profileArea, activeFacilities);
                 return;
             }
-            const matches = facilities.filter(f => {
+            const matches = activeFacilities.filter(f => {
                 const name = (f.name || "").toUpperCase();
                 const addr = (f.address || "").toUpperCase();
                 const file = (f.fileNumber || "").toUpperCase();
@@ -199,8 +206,26 @@ function renderDirectoryArea(facilities) {
 
     dirArea.innerHTML = `
     <div class="fp-directory-section">
-        <div class="fp-overview-header" style="margin-bottom: 16px;">
+        <div class="fp-overview-header" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
             <h3 style="margin:0; font-size: 20px; color: #2d3748;">A-Z Directory</h3>
+            ${currentUserRole === 'admin' ? `
+                <div class="fp-admin-actions" style="display: flex; gap: 8px;">
+                    <button id="autoMergeBtn" class="fp-btn-outline" style="border-style: dashed; font-size: 13px;" onclick="window.__autoMerge && window.__autoMerge()">
+                        ✨ Auto-Consolidate
+                    </button>
+                    <button id="autoLinkBtn" class="fp-btn-outline" style="border-style: dashed; font-size: 13px;" onclick="window.__autoLink && window.__autoLink()">
+                        🔗 Link Branches
+                    </button>
+                    <button id="toggleMergeMode" class="fp-btn-outline" style="font-size: 13px;">
+                        ${isMergeMode ? 'Cancel Merge' : 'Merge Duplicates'}
+                    </button>
+                    ${isMergeMode && selectedFacilities.size >= 2 ? `
+                        <button id="executeMerge" class="fp-btn-success" style="font-size: 13px;">
+                            Merge ${selectedFacilities.size} Selected
+                        </button>
+                    ` : ''}
+                </div>
+            ` : ''}
         </div>
         
         <div class="fp-az-bar">
@@ -249,6 +274,39 @@ function renderDirectoryArea(facilities) {
         });
     });
 
+    // Bind Merge Toggle
+    const toggleMergeBtn = document.getElementById("toggleMergeMode");
+    if (toggleMergeBtn) {
+        toggleMergeBtn.onclick = () => {
+            isMergeMode = !isMergeMode;
+            if (!isMergeMode) selectedFacilities.clear();
+            renderDirectoryArea(facilities);
+        };
+    }
+
+    const executeMergeBtn = document.getElementById("executeMerge");
+    if (executeMergeBtn) {
+        executeMergeBtn.onclick = () => showMergeConfirmation(facilities);
+    }
+
+    const autoMergeBtn = document.getElementById("autoMergeBtn");
+    if (autoMergeBtn) {
+        console.log("[MERGE] Auto-merge button found and bound");
+        window.__autoMerge = () => autoMergeFacilities(facilities);
+        autoMergeBtn.onclick = () => {
+            console.log("[MERGE] Auto-consolidate clicked!");
+            autoMergeFacilities(facilities);
+        };
+    } else {
+        console.log("[MERGE] Auto-merge button NOT found — role:", currentUserRole);
+    }
+
+    const autoLinkBtn = document.getElementById("autoLinkBtn");
+    if (autoLinkBtn) {
+        window.__autoLink = () => autoLinkFacilities(facilities);
+        autoLinkBtn.onclick = () => autoLinkFacilities(facilities);
+    }
+
     // Bind Filters
     const bindFilter = (id, key) => {
         const el = document.getElementById(id);
@@ -275,36 +333,20 @@ function renderDirectoryResults(facilities) {
         const name = (f.name || "").trim().toUpperCase();
         if (!name) return false;
 
-        // Letter filter
-        if (dirState.letter !== "All") {
+        if (dirState.letter !== "ALL") {
             if (dirState.letter === "#") {
                 if (!/^[0-9]/.test(name)) return false;
-            } else {
-                if (!name.startsWith(dirState.letter)) return false;
+            } else if (!name.startsWith(dirState.letter)) {
+                return false;
             }
         }
-
-        // Activity filter
-        if (dirState.activity !== "All") {
-            if (!(f.activityTypes || []).includes(dirState.activity)) return false;
-        }
-
-        // Zone filter
-        if (dirState.zone !== "All") {
-            if (f.zone !== dirState.zone) return false;
-        }
-
-        // Status filter
-        if (dirState.status !== "All") {
-            if (f.status !== dirState.status) return false;
-        }
-
-        // Year filter
+        if (dirState.activity !== "All" && !(f.activityTypes || []).includes(dirState.activity)) return false;
+        if (dirState.zone !== "All" && f.zone !== dirState.zone) return false;
+        if (dirState.status !== "All" && f.status !== dirState.status) return false;
         if (dirState.year !== "All") {
             const y = f.lastVisitDate ? f.lastVisitDate.substring(0, 4) : null;
             if (y !== dirState.year) return false;
         }
-
         return true;
     });
 
@@ -314,35 +356,46 @@ function renderDirectoryResults(facilities) {
     }
 
     grid.innerHTML = filtered.map(f => `
-        <div class="fp-dir-card" data-id="${f.id}">
-            <div class="fp-dir-card-title">${f.name || "Unknown"}</div>
-            <div class="fp-dir-card-meta">
-                ${f.address ? `<div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📍 ${f.address}</div>` : ""}
-                ${f.lastVisitDate ? `<div style="margin-top:4px;">⏱️ Last Visit: ${f.lastVisitDate}</div>` : ""}
-            </div>
-            <div class="fp-dir-card-tags">
-                ${f.zone ? `<span class="fp-tag fp-tag-zone">${f.zone}</span>` : ""}
-                ${f.status ? `<span class="fp-status-badge fp-status-${(f.status || 'Active').toLowerCase().replace(/\s/g, '-')}" style="padding: 2px 6px; font-size: 10px;">${f.status}</span>` : ""}
-            </div>
-            <div class="fp-dir-card-tags">
-                ${(f.activityTypes || []).slice(0, 2).map(at => `<span class="fp-tag fp-tag-activity">${at}</span>`).join("")}
-                ${(f.activityTypes || []).length > 2 ? `<span class="fp-tag">+${f.activityTypes.length - 2}</span>` : ""}
-            </div>
-            <div class="fp-dir-card-footer">
-                <div style="color: #718096;">Total Visits: <strong>${f.totalVisits || 0}</strong></div>
-                <div style="color: var(--fp-green); font-weight: 600;">View Profile →</div>
+        <div class="fp-dir-card ${selectedFacilities.has(f.id) ? 'selected' : ''}" data-id="${f.id}">
+            ${isMergeMode ? `
+                <div class="fp-card-selection">
+                    <div class="fp-checkbox ${selectedFacilities.has(f.id) ? 'checked' : ''}">
+                        ${selectedFacilities.has(f.id) ? '✓' : ''}
+                    </div>
+                </div>
+            ` : ''}
+            <div class="fp-dir-card-body">
+                <div class="fp-dir-card-title">${f.name || "Unknown"}</div>
+                <div class="fp-dir-card-meta">
+                    ${f.address ? `<div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📍 ${f.address}</div>` : ""}
+                    ${f.lastVisitDate ? `<div style="margin-top:4px;">⏱️ Last Visit: ${f.lastVisitDate}</div>` : ""}
+                </div>
+                <div class="fp-dir-card-tags">
+                    ${f.zone ? `<span class="fp-tag fp-tag-zone">${f.zone}</span>` : ""}
+                    ${f.status ? `<span class="fp-status-badge fp-status-${(f.status || 'Active').toLowerCase().replace(/\s/g, '-')}" style="padding: 2px 6px; font-size: 10px;">${f.status}</span>` : ""}
+                </div>
+                <div class="fp-dir-card-tags">
+                    ${(f.activityTypes || []).slice(0, 2).map(at => `<span class="fp-tag fp-tag-activity">${at}</span>`).join("")}
+                    ${(f.activityTypes || []).length > 2 ? `<span class="fp-tag">+${f.activityTypes.length - 2}</span>` : ""}
+                </div>
+                <div class="fp-dir-card-footer">
+                    <div style="color: #718096;">Total Visits: <strong>${f.totalVisits || 0}</strong></div>
+                    <div style="color: var(--fp-green); font-weight: 600;">${isMergeMode ? 'Select' : 'View Profile →'}</div>
+                </div>
             </div>
         </div>
     `).join("");
 
-    // Bind clicks to open profile
+    // Bind clicks
     grid.querySelectorAll(".fp-dir-card").forEach(card => {
         card.addEventListener("click", () => {
-            const fac = facilities.find(f => f.id === card.dataset.id);
-            if (fac) {
-                document.getElementById("fpSearch").value = fac.name;
-                renderProfile(document.getElementById("fpProfileArea"), fac);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            const id = card.dataset.id;
+            if (isMergeMode) {
+                if (selectedFacilities.has(id)) selectedFacilities.delete(id);
+                else selectedFacilities.add(id);
+                renderDirectoryArea(facilities);
+            } else {
+                showFacilityProfile(id);
             }
         });
     });
@@ -432,6 +485,7 @@ async function renderProfile(container, facility) {
             <button class="fp-tab" data-tab="complaints">Consumer Complaints</button>
             <button class="fp-tab" data-tab="documents">Documents</button>
             <button class="fp-tab" data-tab="files">File Registry</button>
+            <button class="fp-tab" data-tab="branches">Branches</button>
         </div>
 
         <!-- Tab Content -->
@@ -441,12 +495,17 @@ async function renderProfile(container, facility) {
     </div>`;
 
     // Bind tabs
-    container.querySelectorAll(".fp-tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-            container.querySelectorAll(".fp-tab").forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
-            loadTabContent(tab.dataset.tab, fid, facility.name);
-        });
+    container.querySelectorAll(".fp-tab").forEach(btn => {
+        btn.onclick = () => {
+            container.querySelectorAll(".fp-tab").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            const tabName = btn.dataset.tab;
+            if (tabName === "branches") {
+                renderBranchesTab(container, facility.id, facility.name);
+            } else {
+                loadTabContent(tabName, facility.id, facility.name);
+            }
+        };
     });
 
     if (currentUserRole === 'admin') {
@@ -556,7 +615,7 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
 
     if (currentUserRole === 'admin') {
         const addBtn = container.querySelector("#fpAddRecordBtn");
-        if (addBtn) addBtn.addEventListener("click", () => showAddInspectionModal(facilityId, facilityName));
+        if (addBtn) addBtn.addEventListener("click", () => showAddInspectionModalFn(facilityId, facilityName));
     }
 }
 
@@ -1038,4 +1097,712 @@ function showAddComplaintModal(facilityId, facilityName) {
             btn.textContent = "Save Complaint";
         }
     };
+}
+
+function showAddInspectionModalFn(facilityId, facilityName) {
+    const modalContainer = document.getElementById("modalContainer");
+    const currentYear = new Date().getFullYear();
+
+    modalContainer.innerHTML = `
+    <div class="modal open">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3 style="margin-bottom: 20px;">Add Inspection Record</h3>
+            <p class="muted" style="margin-bottom: 20px; font-size: 13px;">Log a new inspection for <strong>${facilityName}</strong>.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label>Activity Type</label>
+                    <select id="addInspActivity">
+                        <option value="Routine Surveillance">Routine Surveillance</option>
+                        <option value="GSDP">GSDP</option>
+                        <option value="GLSI">GLSI</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="addInspDate" value="${new Date().toISOString().split('T')[0]}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Observation / Findings</label>
+                <textarea id="addInspObs" rows="3" placeholder="What did the inspector find?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Action Taken</label>
+                <input type="text" id="addInspAction" placeholder="e.g. facility sealed, products mopped...">
+            </div>
+
+            <div class="controls" style="margin-top: 24px;">
+                <button class="secondary" onclick="document.getElementById('modalContainer').innerHTML=''">Cancel</button>
+                <button class="success" id="saveInspBtn">Save Record</button>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById("saveInspBtn").onclick = async () => {
+        const btn = document.getElementById("saveInspBtn");
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+        try {
+            const newRecord = {
+                facilityId: facilityId,
+                facilityName: facilityName,
+                activityType: document.getElementById("addInspActivity").value,
+                inspectionDate: document.getElementById("addInspDate").value,
+                year: parseInt(document.getElementById("addInspDate").value.substring(0, 4)) || currentYear,
+                observation: document.getElementById("addInspObs").value.trim(),
+                actionTaken: document.getElementById("addInspAction").value.trim(),
+                status: "OPEN",
+                source: "manual_entry"
+            };
+            await addDoc(collection(db, "inspections"), newRecord);
+            modalContainer.innerHTML = '';
+            loadTabContent("inspections", facilityId, facilityName);
+        } catch (e) {
+            console.error(e);
+            alert("Error adding record: " + e.message);
+            btn.disabled = false;
+            btn.textContent = "Save Record";
+        }
+    };
+}
+
+function showFacilityProfile(id) {
+    const fac = allFacilities.find(f => f.id === id);
+    if (fac) {
+        document.getElementById("fpSearch").value = fac.name;
+        renderProfile(document.getElementById("fpProfileArea"), fac);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function showMergeConfirmation(facilities) {
+    const selected = facilities.filter(f => selectedFacilities.has(f.id));
+    if (selected.length < 2) return;
+
+    const modalContainer = document.getElementById("modalContainer");
+    modalContainer.innerHTML = `
+    <div class="modal open">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0;">Merge Duplicates</h3>
+                <span class="fp-modal-close" style="cursor:pointer; font-size:24px;" onclick="document.getElementById('modalContainer').innerHTML=''">&times;</span>
+            </div>
+            <div class="fp-modal-body">
+                <p style="font-size: 14px; color: #4a5568; margin-bottom: 20px;">
+                    Select the <strong>Master Record</strong>. All history from the others will be moved to it, and they will be marked as merged.
+                </p>
+                
+                <div class="fp-merge-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    ${selected.map((f, i) => `
+                        <label style="display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #f7fafc; cursor: pointer; background: ${i === 0 ? '#f0faf0' : 'white'};">
+                            <input type="radio" name="masterFac" value="${f.id}" ${i === 0 ? 'checked' : ''}>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px; color: #2d3748;">${f.name}</div>
+                                <div style="font-size: 12px; color: #718096;">📍 ${f.address || 'No address'}</div>
+                                <div style="font-size: 12px; color: var(--fp-green);">${(f.activityTypes || []).join(', ')}</div>
+                            </div>
+                        </label>
+                    `).join('')}
+                </div>
+
+                <div style="margin-top: 20px; padding: 12px; background: #FFF5F5; border: 1px solid #FED7D7; border-radius: 8px; color: #C53030; font-size: 12px;">
+                    ⚠️ All inspection records, sanctions, and complaints from selected items will be linked to the Master.
+                </div>
+            </div>
+            <div class="controls" style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="secondary" onclick="document.getElementById('modalContainer').innerHTML=''">Cancel</button>
+                <button class="success" id="confirmMergeBtn">Execute Merge</button>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById("confirmMergeBtn").addEventListener("click", async () => {
+        const masterId = document.querySelector('input[name="masterFac"]:checked').value;
+        const others = selected.filter(f => f.id !== masterId);
+        
+        const btn = document.getElementById("confirmMergeBtn");
+        btn.disabled = true;
+        btn.textContent = "Merging...";
+
+        try {
+            await executeFacilityMerge(masterId, others);
+            document.getElementById('modalContainer').innerHTML = '';
+            isMergeMode = false;
+            selectedFacilities.clear();
+            allFacilities = []; // force refresh
+            renderFacilityProfilePage(document.getElementById('app'));
+        } catch (e) {
+            console.error(e);
+            alert("Merge failed: " + e.message);
+            btn.disabled = false;
+            btn.textContent = "Execute Merge";
+        }
+    });
+}
+
+async function executeFacilityMerge(masterFacId, otherFacilities) {
+    const masterData = allFacilities.find(f => f.id === masterFacId || f._docId === masterFacId);
+    if (!masterData) throw new Error("Master facility data not found for ID: " + masterFacId);
+    
+    // 1. Collect all data to merge into master
+    let allActivities = new Set(masterData.activityTypes || []);
+    let allAliases = new Set(masterData.aliases || []);
+    let masterAddr = masterData.address;
+    
+    for (const other of otherFacilities) {
+        (other.activityTypes || []).forEach(at => allActivities.add(at));
+        (other.aliases || []).forEach(al => allAliases.add(al));
+        if (other.name !== masterData.name) allAliases.add(other.name);
+        if (!masterAddr) masterAddr = other.address;
+    }
+
+    const batch = writeBatch(db);
+
+    // 2. Update master record in Firestore
+    batch.set(doc(db, "facilities", masterData._docId), {
+        activityTypes: [...allActivities],
+        aliases: [...allAliases],
+        address: masterAddr || "",
+        totalVisits: (masterData.totalVisits || 0) + otherFacilities.reduce((sum, f) => sum + (f.totalVisits || 0), 0),
+        totalFinesIssued: (masterData.totalFinesIssued || 0) + otherFacilities.reduce((sum, f) => sum + (f.totalFinesIssued || 0), 0),
+        lastUpdated: new Date().toISOString()
+    }, { merge: true });
+
+    // 3. Move sub-collection records (re-link facilityId)
+    const collectionsToLink = ["inspections", "sanctions", "complaints", "facilityReports"];
+    
+    for (const collName of collectionsToLink) {
+        for (const other of otherFacilities) {
+            const oId = other.id || other._docId;
+            // Find records by facilityId OR old name (for safety)
+            const q = query(collection(db, collName), where("facilityId", "==", oId));
+            const snap = await getDocs(q);
+            
+            for (const d of snap.docs) {
+                batch.set(doc(db, collName, d.id), {
+                    facilityId: masterFacId,
+                    facilityName: masterData.name,
+                    _mergedFrom: oId
+                }, { merge: true });
+            }
+        }
+    }
+
+    // 4. Mark duplicates as merged/deleted
+    for (const other of otherFacilities) {
+        batch.set(doc(db, "facilities", other._docId), {
+            status: "MERGED",
+            mergedTo: masterFacId,
+            deleted: true,
+            lastUpdated: new Date().toISOString()
+        }, { merge: true });
+    }
+
+    // Commit the entire group as a single atomic operation
+    await batch.commit();
+}
+
+async function autoMergeFacilities(facilities) {
+    console.log("[MERGE] autoMergeFacilities called with", facilities.length, "facilities");
+    try {
+    const modalContainer = document.getElementById("modalContainer");
+    console.log("[MERGE] modalContainer:", modalContainer);
+    modalContainer.innerHTML = `
+    <div class="modal open">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="text-align:center; padding: 20px;">
+                <div class="fp-spinner" style="margin: 0 auto 16px;"></div>
+                <h4>Scanning for Duplicates...</h4>
+                <p class="small muted">Analyzing ${facilities.length} facility records for name similarity.</p>
+            </div>
+        </div>
+    </div>`;
+
+    // 1. Prepare normalized names and addresses (skip already merged ones)
+    const validFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
+    const entries = validFacilities.filter(f => f.name).map((f, idx) => ({
+        idx, fac: f,
+        norm: normalizeFacilityName(f.name),
+        addr: normalizeAddress(f.address)
+    })).filter(e => e.norm);
+
+    console.log(`[MERGE] Prepared ${entries.length} entries for matching`);
+
+    // 2. Union-Find to merge overlapping groups
+    const parent = entries.map((_, i) => i);
+    function find(x) { return parent[x] === x ? x : (parent[x] = find(parent[x])); }
+    function union(a, b) { parent[find(a)] = find(b); }
+
+    // Layer 1: Exact normalized name match
+    const nameMap = {};
+    entries.forEach((e, i) => {
+        if (nameMap[e.norm] !== undefined) union(i, nameMap[e.norm]);
+        else nameMap[e.norm] = i;
+    });
+
+    // Layer 2: Fuzzy name match (Levenshtein)
+    const normKeys = Object.keys(nameMap);
+    for (let i = 0; i < normKeys.length; i++) {
+        for (let j = i + 1; j < normKeys.length; j++) {
+            if (fuzzyMatch(normKeys[i], normKeys[j])) {
+                union(nameMap[normKeys[i]], nameMap[normKeys[j]]);
+            }
+        }
+    }
+
+    // Removed Layer 3 address matching as it was incorrectly grouping unrelated facilities in plazas.
+    
+    // 3. Build groups from union-find
+    const groupMap = {};
+    entries.forEach((e, i) => {
+        const root = find(i);
+        if (!groupMap[root]) groupMap[root] = [];
+        groupMap[root].push(e.fac);
+    });
+
+    // 4. Filter groups with > 1 members and pick master
+    const duplicateGroups = Object.values(groupMap)
+        .filter(members => members.length > 1)
+        .map(members => {
+            const sorted = [...members].sort((a, b) => {
+                const aAct = (a.activityTypes || []).length;
+                const bAct = (b.activityTypes || []).length;
+                if (bAct !== aAct) return bAct - aAct;
+                if ((b.totalVisits || 0) !== (a.totalVisits || 0)) return (b.totalVisits || 0) - (a.totalVisits || 0);
+                if (b.fileNumber && !a.fileNumber) return 1;
+                if (a.fileNumber && !b.fileNumber) return -1;
+                if (b.address && !a.address) return 1;
+                if (a.address && !b.address) return -1;
+                return 0;
+            });
+            return {
+                norm: normalizeFacilityName(sorted[0].name),
+                master: sorted[0],
+                others: sorted.slice(1)
+            };
+        });
+
+    console.log(`[MERGE] Found ${duplicateGroups.length} duplicate clusters`);
+
+    if (duplicateGroups.length === 0) {
+        modalContainer.innerHTML = `
+        <div class="modal open">
+            <div class="modal-content" style="max-width: 400px; text-align: center;">
+                <div style="font-size: 40px; margin-bottom: 12px;">✅</div>
+                <h4>No Duplicates Found</h4>
+                <p class="small muted">The database appears to be lean and clean!</p>
+                <div class="controls" style="margin-top: 20px;">
+                    <button class="primary" onclick="document.getElementById('modalContainer').innerHTML=''">Great</button>
+                </div>
+            </div>
+        </div>`;
+        return;
+    }
+
+    showAutoMergePreview(duplicateGroups);
+    } catch (err) {
+        console.error("[MERGE] Error in autoMergeFacilities:", err);
+        alert("Auto-consolidate error: " + err.message);
+    }
+}
+
+function showAutoMergePreview(groups) {
+    const modalContainer = document.getElementById("modalContainer");
+    const totalOthers = groups.reduce((sum, g) => sum + g.others.length, 0);
+
+    modalContainer.innerHTML = `
+    <div class="modal open">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin:0;">Auto-Consolidation Preview</h3>
+                <span style="font-size: 13px; background: #EBF8FF; color: #2B6CB0; padding: 4px 8px; border-radius: 4px;">Found ${groups.length} duplicate clusters</span>
+            </div>
+            
+            <p style="font-size: 14px; color: #4a5568;">
+                The system found <strong>${totalOthers}</strong> duplicate records that can be safely merged into their master profiles.
+            </p>
+
+            <div class="fp-auto-merge-list" style="margin-top: 16px; max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead style="background: #f7fafc; position: sticky; top: 0;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #edf2f7;">Master Facility</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #edf2f7;">Duplicates to Merge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${groups.map(g => `
+                            <tr style="border-bottom: 1px solid #f7fafc;">
+                                <td style="padding: 10px; vertical-align: top;">
+                                    <div style="font-weight: 600;">${g.master.name}</div>
+                                    <div style="font-size: 11px; color: #718096;">📍 ${g.master.address || 'No address'}</div>
+                                    <div style="margin-top:4px;">${(g.master.activityTypes || []).map(at => `<span class="fp-tag fp-tag-activity" style="font-size:9px; padding: 1px 4px;">${at}</span>`).join('')}</div>
+                                </td>
+                                <td style="padding: 10px; vertical-align: top; color: #718096;">
+                                    ${g.others.map(o => `
+                                        <div style="margin-bottom: 4px; padding: 4px; background: #FFF5F5; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span>${o.name} <span style="font-size: 10px;">(${(o.activityTypes || []).join(', ')})</span></span>
+                                        </div>
+                                    `).join('')}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; padding: 12px; background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px;">
+                <p style="margin:0; font-size: 12px; color: #744210;">
+                    <strong>Heuristic Merge:</strong> The system will select the profile with the most activity history as the master and link all inspection reports from duplicates to it.
+                </p>
+            </div>
+
+            <div class="controls" style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="secondary" id="cancelAutoMergeBtn" onclick="document.getElementById('modalContainer').innerHTML=''">Cancel</button>
+                <button class="success" id="executeAutoMergeBtn">✨ Merge All Duplicates</button>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById("executeAutoMergeBtn").onclick = async () => {
+        const btn = document.getElementById("executeAutoMergeBtn");
+        const cancelBtn = document.getElementById("cancelAutoMergeBtn");
+        btn.disabled = true;
+        btn.textContent = "Merging... Please wait";
+        
+        let stopMerge = false;
+        cancelBtn.textContent = "Stop Merging";
+        cancelBtn.onclick = () => { stopMerge = true; cancelBtn.textContent = "Stopping..."; cancelBtn.disabled = true; };
+
+        let successCount = 0;
+        try {
+            for (const group of groups) {
+                if (stopMerge) break;
+                const mId = group.master.id || group.master._docId;
+                await executeFacilityMerge(mId, group.others);
+                successCount++;
+                btn.textContent = `Merging... (${successCount}/${groups.length})`;
+            }
+
+            if (stopMerge) {
+                modalContainer.innerHTML = `
+                <div class="modal open">
+                    <div class="modal-content" style="max-width: 400px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">⏸️</div>
+                        <h4 style="color: #d69e2e;">Merge Paused</h4>
+                        <p class="small muted">Successfully merged <strong>${successCount} clusters</strong> before pausing.</p>
+                        <p class="small muted" style="margin-top:8px;">You can safely close the app. When you return, the remaining duplicates will be detected automatically.</p>
+                        <div class="controls" style="margin-top: 24px;">
+                            <button class="primary" onclick="location.reload()">Refresh Directory</button>
+                        </div>
+                    </div>
+                </div>`;
+                return;
+            }
+
+            modalContainer.innerHTML = `
+            <div class="modal open">
+                <div class="modal-content" style="max-width: 400px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
+                    <h4 style="color: var(--fp-green);">Database Consolidated!</h4>
+                    <p class="small muted">Successfully merged <strong>${groups.length} clusters</strong> and cleaned up <strong>${totalOthers} duplicate records</strong>.</p>
+                    <div class="controls" style="margin-top: 24px;">
+                        <button class="primary" onclick="location.reload()">Refresh Directory</button>
+                    </div>
+                </div>
+            </div>`;
+        } catch (e) {
+            console.error(e);
+            alert("Error during batch merge: " + e.message);
+            btn.disabled = false;
+            btn.textContent = "✨ Merge All Duplicates";
+        }
+    };
+}
+
+
+// ==========================================
+// 🔗 AUTO-LINK BRANCHES (SAME ADDRESS)
+// ==========================================
+
+async function autoLinkFacilities(facilities) {
+    console.log("[LINK] autoLinkFacilities called");
+    try {
+        const modalContainer = document.getElementById("modalContainer");
+        modalContainer.innerHTML = `
+        <div class="modal open">
+            <div class="modal-content" style="max-width: 500px;">
+                <div style="text-align:center; padding: 20px;">
+                    <div class="fp-spinner" style="margin: 0 auto 16px;"></div>
+                    <h4>Scanning for Co-located Branches...</h4>
+                    <p class="small muted">Finding distinct businesses sharing the exact same address.</p>
+                </div>
+            </div>
+        </div>`;
+
+        // 1. Group by exact normalized address
+        const addrMap = {};
+        facilities.forEach(f => {
+            if (f.status === "MERGED" || f.deleted) return;
+            const addr = normalizeAddress(f.address);
+            if (!addr || addr.length < 10) return; // ignore short/blank addresses
+            if (!addrMap[addr]) addrMap[addr] = [];
+            addrMap[addr].push(f);
+        });
+
+        const linkGroups = [];
+        
+        Object.values(addrMap).forEach(members => {
+            if (members.length <= 1) return;
+            
+            // Inside this shared address, group by fuzzy name to separate ACTUAL branches from DUPLICATE entries
+            const nameGroups = [];
+            members.forEach(f => {
+                const norm = normalizeFacilityName(f.name);
+                let found = false;
+                for (const ng of nameGroups) {
+                    if (fuzzyMatch(ng.norm, norm)) {
+                        ng.facilities.push(f);
+                        found = true; break;
+                    }
+                }
+                if (!found) nameGroups.push({ norm, facilities: [f] });
+            });
+            
+            // If there's only 1 distinct name group at this address, they are just typos of each other. They should be Merged, not Linked.
+            if (nameGroups.length <= 1) return;
+            
+            // Sort name groups by activity footprint to pick the Parent Head Store
+            nameGroups.sort((a, b) => {
+                const aScore = a.facilities.reduce((sum, f) => sum + (f.totalVisits || 0) + (f.activityTypes || []).length, 0);
+                const bScore = b.facilities.reduce((sum, f) => sum + (f.totalVisits || 0) + (f.activityTypes || []).length, 0);
+                return bScore - aScore;
+            });
+            
+            const parentGroup = nameGroups[0];
+            const branchGroups = nameGroups.slice(1);
+            
+            // Pick master of parent Group
+            const parentMaster = parentGroup.facilities.sort((a, b) => ((b.totalVisits || 0) - (a.totalVisits || 0)))[0];
+            const branchMasters = branchGroups.map(bg => bg.facilities.sort((a,b) => ((b.totalVisits || 0) - (a.totalVisits || 0)))[0]);
+            
+            // Ignore if parent already has branches mapped exactly (prevent re-running unecessarily)
+            // Or if branches are already marked as branches
+            const validBranches = branchMasters.filter(b => !b.isBranch);
+            
+            if (validBranches.length > 0) {
+                linkGroups.push({
+                    parent: parentMaster,
+                    branches: validBranches,
+                    address: parentMaster.address
+                });
+            }
+        });
+
+        if (linkGroups.length === 0) {
+            modalContainer.innerHTML = `
+            <div class="modal open">
+                <div class="modal-content" style="max-width: 400px; text-align: center;">
+                    <div style="font-size: 40px; margin-bottom: 12px;">✅</div>
+                    <h4>No Co-located Branches Found</h4>
+                    <p class="small muted">No distinct facilities were found sharing identical addresses.</p>
+                    <div class="controls" style="margin-top: 20px;">
+                        <button class="primary" onclick="document.getElementById('modalContainer').innerHTML=''">Great</button>
+                    </div>
+                </div>
+            </div>`;
+            return;
+        }
+
+        showAutoLinkPreview(linkGroups);
+    } catch (err) {
+        console.error("[LINK] Error:", err);
+        alert("Link error: " + err.message);
+    }
+}
+
+function showAutoLinkPreview(groups) {
+    const modalContainer = document.getElementById("modalContainer");
+    const totalBranches = groups.reduce((sum, g) => sum + g.branches.length, 0);
+
+    modalContainer.innerHTML = `
+    <div class="modal open">
+        <div class="modal-content" style="max-width: 650px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin:0;">Auto-Link Branches Preview</h3>
+                <span style="font-size: 13px; background: #EBF8FF; color: #2B6CB0; padding: 4px 8px; border-radius: 4px;">Found ${groups.length} locations</span>
+            </div>
+            
+            <p style="font-size: 14px; color: #4a5568;">
+                The system found <strong>${totalBranches}</strong> facilities operating at the exact same addresses as other major profiles. They will be linked under the <strong>Branches</strong> tab of the most active facility at that location.
+            </p>
+
+            <div class="fp-auto-merge-list" style="margin-top: 16px; max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead style="background: #f7fafc; position: sticky; top: 0;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #edf2f7; width:50%;">Parent (Head Store)</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #edf2f7;">Branches to Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${groups.map(g => `
+                            <tr style="border-bottom: 1px solid #f7fafc;">
+                                <td style="padding: 10px; vertical-align: top; background: #f0fff4; border-right: 1px solid #e2e8f0;">
+                                    <div style="font-weight: 600; color: #276749;">${g.parent.name}</div>
+                                    <div style="font-size: 11px; color: #718096; margin-top: 4px;">📍 ${g.address}</div>
+                                </td>
+                                <td style="padding: 10px; vertical-align: top; color: #718096;">
+                                    ${g.branches.map(b => `
+                                        <div style="margin-bottom: 6px; padding: 6px; background: #f7fafc; border: 1px dashed #cbd5e0; border-radius: 4px;">
+                                            <div style="font-weight: 500; color: #4a5568;">↳ ${b.name}</div>
+                                            <div style="font-size: 10px; margin-top: 4px;">
+                                                ${(b.activityTypes || []).join(', ')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="controls" style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="secondary" onclick="document.getElementById('modalContainer').innerHTML=''">Cancel</button>
+                <button class="success" id="executeAutoLinkBtn">🔗 Link All Branches</button>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById("executeAutoLinkBtn").onclick = async () => {
+        const btn = document.getElementById("executeAutoLinkBtn");
+        btn.disabled = true;
+        btn.textContent = "Linking... Please wait";
+
+        let successCount = 0;
+        try {
+            for (const group of groups) {
+                const parentId = group.parent.id || group.parent._docId;
+                await executeFacilityLink(parentId, group.branches);
+                successCount++;
+                btn.textContent = `Linking... (${successCount}/${groups.length})`;
+            }
+
+            modalContainer.innerHTML = `
+            <div class="modal open">
+                <div class="modal-content" style="max-width: 400px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">🏢</div>
+                    <h4 style="color: var(--fp-green);">Branches Linked!</h4>
+                    <p class="small muted">Successfully established relationships for <strong>${totalBranches} branches</strong> across <strong>${groups.length} locations</strong>.</p>
+                    <div class="controls" style="margin-top: 24px;">
+                        <button class="primary" onclick="location.reload()">Refresh Directory</button>
+                    </div>
+                </div>
+            </div>`;
+        } catch (e) {
+            console.error(e);
+            alert("Error during branch linking: " + e.message);
+            btn.disabled = false;
+            btn.textContent = "🔗 Link All Branches";
+        }
+    };
+}
+
+async function executeFacilityLink(parentFacId, branchFacilities) {
+    const parentData = allFacilities.find(f => f.id === parentFacId || f._docId === parentFacId);
+    if (!parentData) throw new Error("Parent not found");
+    
+    const batch = writeBatch(db);
+    
+    const existingBranches = new Set(parentData.branches || []);
+    branchFacilities.forEach(b => existingBranches.add(b.id || b._docId));
+    
+    // Update parent
+    batch.set(doc(db, "facilities", parentData._docId), {
+        branches: [...existingBranches],
+        lastUpdated: new Date().toISOString()
+    }, { merge: true });
+    
+    // Update branches
+    for (const b of branchFacilities) {
+        batch.set(doc(db, "facilities", b._docId), {
+            isBranch: true,
+            parentFacilityId: parentFacId,
+            parentFacilityName: parentData.name,
+            lastUpdated: new Date().toISOString()
+        }, { merge: true });
+    }
+    
+    await batch.commit();
+}
+
+async function renderBranchesTab(container, facId, facName) {
+    container.innerHTML = `<div class="fp-spinner" style="margin:40px auto;"></div>`;
+    
+    const fac = allFacilities.find(f => f.id === facId || f._docId === facId);
+    if (!fac) return;
+    
+    let html = `<div style="padding: 20px;">
+        <h4 style="margin-top:0; color: #2d3748; font-size: 18px;">Registered Branches & Co-located Stores</h4>
+        <p class="small muted" style="margin-bottom: 24px; font-size: 13px;">Facilities operating at the same address or officially registered as branches under <strong>${facName}</strong>.</p>
+    `;
+    
+    const branches = fac.branches || [];
+    
+    if (branches.length === 0 && !fac.isBranch) {
+        html += `
+        <div style="text-align: center; padding: 40px 20px; background: #f7fafc; border-radius: 8px; border: 1px dashed #e2e8f0;">
+            <div style="font-size: 32px; margin-bottom: 12px; color: #cbd5e0;">🏢</div>
+            <h5 style="color: #4a5568; margin: 0 0 8px;">No Branches Found</h5>
+            <p class="muted small" style="margin: 0;">This facility has no registered branches or head office links.</p>
+        </div>`;
+    } else {
+        html += `<div style="display: flex; flex-direction: column; gap: 12px;">`;
+        
+        // Emphasize the Parent Head Store if this is a branch
+        if (fac.isBranch && fac.parentFacilityId) {
+            const pf = allFacilities.find(f => f.id === fac.parentFacilityId || f._docId === fac.parentFacilityId);
+            if (pf) {
+                html += `
+                <div style="padding: 16px; border: 2px solid #319795; border-radius: 8px; background: #e6fffa; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(49, 151, 149, 0.1);">
+                    <div>
+                        <div style="font-size: 11px; font-weight: 800; color: #319795; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em;">★ Head Store / Parent Facility</div>
+                        <div style="font-weight: 700; font-size: 16px; color: #234e52; margin-bottom: 4px;">${pf.name}</div>
+                        <div style="font-size: 13px; color: #285e61;">📍 ${pf.address}</div>
+                    </div>
+                </div>`;
+            }
+        }
+        
+        // List Sub-branches
+        if (branches.length > 0) {
+            html += `<h5 style="margin: 16px 0 8px; color: #4a5568; font-size: 12px; text-transform: uppercase;">Sub-Branches / Vendors (${branches.length})</h5>`;
+            
+            for (const bId of branches) {
+                const b = allFacilities.find(f => f.id === bId || f._docId === bId);
+                if (!b) continue;
+                
+                html += `
+                <div style="padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 15px; color: #2d3748; margin-bottom: 4px;">↳ ${b.name}</div>
+                        <div style="font-size: 12px; color: #718096; display: flex; gap: 12px;">
+                            <span>📍 ${b.address}</span>
+                            <span>📦 Visits: ${b.totalVisits || 0}</span>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            ${(b.activityTypes || []).map(at => `<span class="fp-tag fp-tag-activity" style="font-size: 10px; padding: 2px 6px;">${at}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+            }
+        }
+        
+        html += `</div>`;
+    }
+    
+    html += `</div>`;
+    container.innerHTML = html;
 }

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PMS Lagos — Facility Merge Engine</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1a202c; background: #f7fafc; }
+        h1 { color: #2e7d32; margin-bottom: 8px; }
+        .subtitle { color: #718096; margin-bottom: 24px; }
+        .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+        .stat { background: #fff; padding: 16px 24px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; flex: 1; min-width: 100px; }
+        .stat strong { display: block; font-size: 28px; color: #2e7d32; }
+        .stat small { color: #718096; font-size: 12px; }
+        .stat.danger strong { color: #c53030; }
+        .controls { display: flex; gap: 12px; margin: 20px 0; }
+        button { background: #2e7d32; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,125,50,0.3); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        button.danger { background: #c53030; }
+        button.outline { background: transparent; color: #4a5568; border: 1px solid #cbd5e0; }
+        button.outline:hover { background: #f7fafc; }
+        #log { background: #1a202c; color: #68d391; padding: 16px; border-radius: 10px; margin-top: 16px; max-height: 500px; overflow-y: auto; font-family: 'SF Mono', Menlo, monospace; font-size: 13px; white-space: pre-wrap; line-height: 1.6; }
+        .preview-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .preview-table th { background: #2d3748; color: #e2e8f0; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .preview-table td { padding: 10px 12px; border-bottom: 1px solid #f7fafc; vertical-align: top; }
+        .preview-table tr:hover { background: #f0fff4; }
+        .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-right: 4px; }
+        .tag-green { background: #c6f6d5; color: #22543d; }
+        .tag-red { background: #fed7d7; color: #9b2c2c; }
+        .tag-blue { background: #bee3f8; color: #2a4365; }
+        .master-label { background: #c6f6d5; color: #22543d; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        .dupe-name { color: #718096; font-size: 12px; padding: 2px 0; }
+        #previewArea { max-height: 400px; overflow-y: auto; margin: 16px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔀 Facility Merge Engine</h1>
+    <p class="subtitle">Scans your Firestore database, finds facilities with the same name across different activities (GSDP, Routine, GLSI, etc.), and merges them into one canonical profile with unified history.</p>
+
+    <div class="stats">
+        <div class="stat"><strong id="totalCount">—</strong><small>Active Facilities</small></div>
+        <div class="stat danger"><strong id="dupeCount">—</strong><small>Duplicate Clusters</small></div>
+        <div class="stat danger"><strong id="redundantCount">—</strong><small>Redundant Records</small></div>
+        <div class="stat"><strong id="relinkedCount">—</strong><small>Records Re-linked</small></div>
+    </div>
+
+    <div class="controls">
+        <button id="scanBtn">1. Scan for Duplicates</button>
+        <button id="mergeBtn" class="danger" style="display:none;" disabled>2. Execute Batch Merge</button>
+        <button id="stopBtn" class="danger" style="display:none;">Stop</button>
+    </div>
+
+    <div id="previewArea"></div>
+    <div id="log"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKtEkK9rY7NLFLRjqexRjeUL2jj7tC6tY",
+            authDomain: "enilama-system-app.firebaseapp.com",
+            projectId: "enilama-system-app",
+            storageBucket: "enilama-system-app.firebasestorage.app",
+            messagingSenderId: "180395774893",
+            appId: "1:180395774893:web:7bd017f2b1478f22264724",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const logEl = document.getElementById('log');
+        const scanBtn = document.getElementById('scanBtn');
+        const mergeBtn = document.getElementById('mergeBtn');
+        const previewArea = document.getElementById('previewArea');
+        const stopBtn = document.getElementById('stopBtn'); // Get the new stop button
+
+        function log(msg) {
+            logEl.textContent += msg + '\n';
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // ─── Name Normalization (mirrors facility-utils.js) ─────────────
+        function normalizeFacilityName(name) {
+            if (!name) return "";
+            let n = name.trim().toUpperCase();
+            const noise = [
+                ' LIMITED', ' LTD', ' PLC', ' NIG', ' NIGERIA',
+                ' ENTERPRISES', ' ENTERPRISE', ' ENT', ' COMPANY', ' CO',
+                ' INTERNATIONAL', ' INTL', ' INCORPORATED', ' INC',
+                ' PHARMACY', ' PHARMACARE', ' PHARMACEUTICAL', ' PHARMACEUTICALS', ' PHARM',
+                ' CHEMIST', ' CHEMISTS', ' DRUGSTORE', ' DRUGSTORES',
+                ' VENTURES', ' VENTURE', ' GLOBAL', ' SERVICES', ' SERVICE',
+                ' STORES', ' STORE', ' SUPERMARKET', ' SUPERSTORES', ' SUPERSTORE',
+                ' INDUSTRIES', ' INDUSTRY', ' TRADING', ' INVESTMENT', ' INVESTMENTS',
+                ' HEALTHCARE', ' HEALTH CARE', ' HEALTH', ' MEDICAL', ' MEDICALS',
+                ' DISTRIBUTOR', ' DISTRIBUTORS', ' DISTRIBUTION', ' LOGISTICS',
+                ' AND SONS', ' & SONS', ' AND CO', ' & CO',
+            ];
+            const sorted = [...noise].sort((a, b) => b.length - a.length);
+            for (const suffix of sorted) {
+                if (n.endsWith(suffix)) n = n.slice(0, -suffix.length).trim();
+            }
+            return n.replace(/[^A-Z0-9]/g, "");
+        }
+
+        function normalizeAddress(addr) {
+            if (!addr) return "";
+            return addr.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 30);
+        }
+
+        function levenshtein(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    const cost = b[i - 1] === a[j - 1] ? 0 : 1;
+                    matrix[i][j] = Math.min(matrix[i-1][j]+1, matrix[i][j-1]+1, matrix[i-1][j-1]+cost);
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function fuzzyMatch(normA, normB) {
+            if (!normA || !normB) return false;
+            if (normA === normB) return true;
+            if (normA.startsWith(normB) || normB.startsWith(normA)) return true;
+            const maxLen = Math.max(normA.length, normB.length);
+            if (maxLen < 4) return normA === normB;
+            const dist = levenshtein(normA, normB);
+            const threshold = maxLen <= 8 ? 1 : maxLen <= 15 ? 2 : 3;
+            return dist <= threshold;
+        }
+
+        let allFacilities = [];
+        let duplicateClusters = [];
+
+        // ─── Phase 1: Scan ──────────────────────────────────────────────
+        async function scanForDuplicates() {
+            scanBtn.disabled = true;
+            scanBtn.textContent = "Scanning...";
+            log("📥 Loading all facilities from Firestore...");
+
+            const snap = await getDocs(collection(db, "facilities"));
+            allFacilities = [];
+            snap.forEach(d => {
+                const data = d.data();
+                data._docId = d.id;
+                if (data.status === "MERGED" || data.deleted === true) return;
+                allFacilities.push(data);
+            });
+
+            document.getElementById("totalCount").textContent = allFacilities.length;
+            log(`  Found ${allFacilities.length} active facilities.`);
+
+            // 3-Layer matching with Union-Find
+            log("\n🔍 Running 3-layer duplicate detection...");
+            log("  Layer 1: Exact normalized name match");
+            log("  Layer 2: Fuzzy name match (Levenshtein distance)");
+            log("  Layer 3: Address-based match");
+
+            const entries = allFacilities.filter(f => f.name).map((f, idx) => ({
+                idx, fac: f,
+                norm: normalizeFacilityName(f.name),
+                addr: normalizeAddress(f.address)
+            })).filter(e => e.norm);
+
+            // Union-Find
+            const parent = entries.map((_, i) => i);
+            function find(x) { return parent[x] === x ? x : (parent[x] = find(parent[x])); }
+            function union(a, b) { parent[find(a)] = find(b); }
+
+            // Layer 1: Exact name match
+            const nameMap = {};
+            entries.forEach((e, i) => {
+                if (nameMap[e.norm] !== undefined) union(i, nameMap[e.norm]);
+                else nameMap[e.norm] = i;
+            });
+
+            // Layer 2: Fuzzy name match
+            const normKeys = Object.keys(nameMap);
+            let fuzzyHits = 0;
+            for (let i = 0; i < normKeys.length; i++) {
+                for (let j = i + 1; j < normKeys.length; j++) {
+                    if (fuzzyMatch(normKeys[i], normKeys[j])) {
+                        union(nameMap[normKeys[i]], nameMap[normKeys[j]]);
+                        fuzzyHits++;
+                    }
+                }
+            }
+            log(`  → Fuzzy matches found: ${fuzzyHits}`);
+
+            // Build groups
+            const groupMap = {};
+            entries.forEach((e, i) => {
+                const root = find(i);
+                if (!groupMap[root]) groupMap[root] = [];
+                groupMap[root].push(e.fac);
+            });
+
+            duplicateClusters = Object.values(groupMap)
+                .filter(members => members.length > 1)
+                .map(members => {
+                    const sorted = [...members].sort((a, b) => {
+                        const aAct = (a.activityTypes || []).length;
+                        const bAct = (b.activityTypes || []).length;
+                        if (bAct !== aAct) return bAct - aAct;
+                        if ((b.totalVisits || 0) !== (a.totalVisits || 0)) return (b.totalVisits || 0) - (a.totalVisits || 0);
+                        if (b.fileNumber && !a.fileNumber) return 1;
+                        if (a.fileNumber && !b.fileNumber) return -1;
+                        if (b.address && !a.address) return 1;
+                        if (a.address && !b.address) return -1;
+                        return 0;
+                    });
+                    return { norm: normalizeFacilityName(sorted[0].name), master: sorted[0], others: sorted.slice(1) };
+                });
+
+            const totalDupes = duplicateClusters.reduce((s, g) => s + g.others.length, 0);
+            document.getElementById("dupeCount").textContent = duplicateClusters.length;
+            document.getElementById("redundantCount").textContent = totalDupes;
+
+            log(`\n  Found ${duplicateClusters.length} duplicate clusters containing ${totalDupes} redundant records.\n`);
+
+            if (duplicateClusters.length === 0) {
+                log("✅ No duplicates found — database is already clean!");
+                scanBtn.textContent = "✅ Clean";
+                previewArea.innerHTML = '<p style="text-align:center; padding:20px; color:#2e7d32; font-weight:600;">No duplicates found!</p>';
+                return;
+            }
+
+            // Render preview table
+            previewArea.innerHTML = `
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Master (Surviving Record)</th>
+                            <th>Duplicates to Absorb</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${duplicateClusters.map(g => `
+                            <tr>
+                                <td>
+                                    <div style="font-weight:600;">${g.master.name}</div>
+                                    <div style="font-size:11px; color:#718096; margin-top:2px;">📍 ${g.master.address || 'No address'}</div>
+                                    <div style="margin-top:4px;">${(g.master.activityTypes || []).map(at => `<span class="tag tag-green">${at}</span>`).join('')}</div>
+                                    <div style="font-size:10px; color:#a0aec0; margin-top:2px;">Visits: ${g.master.totalVisits || 0} | Fines: ₦${(g.master.totalFinesIssued || 0).toLocaleString()}</div>
+                                </td>
+                                <td>
+                                    ${g.others.map(o => `
+                                        <div class="dupe-name" style="padding:4px 6px; background:#fff5f5; border-radius:4px; margin-bottom:4px;">
+                                            ${o.name}
+                                            <div>${(o.activityTypes || []).map(at => `<span class="tag tag-red">${at}</span>`).join('')}</div>
+                                        </div>
+                                    `).join('')}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+
+            for (const g of duplicateClusters) {
+                const masterTypes = (g.master.activityTypes || []).join(", ") || "unknown";
+                log(`  ★ MASTER: "${g.master.name}" [${masterTypes}] (${g.master.totalVisits || 0} visits)`);
+                for (const o of g.others) {
+                    log(`    ← ABSORB: "${o.name}" [${(o.activityTypes || []).join(", ")}]`);
+                }
+            }
+
+            scanBtn.textContent = "Re-scan";
+            scanBtn.disabled = false;
+            mergeBtn.style.display = "inline-flex";
+            mergeBtn.disabled = false;
+        }
+
+        // ─── Phase 2: Execute Merge ─────────────────────────────────────
+        let stopMerge = false;
+        async function executeMerge() {
+            mergeBtn.disabled = true;
+            mergeBtn.textContent = "Merging...";
+            
+            stopBtn.style.display = "inline-flex";
+            stopBtn.textContent = "Stop";
+            stopBtn.disabled = false;
+            stopMerge = false;
+            
+            stopBtn.onclick = () => { 
+                stopMerge = true; 
+                stopBtn.textContent = "Stopping..."; 
+                stopBtn.disabled = true; 
+            };
+
+            const LINKED_COLLECTIONS = ["inspections", "sanctions", "complaints", "documents", "file_registry", "facilityReports"];
+            let mergedCount = 0;
+            let relinkedRecords = 0;
+
+            log("\n" + "═".repeat(50));
+            log("🔧 EXECUTING MERGE...");
+            log("═".repeat(50));
+
+            for (const group of duplicateClusters) {
+                if (stopMerge) break;
+                
+                const master = group.master;
+                const others = group.others;
+
+                // Aggregate all metadata into master
+                let allActivities = new Set(master.activityTypes || []);
+                let allAliases = new Set(master.aliases || []);
+                let addr = master.address || "";
+                let contact = master.contactPerson || "";
+                let phone = master.phone || "";
+                let email = master.email || "";
+                let fileNum = master.fileNumber || "";
+                let zone = master.zone || "";
+                let lga = master.lga || "";
+                let visits = master.totalVisits || 0;
+                let finesIssued = master.totalFinesIssued || 0;
+                let finesPaid = master.totalFinesPaid || 0;
+                let outstanding = master.outstandingFines || 0;
+                let lastVisit = master.lastVisitDate || "";
+
+                for (const o of others) {
+                    (o.activityTypes || []).forEach(at => allActivities.add(at));
+                    (o.aliases || []).forEach(al => allAliases.add(al));
+                    if (o.name !== master.name) allAliases.add(o.name);
+                    if (!addr && o.address) addr = o.address;
+                    if (!contact && o.contactPerson) contact = o.contactPerson;
+                    if (!phone && o.phone) phone = o.phone;
+                    if (!email && o.email) email = o.email;
+                    if (!fileNum && o.fileNumber) fileNum = o.fileNumber;
+                    if (!zone && o.zone) zone = o.zone;
+                    if (!lga && o.lga) lga = o.lga;
+                    visits += o.totalVisits || 0;
+                    finesIssued += o.totalFinesIssued || 0;
+                    finesPaid += o.totalFinesPaid || 0;
+                    outstanding += o.outstandingFines || 0;
+                    if (o.lastVisitDate && o.lastVisitDate > lastVisit) lastVisit = o.lastVisitDate;
+                }
+
+                const batch = writeBatch(db);
+
+                // Update master record
+                batch.set(doc(db, "facilities", master._docId), {
+                    activityTypes: [...allActivities],
+                    aliases: [...allAliases],
+                    address: addr, contactPerson: contact, phone, email,
+                    fileNumber: fileNum, zone, lga,
+                    totalVisits: visits, totalFinesIssued: finesIssued,
+                    totalFinesPaid: finesPaid, outstandingFines: outstanding,
+                    lastVisitDate: lastVisit,
+                    lastUpdated: new Date().toISOString()
+                }, { merge: true });
+
+                // Re-link sub-collection records
+                for (const collName of LINKED_COLLECTIONS) {
+                    for (const o of others) {
+                        try {
+                            const oId = o.id || o._docId;
+                            const mId = master.id || master._docId;
+                            const q = query(collection(db, collName), where("facilityId", "==", oId));
+                            const snap = await getDocs(q);
+                            for (const d of snap.docs) {
+                                batch.set(doc(db, collName, d.id), {
+                                    facilityId: mId,
+                                    facilityName: master.name,
+                                    _mergedFrom: oId
+                                }, { merge: true });
+                                relinkedRecords++;
+                            }
+                        } catch (e) { /* collection might not exist */ }
+                    }
+                }
+
+                // Mark duplicates as MERGED
+                for (const o of others) {
+                    const mId = master.id || master._docId;
+                    batch.set(doc(db, "facilities", o._docId), {
+                        status: "MERGED", mergedTo: mId, deleted: true,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
+                }
+
+                // Commit the entire group as a single atomic operation
+                await batch.commit();
+
+                mergedCount++;
+                mergeBtn.textContent = `Merging... (${mergedCount}/${duplicateClusters.length})`;
+                log(`  ✅ [${mergedCount}/${duplicateClusters.length}] "${master.name}" ← ${others.length} duplicates`);
+            }
+            
+            if (stopMerge) {
+                log(`\n⏸️ MERGE PAUSED. Successfully merged ${mergedCount} clusters before stopping.`);
+                stopBtn.style.display = "none";
+                scanBtn.disabled = false;
+                scanBtn.textContent = "Re-scan Remaining";
+                return;
+            }
+
+            document.getElementById("relinkedCount").textContent = relinkedRecords;
+            log("\n" + "═".repeat(50));
+            log("🚀 MERGE COMPLETE!");
+            log(`  📊 Clusters merged:     ${mergedCount}`);
+            log(`  🗑️  Duplicates removed:  ${duplicateClusters.reduce((s, g) => s + g.others.length, 0)}`);
+            log(`  🔗 Records re-linked:   ${relinkedRecords}`);
+            log("═".repeat(50));
+
+            mergeBtn.textContent = "✅ Merge Complete";
+            mergeBtn.style.background = "#2e7d32";
+        }
+
+        // ─── Boot ───────────────────────────────────────────────────────
+        log("🔌 Connected to Firestore. Ready to scan.\n");
+        scanBtn.textContent = "🔍 Scan for Duplicates";
+        scanBtn.disabled = false;
+        scanBtn.addEventListener("click", scanForDuplicates);
+        mergeBtn.addEventListener("click", executeMerge);
+    </script>
+</body>
+</html>

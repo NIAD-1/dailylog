@@ -1,4 +1,5 @@
 import { db, collection, getDocs, addDoc, doc, setDoc, query, where } from "./db.js";
+import { resolveFacility } from "./facility-utils.js";
 
 /* ─── Smart Loggers Module ───────────────────────────────────────────────── */
 /* Standalone forms for logging complaints and sanctions with intelligent
@@ -111,35 +112,22 @@ function highlightMatch(text, query) {
     return text.slice(0, idx) + `<mark>${text.slice(idx, idx + query.length)}</mark>` + text.slice(idx + query.length);
 }
 
-async function resolveOrCreateFacility(nameInputId, hiddenId, addressInputId) {
+// Helper from utility
+async function resolveOrCreateFacilityWrapper(nameInputId, hiddenId, addressInputId) {
     const hidden = document.getElementById(hiddenId);
     const nameInput = document.getElementById(nameInputId);
     const name = nameInput.value.trim();
+    const address = addressInputId ? (document.getElementById(addressInputId)?.value?.trim() || "") : "";
 
     if (!name) throw new Error("Facility name is required");
 
-    // Existing facility matched
+    // Existing facility matched via Picker
     if (hidden.value && hidden.value !== "__NEW__") {
         return { facilityId: hidden.value, facilityName: name, docId: hidden.dataset.docId, isNew: false };
     }
 
-    // Create new facility
-    const address = addressInputId ? (document.getElementById(addressInputId)?.value?.trim() || "") : "";
-    const newFacility = {
-        id: name.toUpperCase().replace(/[^A-Z0-9]/g, "_") + "_" + Date.now(),
-        name: name,
-        address: address,
-        status: "Active",
-        activityTypes: [],
-        totalVisits: 0,
-        totalFinesIssued: 0,
-        outstandingFines: 0,
-        source: "smart_logger"
-    };
-
-    const docRef = await addDoc(collection(db, "facilities"), newFacility);
-    invalidateCache();
-    return { facilityId: newFacility.id, facilityName: name, docId: docRef.id, isNew: true };
+    // Fallback or New: Use centralized resolver
+    return await resolveFacility(name, address, "smart_logger");
 }
 
 /* ─── Consumer Complaint Page ────────────────────────────────────────────── */
@@ -275,13 +263,13 @@ async function handleSubmitComplaint() {
         // Resolve or create outlet facility
         let outletInfo = { facilityId: "", facilityName: "", isNew: false };
         if (document.getElementById("slOutletName").value.trim()) {
-            outletInfo = await resolveOrCreateFacility("slOutletName", "slOutletId", "slOutletAddress");
+            outletInfo = await resolveOrCreateFacilityWrapper("slOutletName", "slOutletId", "slOutletAddress");
         }
 
         // Resolve or create manufacturer
         let mfgInfo = { facilityId: "", facilityName: "", isNew: false };
         if (document.getElementById("slMfgName").value.trim()) {
-            mfgInfo = await resolveOrCreateFacility("slMfgName", "slMfgId", null);
+            mfgInfo = await resolveOrCreateFacilityWrapper("slMfgName", "slMfgId", null);
         }
 
         const complaint = {
@@ -415,7 +403,7 @@ async function handleSubmitSanction() {
     text.textContent = "Saving...";
 
     try {
-        const facInfo = await resolveOrCreateFacility("slSanctionFacility", "slSanctionFacId", "slSanctionFacAddr");
+        const facInfo = await resolveOrCreateFacilityWrapper("slSanctionFacility", "slSanctionFacId", "slSanctionFacAddr");
 
         const sanction = {
             facilityId: facInfo.facilityId,

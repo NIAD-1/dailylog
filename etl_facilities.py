@@ -177,15 +177,22 @@ class FacilityRegistry:
     def _match_key(self, name):
         """Generate a matching key for fuzzy dedup."""
         key = normalize_name(name)
-        # Remove common business suffixes
-        for suffix in [' LIMITED', ' LTD', ' PLC', ' NIG', ' NIGERIA',
-                       ' ENTERPRISES', ' ENTERPRISE', ' COMPANY',
-                       ' INTERNATIONAL', ' INTL', ' INCORPORATED',
-                       ' PHARMACY', ' PHARMACEUTICAL', ' PHARMACEUTICALS',
-                       ' PHARM']:
+        # Remove common business suffixes and noise
+        noise = [
+            ' LIMITED', ' LTD', ' PLC', ' NIG', ' NIGERIA',
+            ' ENTERPRISES', ' ENTERPRISE', ' ENT', ' COMPANY', ' CO',
+            ' INTERNATIONAL', ' INTL', ' INCORPORATED', ' INC',
+            ' PHARMACY', ' PHARMACEUTICAL', ' PHARMACEUTICALS', ' PHARM',
+            ' VENTURES', ' VENTURE', ' GLOBAL', ' SERVICES', ' SERVICE',
+            ' STORES', ' STORE', ' SUPERMARKET', ' SUPERSTORES'
+        ]
+        # Sort by length descending to replace longer ones first
+        for suffix in sorted(noise, key=len, reverse=True):
             key = key.replace(suffix, '')
-        key = key.strip()
-        return key
+        
+        # Remove non-alphanumeric for very strict core matching
+        key = re.sub(r'[^A-Z0-9]', '', key)
+        return key.strip()
 
     def register(self, name, address="", contact="", phone="", email="",
                  activity_type="", file_number="", zone="", lga="",
@@ -196,21 +203,36 @@ class FacilityRegistry:
             return None
 
         match_key = self._match_key(name)
+        addr_norm = normalize_address(address)
 
         # Check for existing match
         existing_key = None
         for existing_norm, facility in self.facilities.items():
+            # 1. Exact Name Match
             if existing_norm == norm:
                 existing_key = existing_norm
                 break
+            
+            # 2. Match Key (Name without suffixes)
             existing_match = self._match_key(facility["name"])
             if existing_match == match_key and match_key:
                 existing_key = existing_norm
                 self.merge_log.append({
-                    "action": "merged",
+                    "action": "merged_by_name",
                     "incoming": name,
                     "matched_to": facility["name"],
                     "match_key": match_key
+                })
+                break
+                
+            # 3. Address Match (if address is substantial)
+            if addr_norm and len(addr_norm) > 15 and facility["address"] == addr_norm:
+                existing_key = existing_norm
+                self.merge_log.append({
+                    "action": "merged_by_address",
+                    "incoming": name,
+                    "matched_to": facility["name"],
+                    "address": addr_norm
                 })
                 break
 
