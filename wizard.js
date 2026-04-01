@@ -1,6 +1,6 @@
 import { db, collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, where } from "./db.js";
 import { resolveFacility } from "./facility-utils.js";
-import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./ui.js";
+import { clearRoot, addChoicesInstance, getChoicesInstance, removeChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
 const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran", "Others"];
