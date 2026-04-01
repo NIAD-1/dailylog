@@ -11,6 +11,8 @@ export const clearRoot = (root) => {
 };
 
 export const addChoicesInstance = (key, instance) => {
+    // If instance with this key already exists, remove it first to avoid stale references
+    activeChoicesInstances = activeChoicesInstances.filter(item => item.key !== key);
     activeChoicesInstances.push({ key, instance });
 };
 

@@ -234,7 +234,8 @@ function bindStep_SharedInspectors(root) {
         const selected = choices.getValue(true).filter(name => name !== 'Others');
         const otherText = otherInput.value.trim();
         const fromOther = otherText ? otherText.split(',').map(n => n.trim()).filter(Boolean) : [];
-        const finalNames = [...selected, ...fromOther];
+        // Use Set to deduplicate names
+        const finalNames = [...new Set([...selected, ...fromOther])];
 
         if (finalNames.length === 0) { alert('Please select at least one inspector.'); return; }
 
@@ -261,12 +262,18 @@ function bindStep_FacilityForm(root) {
         addChoicesInstance('inspectorNameSelect', choices);
 
         const otherInspectorInput = container.querySelector('textarea[name="inspectorNameOther"]');
-        inspectorSelect.addEventListener('change', () => {
-            const selected = choices.getValue(true);
-            otherInspectorInput.style.display = selected.includes('Others') ? 'block' : 'none';
-            if (!selected.includes('Others')) otherInspectorInput.value = '';
-        });
-        if (currentData.inspectorNames) choices.setValue(currentData.inspectorNames);
+        if (currentData.inspectorNames) {
+            choices.setValue(currentData.inspectorNames);
+            
+            // Restore "Others" textarea if some names were manual entries
+            const officialNames = INSPECTORS_LIST.filter(n => n !== 'Others');
+            const manualNames = currentData.inspectorNames.filter(n => !officialNames.includes(n));
+            if (manualNames.length > 0) {
+                choices.setChoiceByValue('Others');
+                otherInspectorInput.value = manualNames.join(', ');
+                otherInspectorInput.style.display = 'block';
+            }
+        }
     }
 
     const activitySelect = container.querySelector('select[name="activityType"]');
@@ -279,10 +286,7 @@ function bindStep_FacilityForm(root) {
             oldChoices.instance.destroy();
         }
         // Remove old consultativeFacilityName instance if exists
-        const oldFacChoices = getChoicesInstance('consultativeFacilityName');
-        if (oldFacChoices) {
-            oldFacChoices.instance.destroy();
-        }
+        removeChoicesInstance('consultativeFacilityName');
 
         let conditionalHTML = '';
         const val = activitySelect.value;
@@ -588,7 +592,8 @@ function saveCurrentFacilityData() {
         const selected = choicesItem ? choicesItem.instance.getValue(true).filter(name => name !== 'Others') : [];
         const otherText = container.querySelector('textarea[name="inspectorNameOther"]').value.trim();
         const fromOther = otherText ? otherText.split(',').map(n => n.trim()).filter(Boolean) : [];
-        data.inspectorNames = [...selected, ...fromOther];
+        // Use Set to deduplicate
+        data.inspectorNames = [...new Set([...selected, ...fromOther])];
         if (data.inspectorNames.length === 0) { alert('Please select at least one inspector for this facility.'); return false; }
     }
 
@@ -778,6 +783,7 @@ async function triggerTeamsWebhook(report) {
         // Prepare enhanced payload
         const payload = {
             reportId: reportId,
+            lookupKey: `${sanitizedFacilityName}_${report.activityType}`, // UNIQUE KEY FOR FLOW LOOKUP
             facilityName: sanitizedFacilityName,
             area: report.area,
             inspectionDate: report.inspectionDate.toISOString().split('T')[0],
@@ -859,6 +865,7 @@ async function triggerConsultativeMeetingWebhook(report) {
         const payload = {
             // PA uses this to identify the activity type (matches the field name in the other webhook)
             activity: 'Consultative Meeting',
+            lookupKey: `${sanitizedFacilityName}_Consultative Meeting`, // UNIQUE KEY FOR FLOW LOOKUP
 
             // Facility info — used to find the right SharePoint list row
             facilityName: sanitizedFacilityName,

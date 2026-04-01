@@ -199,7 +199,8 @@ function renderDirectoryArea(facilities) {
     const statuses = [...new Set(facilities.map(f => f.status ? f.status.trim() : ""))].filter(Boolean).sort();
     const years = [...new Set(facilities.map(f => {
         if (!f.lastVisitDate) return null;
-        return f.lastVisitDate.substring(0, 4);
+        const match = f.lastVisitDate.match(/\b(20\d{2})\b/);
+        return match ? match[1] : null;
     }).filter(Boolean))].sort((a, b) => b.localeCompare(a)); // Descending
 
     const letters = "ALL,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,#".split(",");
@@ -344,7 +345,9 @@ function renderDirectoryResults(facilities) {
         if (dirState.zone !== "All" && f.zone !== dirState.zone) return false;
         if (dirState.status !== "All" && f.status !== dirState.status) return false;
         if (dirState.year !== "All") {
-            const y = f.lastVisitDate ? f.lastVisitDate.substring(0, 4) : null;
+            if (!f.lastVisitDate) return false;
+            const match = f.lastVisitDate.match(/\b(20\d{2})\b/);
+            const y = match ? match[1] : null;
             if (y !== dirState.year) return false;
         }
         return true;

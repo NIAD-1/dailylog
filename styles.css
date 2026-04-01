@@ -1948,3 +1948,84 @@ select[multiple] {
 .fp-dir-card-body {
   padding-left: 0;
 }
+
+/* ========================================================================= */
+/* LEADERBOARD STYLES                                                        */
+/* ========================================================================= */
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+.leaderboard-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.leaderboard-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+}
+.leaderboard-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--primary-text);
+  font-weight: 500;
+}
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #edf2f7;
+  color: #4a5568;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+}
+.rank-badge.gold {
+  background: #fffff0;
+  border: 1px solid #f6e05e;
+  font-size: 16px;
+}
+.rank-badge.silver {
+  background: #f7fafc;
+  border: 1px solid #cbd5e0;
+  font-size: 16px;
+}
+.rank-badge.bronze {
+  background: #fffaf0;
+  border: 1px solid #ed8936;
+  font-size: 16px;
+}
+.leaderboard-score {
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 18px;
+}
+.leaderboard-score span {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--secondary-text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: 4px;
+}
+.leaderboard-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: #edf2f7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.leaderboard-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-out;
+}

@@ -31,6 +31,13 @@ const pageDashboard = `
     </div>
     ${kpiOverviewSection}
     <div class="stat-cards" id="statCardsContainer"></div>
+    
+    <div class="card" style="margin-top: 16px;">
+        <h2 style="display: flex; align-items: center; gap: 8px;">🏆 Inspector Performance Matrix</h2>
+        <p class="muted small">Monthly inspection count per officer. (Only includes physical inspections)</p>
+        <div id="inspectorLeaderboardContainer"></div>
+    </div>
+
     <div class="card">
         <h2>Report Details</h2>
         <div class="muted small">Filters</div>
@@ -154,6 +161,7 @@ async function loadDashboard() {
         }
 
         renderKpiOverview(reports, kpiTargets);
+        renderInspectorLeaderboard(reports);
         renderStatCards(reports);
         renderTable(reports, inspectors);
         buildActivityChart(reports);
@@ -207,6 +215,80 @@ function renderKpiOverview(reports, targets) {
           <span class="kpi-percentage">(${kpi.target > 0 ? displayPercentage : 'N/A'}%)</span>
         </div>`;
     }).join('');
+}
+
+function renderInspectorLeaderboard(reports) {
+    const container = document.getElementById('inspectorLeaderboardContainer');
+    if (!container) return;
+    
+    // Only count actual inspections as requested by the user
+    // The user explicitly stated: "make this only for the inspection they carried out"
+    const validActivities = ['Routine Surveillance', 'GSDP', 'GLSI', 'Survey', 'Laboratory Analysis', 'COLD CHAIN Monitoring', 'Consultative Meeting'];
+    const inspectionsOnly = reports.filter(r => validActivities.includes(r.activityType));
+    
+    const counters = {};
+    
+    inspectionsOnly.forEach(r => {
+        let names = [];
+        if (Array.isArray(r.inspectorNames)) {
+            names = r.inspectorNames;
+        } else if (typeof r.inspectorName === 'string') {
+            names = r.inspectorName.split(',').map(n => n.trim());
+        }
+        
+        names.forEach(n => {
+            if (!n || n.toLowerCase() === 'n/a' || n.toLowerCase() === 'unknown') return;
+            // Clean up name formatting (Title Case)
+            const cleanName = n.replace(/\b\w/g, c => c.toUpperCase()).trim();
+            if (cleanName.length > 2) {
+                counters[cleanName] = (counters[cleanName] || 0) + 1;
+            }
+        });
+    });
+    
+    const sortedInspectors = Object.entries(counters).sort((a, b) => b[1] - a[1]);
+    
+    if (sortedInspectors.length === 0) {
+        container.innerHTML = '<div class="muted" style="padding: 16px; text-align: center; border: 1px dashed #e2e8f0; border-radius: 4px; margin-top: 16px;">No inspections logged by staff in this period.</div>';
+        return;
+    }
+    
+    // Find max for the progress bar relative sizing
+    const maxCount = sortedInspectors[0][1];
+    
+    let html = '<div class="leaderboard-list">';
+    sortedInspectors.forEach((entry, idx) => {
+        const name = entry[0];
+        const count = entry[1];
+        const percentage = Math.max(5, (count / maxCount) * 100);
+        
+        let rankIcon = `<span class="rank-badge">${idx + 1}</span>`;
+        let barColor = 'var(--accent)';
+        if (idx === 0) {
+            rankIcon = `<span class="rank-badge gold">🥇</span>`;
+            barColor = '#D69E2E';
+        } else if (idx === 1) {
+            rankIcon = `<span class="rank-badge silver">🥈</span>`;
+            barColor = '#718096';
+        } else if (idx === 2) {
+            rankIcon = `<span class="rank-badge bronze">🥉</span>`;
+            barColor = '#DD6B20';
+        }
+        
+        html += `
+        <div class="leaderboard-item">
+            <div class="leaderboard-meta">
+                <div class="leaderboard-name">${rankIcon} <strong>${name}</strong></div>
+                <div class="leaderboard-score">${count} <span>inspections</span></div>
+            </div>
+            <div class="leaderboard-bar-bg">
+                <div class="leaderboard-bar-fill" style="width: ${percentage}%; background-color: ${barColor};"></div>
+            </div>
+        </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 function renderStatCards(data) {
