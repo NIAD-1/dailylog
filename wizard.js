@@ -698,16 +698,15 @@ async function handleSubmitWizard(root) {
             try {
                 const facName = (reportData.facilityName || "").trim();
                 if (facName) {
-                    const resolved = await resolveFacility(facName, reportData.facilityAddress, "wizard");
-                    // Link the report to the found/created ID
+                    const resolved = await resolveFacility(
+                        facName, 
+                        reportData.facilityAddress, 
+                        "wizard", 
+                        reportData.activityType
+                    );
+                    // Link the report to the found/created record ID
                     reportData.facilityId = resolved.facilityId;
-                    
-                    // Update visit count on the master record
-                    await setDoc(doc(db, "facilities", resolved.docId), {
-                        totalVisits: (resolved.isNew ? 1 : (await getDoc(doc(db, "facilities", resolved.docId))).data()?.totalVisits || 0) + 1,
-                        lastVisitDate: reportData.inspectionDate ? reportData.inspectionDate.toISOString().split("T")[0] : "",
-                        activityTypes: (resolved.isNew ? [] : (await getDoc(doc(db, "facilities", resolved.docId))).data()?.activityTypes || []).concat(reportData.activityType)
-                    }, { merge: true });
+                    reportData.facilityDocId = resolved.docId; // Keep docId for reference if needed
                 }
             } catch (facErr) {
                 console.error("Error syncing with facility database:", facErr);

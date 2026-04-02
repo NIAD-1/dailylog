@@ -1,5 +1,6 @@
-import { db, collection, getDocs, addDoc, doc, setDoc, query, where } from "./db.js";
+import { db, collection, getDocs, addDoc, doc, setDoc, getDoc, query, where } from "./db.js";
 import { resolveFacility } from "./facility-utils.js";
+import { addChoicesInstance, getChoicesInstance, removeChoicesInstance } from "./ui.js";
 
 /* ─── Smart Loggers Module ───────────────────────────────────────────────── */
 /* Standalone forms for logging complaints and sanctions with intelligent
@@ -24,83 +25,61 @@ function invalidateCache() { cachedFacilities = null; }
 
 /* ─── Smart Facility Picker Component ────────────────────────────────────── */
 
-function renderFacilityPicker(inputId, resultsId, hiddenId, label = "Facility / Outlet") {
+function renderFacilityPicker(inputId, label = "Facility / Outlet") {
     return `
     <div class="form-group sl-picker-wrap">
         <label>${label}</label>
-        <div style="position: relative;">
-            <input type="text" id="${inputId}" autocomplete="off" placeholder="Start typing facility name...">
-            <div id="${resultsId}" class="sl-picker-results"></div>
-            <input type="hidden" id="${hiddenId}">
+        <select id="${inputId}" class="sl-choices-select">
+            <option value="">Search or select facility...</option>
+        </select>
+        <div id="${inputId}_status" class="sl-picker-status" style="margin-top: 4px; font-size: 13px;"></div>
+    </div>
+    <div id="${inputId}_newSection" style="display:none; background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 8px; border: 1px dashed var(--accent);">
+        <label style="font-size: 13px; font-weight: 600; margin-bottom: 8px; display:block; color: var(--accent);">+ Add New Facility</label>
+        <div class="row">
+            <div class="col"><label class="small">New Facility Name</label><input id="${inputId}_newName" placeholder="Enter facility name..."></div>
+            <div class="col"><label class="small">New Facility Address</label><input id="${inputId}_newAddress" placeholder="Enter facility address..."></div>
         </div>
-        <div id="${inputId}_status" class="sl-picker-status"></div>
     </div>`;
 }
 
-function bindFacilityPicker(inputId, resultsId, hiddenId, facilities) {
-    const input = document.getElementById(inputId);
-    const results = document.getElementById(resultsId);
-    const hidden = document.getElementById(hiddenId);
+async function bindFacilityPicker(inputId, facilities) {
+    const select = document.getElementById(inputId);
     const status = document.getElementById(inputId + "_status");
-    if (!input || !results || !hidden) return;
+    const newSection = document.getElementById(inputId + "_newSection");
+    if (!select) return;
 
-    input.addEventListener("input", () => {
-        const q = input.value.trim().toUpperCase();
-        hidden.value = "";
+    // Destroy old instance if exists
+    removeChoicesInstance(inputId);
 
-        if (q.length < 2) {
-            results.innerHTML = "";
-            results.classList.remove("visible");
-            status.innerHTML = "";
-            return;
-        }
+    // Filter to remove any undefined or empty names
+    const validFacilities = facilities.filter(f => f.name);
 
-        const matches = facilities.filter(f =>
-            (f.name || "").toUpperCase().includes(q) ||
-            (f.address || "").toUpperCase().includes(q)
-        ).slice(0, 10);
+    select.innerHTML = '<option value="">Search or select facility...</option>' + 
+        validFacilities.map(f => `<option value="${f.id}" data-docid="${f._docId}" data-address="${f.address || ''}">${f.name}</option>`).join('') +
+        '<option value="__NEW__">➕ Add New Facility...</option>';
 
-        let html = matches.map(f => `
-            <div class="sl-picker-item" data-id="${f.id}" data-name="${f.name}" data-docid="${f._docId}">
-                <div class="sl-picker-item-name">${highlightMatch(f.name, q)}</div>
-                <div class="sl-picker-item-meta">${f.address || ""} ${f.zone ? `· ${f.zone}` : ""}</div>
-            </div>
-        `).join("");
-
-        // Always add "Create new" option
-        html += `
-            <div class="sl-picker-item sl-picker-new" data-id="__NEW__" data-name="${input.value.trim()}">
-                <div class="sl-picker-item-name" style="color: var(--fp-green); font-weight: 600;">
-                    + Create new facility: "${input.value.trim()}"
-                </div>
-            </div>`;
-
-        results.innerHTML = html;
-        results.classList.add("visible");
-
-        results.querySelectorAll(".sl-picker-item").forEach(el => {
-            el.addEventListener("click", () => {
-                if (el.dataset.id === "__NEW__") {
-                    hidden.value = "__NEW__";
-                    input.value = el.dataset.name;
-                    status.innerHTML = `<span style="color: var(--fp-green);">✨ New facility will be created on save</span>`;
-                } else {
-                    hidden.value = el.dataset.id;
-                    hidden.dataset.docId = el.dataset.docid;
-                    input.value = el.dataset.name;
-                    status.innerHTML = `<span style="color: #1565C0;">✓ Linked to existing facility</span>`;
-                }
-                results.innerHTML = "";
-                results.classList.remove("visible");
-            });
-        });
+    const choices = new Choices(select, {
+        removeItemButton: false,
+        placeholder: true,
+        placeholderValue: 'Search facility...',
+        searchEnabled: true,
+        shouldSort: false // Already sorted by getFacilities
     });
+    
+    addChoicesInstance(inputId, choices);
 
-    // Close on outside click
-    document.addEventListener("click", (e) => {
-        if (!e.target.closest(`#${inputId}`) && !e.target.closest(`#${resultsId}`)) {
-            results.innerHTML = "";
-            results.classList.remove("visible");
+    select.addEventListener('change', () => {
+        const val = select.value;
+        if (val === '__NEW__') {
+            newSection.style.display = 'block';
+            status.innerHTML = `<span style="color: var(--fp-green);">✨ New facility will be created on save</span>`;
+        } else if (val) {
+            newSection.style.display = 'none';
+            status.innerHTML = `<span style="color: #1565C0;">✓ Linked to existing record</span>`;
+        } else {
+            newSection.style.display = 'none';
+            status.innerHTML = '';
         }
     });
 }
@@ -113,21 +92,32 @@ function highlightMatch(text, query) {
 }
 
 // Helper from utility
-async function resolveOrCreateFacilityWrapper(nameInputId, hiddenId, addressInputId) {
-    const hidden = document.getElementById(hiddenId);
-    const nameInput = document.getElementById(nameInputId);
-    const name = nameInput.value.trim();
-    const address = addressInputId ? (document.getElementById(addressInputId)?.value?.trim() || "") : "";
+async function resolveOrCreateFacilityWrapper(inputId) {
+    const select = document.getElementById(inputId);
+    const newNameInput = document.getElementById(inputId + "_newName");
+    const newAddrInput = document.getElementById(inputId + "_newAddress");
 
-    if (!name) throw new Error("Facility name is required");
+    if (!select.value) throw new Error("Facility selection is required");
 
-    // Existing facility matched via Picker
-    if (hidden.value && hidden.value !== "__NEW__") {
-        return { facilityId: hidden.value, facilityName: name, docId: hidden.dataset.docId, isNew: false };
+    if (select.value === '__NEW__') {
+        const name = newNameInput.value.trim();
+        const address = newAddrInput.value.trim();
+        if (!name) throw new Error("New facility name is required");
+        return await resolveFacility(name, address, "smart_logger");
     }
 
-    // Fallback or New: Use centralized resolver
-    return await resolveFacility(name, address, "smart_logger");
+    // Existing: Use the cache to find the docId reliably
+    const facilities = await getFacilities();
+    const facility = facilities.find(f => f.id === select.value);
+    
+    if (!facility) throw new Error("Selected facility not found in database.");
+
+    return { 
+        facilityId: facility.id, 
+        facilityName: facility.name, 
+        docId: facility._docId, 
+        isNew: false 
+    };
 }
 
 /* ─── Consumer Complaint Page ────────────────────────────────────────────── */
@@ -183,14 +173,10 @@ export function renderComplaintLoggerPage(root) {
             </div>
 
             <div class="sl-section-title" style="margin-top: 24px;">Outlet / Place of Purchase</div>
-            ${renderFacilityPicker("slOutletName", "slOutletResults", "slOutletId", "Outlet / Place of Purchase")}
-            <div class="form-group">
-                <label>Outlet Address (if new)</label>
-                <input type="text" id="slOutletAddress" placeholder="Address of the outlet">
-            </div>
+            ${renderFacilityPicker("slOutletName", "Outlet / Place of Purchase")}
 
             <div class="sl-section-title" style="margin-top: 24px;">Manufacturer / Company</div>
-            ${renderFacilityPicker("slMfgName", "slMfgResults", "slMfgId", "Manufacturer / Importer")}
+            ${renderFacilityPicker("slMfgName", "Manufacturer / Importer")}
 
             <div class="sl-section-title" style="margin-top: 24px;">Complaint Details</div>
             <div class="form-group">
@@ -244,8 +230,8 @@ export function renderComplaintLoggerPage(root) {
 async function initComplaintPage() {
     try {
         const facilities = await getFacilities();
-        bindFacilityPicker("slOutletName", "slOutletResults", "slOutletId", facilities);
-        bindFacilityPicker("slMfgName", "slMfgResults", "slMfgId", facilities);
+        bindFacilityPicker("slOutletName", facilities);
+        bindFacilityPicker("slMfgName", facilities);
     } catch (e) {
         console.error("Error loading facilities for picker:", e);
     }
@@ -262,14 +248,14 @@ async function handleSubmitComplaint() {
     try {
         // Resolve or create outlet facility
         let outletInfo = { facilityId: "", facilityName: "", isNew: false };
-        if (document.getElementById("slOutletName").value.trim()) {
-            outletInfo = await resolveOrCreateFacilityWrapper("slOutletName", "slOutletId", "slOutletAddress");
+        if (document.getElementById("slOutletName").value) {
+            outletInfo = await resolveOrCreateFacilityWrapper("slOutletName");
         }
 
         // Resolve or create manufacturer
         let mfgInfo = { facilityId: "", facilityName: "", isNew: false };
-        if (document.getElementById("slMfgName").value.trim()) {
-            mfgInfo = await resolveOrCreateFacilityWrapper("slMfgName", "slMfgId", null);
+        if (document.getElementById("slMfgName").value) {
+            mfgInfo = await resolveOrCreateFacilityWrapper("slMfgName");
         }
 
         const complaint = {
@@ -341,11 +327,7 @@ export function renderSanctionLoggerPage(root) {
 
         <div class="sl-form-card">
             <div class="sl-section-title">Facility</div>
-            ${renderFacilityPicker("slSanctionFacility", "slSanctionResults", "slSanctionFacId", "Facility Name")}
-            <div class="form-group">
-                <label>Facility Address (if new)</label>
-                <input type="text" id="slSanctionFacAddr" placeholder="Address of the facility (for new entries)">
-            </div>
+            ${renderFacilityPicker("slSanctionFacility", "Facility Name")}
 
             <div class="sl-section-title" style="margin-top: 24px;">Sanction Details</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -388,7 +370,7 @@ export function renderSanctionLoggerPage(root) {
 async function initSanctionPage() {
     try {
         const facilities = await getFacilities();
-        bindFacilityPicker("slSanctionFacility", "slSanctionResults", "slSanctionFacId", facilities);
+        bindFacilityPicker("slSanctionFacility", facilities);
     } catch (e) {
         console.error("Error loading facilities:", e);
     }
@@ -403,7 +385,8 @@ async function handleSubmitSanction() {
     text.textContent = "Saving...";
 
     try {
-        const facInfo = await resolveOrCreateFacilityWrapper("slSanctionFacility", "slSanctionFacId", "slSanctionFacAddr");
+        const facInfo = await resolveOrCreateFacilityWrapper("slSanctionFacility");
+        console.log("Sanction Facility Info:", facInfo);
 
         const sanction = {
             facilityId: facInfo.facilityId,
@@ -417,6 +400,25 @@ async function handleSubmitSanction() {
         };
 
         await addDoc(collection(db, "sanctions"), sanction);
+
+        // Update facility financial stats
+        try {
+            const facRef = doc(db, "facilities", facInfo.docId);
+            const facSnap = await getDoc(facRef);
+            if (facSnap.exists()) {
+                const currentFines = facSnap.data().totalFinesIssued || 0;
+                const currentOutstanding = facSnap.data().outstandingFines || 0;
+                
+                await setDoc(facRef, {
+                    totalFinesIssued: currentFines + sanction.amount,
+                    outstandingFines: sanction.paymentStatus !== 'PAID' ? (currentOutstanding + sanction.amount) : currentOutstanding,
+                    lastSanctionDate: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+            }
+        } catch (facErr) {
+            console.error("Error updating facility financial stats:", facErr);
+        }
 
         document.getElementById("slSanctionSuccessMsg").classList.remove("hidden");
         document.getElementById("slSanctionSuccessMsg").innerHTML = `

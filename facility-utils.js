@@ -111,9 +111,27 @@ export async function findExistingFacility(name, address = "") {
 /**
  * Resolves a facility (finds or creates) and returns unified info.
  */
-export async function resolveFacility(name, address, source = "system") {
+export async function resolveFacility(name, address, source = "system", activityType = null) {
     const existing = await findExistingFacility(name, address);
+    
     if (existing) {
+        // Update existing facility stats
+        const updates = {
+            totalVisits: (existing.totalVisits || 0) + 1,
+            lastActivityDate: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        // Add activityType if provided and not already in the list
+        if (activityType) {
+            const currentActivities = existing.activityTypes || [];
+            if (!currentActivities.includes(activityType)) {
+                updates.activityTypes = [...currentActivities, activityType];
+            }
+        }
+
+        await setDoc(doc(db, "facilities", existing._docId), updates, { merge: true });
+
         return { 
             facilityId: existing.id, 
             facilityName: existing.name, 
@@ -128,11 +146,12 @@ export async function resolveFacility(name, address, source = "system") {
         name: name.trim(),
         address: address || "",
         status: "Active",
-        activityTypes: [],
-        totalVisits: 0,
+        activityTypes: activityType ? [activityType] : [],
+        totalVisits: 1,
         totalFinesIssued: 0,
         outstandingFines: 0,
         source: source,
+        lastActivityDate: new Date().toISOString(),
         createdAt: new Date().toISOString()
     };
 
