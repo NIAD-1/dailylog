@@ -8,6 +8,7 @@ import { renderMapPage } from "./map.js";
 import { renderWeeklySummaryPage } from "./weekly.js";
 import { renderFacilityProfilePage, setFacilityProfileUser } from "./facility-profile.js";
 import { renderComplaintLoggerPage, renderSanctionLoggerPage } from "./smart-loggers.js";
+import { renderWorkflowPage } from "./workflow.js";
 
 const root = document.getElementById('app');
 const modalContainer = document.getElementById('modalContainer');
@@ -29,6 +30,7 @@ const pageWelcome = `
     <button id="openFacilities" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🏢 Facility Database</button>
     <button id="openLogComplaint" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📋 Log Complaint</button>
     <button id="openLogSanction" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">💰 Log Sanction</button>
+    <button id="openWorkflow" class="success" style="padding: 16px 40px; font-size: 18px; display: none;">🚦 Live Movement</button>
     <button id="openMap" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🗺️ Inspection Map</button>
     <button id="openWeekly" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📊 Weekly Summary</button>
     <button id="openDashboard" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">View Dashboard</button>
@@ -132,7 +134,7 @@ initAuth(db, (user, role) => {
     authReady = true;
     const page = window.location.hash.substring(1);
 
-    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import', 'weekly', 'facilities', 'log-complaint', 'log-sanction'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map' || page === 'weekly' || page === 'facilities' || page === 'log-complaint' || page === 'log-sanction')) {
+    if (['dashboard', 'kpi-settings', 'scheduler', 'map', 'import', 'weekly', 'facilities', 'log-complaint', 'log-sanction', 'live-movement'].includes(page) && (role === 'admin' || page === 'scheduler' || page === 'map' || page === 'weekly' || page === 'facilities' || page === 'log-complaint' || page === 'log-sanction' || page === 'live-movement')) {
       navigate(page, false);
     } else if (['report', 'success'].includes(page) && user) {
       navigate(page, false);
@@ -174,6 +176,10 @@ function updateAuthUI(user, role) {
   const sanctionBtn = document.getElementById('openLogSanction');
   if (sanctionBtn) {
     sanctionBtn.style.display = role === 'admin' ? 'block' : 'none';
+  }
+  const workflowBtn = document.getElementById('openWorkflow');
+  if (workflowBtn) {
+    workflowBtn.style.display = user ? 'block' : 'none';
   }
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
@@ -234,6 +240,9 @@ function renderPage(page) {
       navigate('welcome');
     }
   }
+  if (page === 'live-movement') {
+    renderWorkflowPage(root);
+  }
   if (page === 'import') {
     if (currentUserRole === 'admin') {
       renderImportPage(root);
@@ -273,6 +282,11 @@ function bindWelcome() {
   if (sanctionBtn) {
     sanctionBtn.style.display = currentUserRole === 'admin' ? 'block' : 'none';
     sanctionBtn.onclick = () => navigate('log-sanction');
+  }
+  const workflowBtn = document.getElementById('openWorkflow');
+  if (workflowBtn) {
+    workflowBtn.style.display = currentUser ? 'block' : 'none';
+    workflowBtn.onclick = () => navigate('live-movement');
   }
   const mapBtn = document.getElementById('openMap');
   if (mapBtn) {
