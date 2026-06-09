@@ -287,6 +287,7 @@ function bindStep_FacilityForm(root) {
         }
         // Remove old consultativeFacilityName instance if exists
         removeChoicesInstance('consultativeFacilityName');
+        removeChoicesInstance('gsdpFacilityName');
 
         let conditionalHTML = '';
         const val = activitySelect.value;
@@ -295,7 +296,7 @@ function bindStep_FacilityForm(root) {
         // (the CM section has its own searchable facility dropdown)
         const facilityRow = container.querySelector('#regularFacilityRow');
         if (facilityRow) {
-            facilityRow.style.display = val === 'Consultative Meeting' ? 'none' : '';
+            facilityRow.style.display = (val === 'Consultative Meeting') ? 'none' : '';
         }
 
         const mopUpHTML = `
@@ -390,7 +391,28 @@ function bindStep_FacilityForm(root) {
                 </div>
             `;
         } else if (val === 'GSDP') {
-            conditionalHTML = `<div style="margin-top:8px"><label>GSDP Sub-Activity</label><select name="gsdpSubActivity"><option>GDP</option><option>CEVI</option></select></div>
+            conditionalHTML = `
+                <div style="margin-top:8px"><label>GSDP Sub-Activity</label><select name="gsdpSubActivity"><option value="GDP">GDP</option><option value="CEVI">CEVI</option></select></div>
+                <div id="ceviFacilitySection" style="display:none;">
+                    <div class="row" style="margin-top:12px">
+                        <div class="col">
+                            <label>Facility Name</label>
+                            <select name="gsdpFacilityName"><option value="">Select facility...</option></select>
+                            <p class="muted small" id="gsdpFacilityLoadingMsg" style="display:none;">Loading facilities...</p>
+                        </div>
+                        <div class="col">
+                            <label>Facility Address</label>
+                            <input name="gsdpFacilityAddress" placeholder="Auto-filled when facility is selected..." readonly style="background:#f0f0f0;">
+                        </div>
+                    </div>
+                </div>
+                <div id="addNewGsdpFacilitySection" style="display:none; background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <label style="font-size: 14px; font-weight: 600; margin-bottom: 8px; display:block;">Add New Facility</label>
+                    <div class="row">
+                        <div class="col"><label class="small">Facility Name</label><input name="newGsdpFacilityName" placeholder="Enter exact facility name..."></div>
+                        <div class="col"><label class="small">Facility Address</label><input name="newGsdpFacilityAddress" placeholder="Enter facility address..."></div>
+                    </div>
+                </div>
                 <div style="margin-top:8px"><label>Company Email (M.D / Superintendent Pharmacist)</label><input name="companyEmail" type="email" placeholder="Must be M.D or Superintendent Pharmacist email" required></div>`;
         } else if (val === 'Laboratory Analysis') {
             conditionalHTML = `<div style="margin-top:8px"><label>How many samples taken?</label><input name="Samplescount" type="number" min="0" value="0"></div>`;
@@ -495,6 +517,69 @@ function bindStep_FacilityForm(root) {
                 }
             });
         }
+        
+        const gsdpFacilitySelect = conditional.querySelector('[name="gsdpFacilityName"]');
+        const gsdpSubActivitySelect = conditional.querySelector('[name="gsdpSubActivity"]');
+        const ceviFacilitySection = conditional.querySelector('#ceviFacilitySection');
+
+        if (gsdpSubActivitySelect && ceviFacilitySection && facilityRow) {
+            gsdpSubActivitySelect.addEventListener('change', () => {
+                if (gsdpSubActivitySelect.value === 'CEVI') {
+                    facilityRow.style.display = 'none';
+                    ceviFacilitySection.style.display = 'block';
+                } else {
+                    facilityRow.style.display = '';
+                    ceviFacilitySection.style.display = 'none';
+                }
+            });
+            // Don't trigger change instantly here because currentData might set it later. By default GDP shows regular input.
+        }
+
+        if (gsdpFacilitySelect) {
+            const addressInput = conditional.querySelector('input[name="gsdpFacilityAddress"]');
+            const addNewSection = conditional.querySelector('#addNewGsdpFacilitySection');
+            const loadingMsg = conditional.querySelector('#gsdpFacilityLoadingMsg');
+
+            loadingMsg.style.display = 'block';
+            loadFacilitiesForCategory('GSDP', true).then(facilityNames => {
+                const oldChoices = getChoicesInstance('gsdpFacilityName');
+                if (oldChoices) oldChoices.instance.destroy();
+
+                gsdpFacilitySelect.innerHTML = '<option value="">Select facility...</option>' +
+                    facilityNames.map(f => `<option value="${f}">${f}</option>`).join('') +
+                    '<option value="__ADD_NEW__">➕ Add new facility…</option>';
+
+                const choices = new Choices(gsdpFacilitySelect, {
+                    removeItemButton: false,
+                    placeholder: true,
+                    placeholderValue: 'Search existing GSDP facility...',
+                    searchEnabled: true
+                });
+                addChoicesInstance('gsdpFacilityName', choices);
+
+                if (currentData.gsdpFacilityName) {
+                    choices.setChoiceByValue(currentData.gsdpFacilityName);
+                }
+                loadingMsg.style.display = 'none';
+            });
+
+            gsdpFacilitySelect.addEventListener('change', () => {
+                const selectedName = gsdpFacilitySelect.value;
+                if (selectedName === '__ADD_NEW__') {
+                    if (addNewSection) addNewSection.style.display = 'block';
+                    if (addressInput) { addressInput.value = ''; addressInput.readOnly = false; addressInput.style.background = ''; }
+                } else {
+                    if (addNewSection) addNewSection.style.display = 'none';
+                    const details = facilityDetailCache['GSDP'] || [];
+                    const match = details.find(d => d.name === selectedName);
+                    if (addressInput) {
+                        addressInput.value = match ? match.address : '';
+                        addressInput.readOnly = true;
+                        addressInput.style.background = '#f0f0f0';
+                    }
+                }
+            });
+        }
 
         const sanctionSelect = conditional.querySelector('select[name="sanctionGiven"]');
         if (sanctionSelect) {
@@ -527,6 +612,11 @@ function bindStep_FacilityForm(root) {
                 el.dispatchEvent(new Event('change'));
             }
         });
+
+        // Trigger gsdp sub activity after possible rehydration to ensure UI is in correct state
+        if (gsdpSubActivitySelect) {
+            gsdpSubActivitySelect.dispatchEvent(new Event('change'));
+        }
     }
 
     activitySelect.addEventListener('change', updateConditionalFields);
@@ -564,10 +654,15 @@ function saveCurrentFacilityData() {
 
     // Check for facility name: use the consultative meeting dropdown if present, otherwise the regular input
     const consultativeFacilitySelect = container.querySelector('select[name="consultativeFacilityName"]');
+    const gsdpFacilitySelect = container.querySelector('select[name="gsdpFacilityName"]');
     const facilityNameInput = container.querySelector('input[name="facilityName"]');
     const newFacNameInput = container.querySelector('input[name="newConsultativeFacilityName"]');
+    const newGsdpFacNameInput = container.querySelector('input[name="newGsdpFacilityName"]');
+    
+    const isConsultative = consultativeFacilitySelect != null;
+    const isCevi = gsdpFacilitySelect != null && container.querySelector('#ceviFacilitySection') && container.querySelector('#ceviFacilitySection').style.display !== 'none';
 
-    if (consultativeFacilitySelect) {
+    if (isConsultative) {
         // Consultative Meeting mode
         const isAddNew = consultativeFacilitySelect.value === '__ADD_NEW__';
         if (isAddNew) {
@@ -578,6 +673,19 @@ function saveCurrentFacilityData() {
                 return false;
             }
         } else if (!consultativeFacilitySelect.value) {
+            alert('Please select a facility from the dropdown.');
+            return false;
+        }
+    } else if (isCevi) {
+        // CEVI mode
+        const isAddNew = gsdpFacilitySelect.value === '__ADD_NEW__';
+        if (isAddNew) {
+            if (!newGsdpFacNameInput || !newGsdpFacNameInput.value.trim()) {
+                alert('Please enter a facility name.');
+                if (newGsdpFacNameInput) newGsdpFacNameInput.focus();
+                return false;
+            }
+        } else if (!gsdpFacilitySelect.value) {
             alert('Please select a facility from the dropdown.');
             return false;
         }
@@ -616,7 +724,7 @@ function saveCurrentFacilityData() {
 
     // Override facilityName and facilityAddress from consultative meeting fields
     // (must be AFTER fields.forEach so it doesn't get overwritten by the hidden regular inputs)
-    if (consultativeFacilitySelect) {
+    if (isConsultative) {
         if (consultativeFacilitySelect.value === '__ADD_NEW__') {
             // Use manually entered name + address
             data.facilityName = newFacNameInput ? newFacNameInput.value.trim() : '';
@@ -627,6 +735,18 @@ function saveCurrentFacilityData() {
             const addrInput = container.querySelector('input[name="consultativeFacilityAddress"]');
             data.facilityAddress = addrInput ? addrInput.value.trim() : '';
         }
+        data.consultativeFacilityName = consultativeFacilitySelect.value;
+    } else if (isCevi) {
+        if (gsdpFacilitySelect.value === '__ADD_NEW__') {
+            data.facilityName = newGsdpFacNameInput ? newGsdpFacNameInput.value.trim() : '';
+            const newAddrInput = container.querySelector('input[name="newGsdpFacilityAddress"]');
+            data.facilityAddress = newAddrInput ? newAddrInput.value.trim() : '';
+        } else if (gsdpFacilitySelect.value) {
+            data.facilityName = gsdpFacilitySelect.value;
+            const addrInput = container.querySelector('input[name="gsdpFacilityAddress"]');
+            data.facilityAddress = addrInput ? addrInput.value.trim() : '';
+        }
+        data.gsdpFacilityName = gsdpFacilitySelect.value;
     }
 
     data.mopUpCount = (parseInt(data.mopUpDrugs) || 0) + (parseInt(data.mopUpCosmetics) || 0) + (parseInt(data.mopUpMedicalDevices) || 0) + (parseInt(data.mopUpFood) || 0);
