@@ -25,7 +25,7 @@ exports.handler = async function (event, context) {
     const apiKey = process.env.GROQ_API_KEY;
 
     const postData = JSON.stringify({
-      model: 'llama3-70b-8192',
+      model: 'llama-3.3-70b-versatile',
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
