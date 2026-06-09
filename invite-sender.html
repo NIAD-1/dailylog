@@ -444,18 +444,18 @@ END:VALARM\n`;
         const base64Ics = btoa(unescape(encodeURIComponent(icsContent)));
 
         // Generate a beautiful HTML table for the email body
-        const tableRows = userInspections.map(insp => `
+        const tableRows = userInspections.map((insp, index) => `
           <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;"><strong>${insp.date}</strong></td>
-            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.time || '10:00'}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${index + 1}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; color: #008751; font-weight: 600;">${insp.title}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;"><strong>${insp.date}</strong><br><span style="color:#64748b; font-size:12px;">${insp.time || '10:00'}</span></td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.location}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.type || 'N/A'}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.inspector}</td>
           </tr>
         `).join('');
 
         const bodyHtml = `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <div style="background-color: #008751; padding: 20px; text-align: center; color: white;">
               <h2 style="margin: 0; font-size: 24px;">Your Inspection Schedule</h2>
               <p style="margin: 5px 0 0 0; opacity: 0.9;">NAFDAC Post Marketing Surveillance</p>
@@ -468,11 +468,11 @@ END:VALARM\n`;
               <table style="width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 14px; text-align: left;">
                 <thead>
                   <tr style="background-color: #f8fafc;">
-                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Date</th>
-                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Time</th>
-                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Facility</th>
-                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Location</th>
-                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Type</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569; width: 50px;">S/N</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Facility Name</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569; width: 100px;">Date</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Address</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Inspectors</th>
                   </tr>
                 </thead>
                 <tbody>
