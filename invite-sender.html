@@ -195,10 +195,15 @@
           body: JSON.stringify({ text })
         });
 
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Server Error (${response.status}): ${errText}`);
+        }
+
         const data = await response.json();
 
         if (data.error) {
-          throw new Error(data.error.message);
+          throw new Error(typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error)));
         }
 
         let resultText = data.choices[0].message.content;
