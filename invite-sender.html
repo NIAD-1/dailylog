@@ -37,11 +37,6 @@
       
       <div class="row">
         <div class="col">
-          <label>Groq API Key</label>
-          <input type="password" id="apiKey" placeholder="gsk_..." style="padding: 12px;">
-          <p class="muted small" style="margin-top:4px;">Free key from <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent)">console.groq.com</a></p>
-        </div>
-        <div class="col">
           <label>Default Reminder</label>
           <select id="reminderSelect" style="padding: 12px;">
             <option value="1440">1 day before</option>
@@ -163,13 +158,6 @@
         return;
       }
 
-      const apiKey = document.getElementById('apiKey').value.trim();
-      if (!apiKey) {
-        alert('Please enter your Groq API Key first.');
-        document.getElementById('apiKey').focus();
-        return;
-      }
-
       uploadLoader.style.display = 'block';
       uploadStatus.textContent = 'Extracting text from document...';
 
@@ -183,7 +171,7 @@
         }
 
         uploadStatus.textContent = 'Analyzing schedule with AI...';
-        await parseTextWithAI(text, apiKey);
+        await parseTextWithAI(text);
 
       } catch (error) {
         console.error(error);
@@ -194,30 +182,17 @@
       }
     }
 
-    // AI Parsing (Groq Llama 3)
-    async function parseTextWithAI(text, apiKey) {
-      const systemPrompt = `You are a data extraction assistant. Return ONLY a JSON object with a single key "inspections" containing an array of objects. Each object must have: title (string), date (YYYY-MM-DD), time (HH:MM 24hr format), duration_hours (number), location (string), inspector (full name), inspector_email (string), type (string), notes (string). If a field is missing use empty string or 1 for duration.`;
-      const userPrompt = `Extract all inspection schedule entries from this text:\n\n${text.substring(0, 20000)}`;
-
-      // We use a CORS proxy because Groq API currently blocks direct browser requests
-      const url = `https://corsproxy.io/?${encodeURIComponent('https://api.groq.com/openai/v1/chat/completions')}`;
+    // AI Parsing via Netlify Function
+    async function parseTextWithAI(text) {
+      const url = `/.netlify/functions/parse`;
 
       try {
         const response = await fetch(url, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            model: 'llama3-70b-8192',
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt }
-            ],
-            temperature: 0.1,
-            response_format: { type: "json_object" }
-          })
+          body: JSON.stringify({ text })
         });
 
         const data = await response.json();
