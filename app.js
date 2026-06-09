@@ -27,6 +27,7 @@ const pageWelcome = `
   <div class="controls" style="display: flex; gap: 16px; justify-content: center; margin-top: 48px; flex-wrap: wrap;">
     <button id="startReport" style="padding: 16px 40px; font-size: 18px;">Start New Report</button>
     <button id="openScheduler" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">Schedule Inspections</button>
+    <button id="openInviteSender" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📅 Send Calendar Invites</button>
     <button id="openFacilities" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">🏢 Facility Database</button>
     <button id="openLogComplaint" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">📋 Log Complaint</button>
     <button id="openLogSanction" class="secondary" style="padding: 16px 40px; font-size: 18px; display: none;">💰 Log Sanction</button>
@@ -165,6 +166,10 @@ function updateAuthUI(user, role) {
   if (schedulerBtn) {
     schedulerBtn.style.display = user ? 'block' : 'none';
   }
+  const inviteBtn = document.getElementById('openInviteSender');
+  if (inviteBtn) {
+    inviteBtn.style.display = user ? 'block' : 'none';
+  }
   const facilityBtn = document.getElementById('openFacilities');
   if (facilityBtn) {
     facilityBtn.style.display = user ? 'block' : 'none';
@@ -267,6 +272,11 @@ function bindWelcome() {
   if (schedulerBtn) {
     schedulerBtn.style.display = currentUser ? 'block' : 'none';
     schedulerBtn.onclick = () => navigate('scheduler');
+  }
+  const inviteBtn = document.getElementById('openInviteSender');
+  if (inviteBtn) {
+    inviteBtn.style.display = currentUser ? 'block' : 'none';
+    inviteBtn.onclick = () => window.location.href = 'invite-sender.html';
   }
   const facilityBtn = document.getElementById('openFacilities');
   if (facilityBtn) {

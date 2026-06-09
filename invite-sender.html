@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAFDAC Inspection Scheduler</title>
+
+  <!-- Mammoth.js for DOCX parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <!-- Modern Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Premium SaaS Aesthetic with Glassmorphism */
+    :root {
+      --primary: #0f172a;
+      --primary-light: #1e293b;
+      --brand: #2563eb;
+      --brand-hover: #1d4ed8;
+      --bg-gradient-start: #f8fafc;
+      --bg-gradient-end: #e2e8f0;
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --text-main: #334155;
+      --text-muted: #64748b;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Glassmorphism Panel */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Settings & Upload Row */
+    .top-controls {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+    }
+
+    /* Inputs & Forms */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--primary-light);
+    }
+
+    .form-control {
+      padding: 0.75rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Dropzone */
+    .dropzone {
+      border: 2px dashed #94a3b8;
+      border-radius: var(--radius-md);
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      height: 100%;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: var(--brand);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    .dropzone p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .dropzone .icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    /* Table Container */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid #e2e8f0;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: var(--primary-light);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    td {
+      font-size: 0.95rem;
+    }
+
+    tr.missing-email td {
+      background-color: rgba(245, 158, 11, 0.05);
+    }
+
+    /* Inline Editing Inputs */
+    .inline-input {
+      width: 100%;
+      padding: 0.4rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: inherit;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .inline-input:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .inline-input:focus {
+      outline: none;
+      border-color: var(--brand);
+      background: white;
+    }
+
+    .inline-input.invalid {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    /* Toolbar & Actions */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .badge {
+      background: #e0e7ff;
+      color: var(--brand);
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Summary Panel */
+    .summary-panel {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      font-weight: 500;
+    }
+
+    /* Loader */
+    .loader {
+      display: none;
+      border: 3px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 3px solid var(--brand);
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Tooltip */
+    [data-tooltip] {
+      position: relative;
+      cursor: help;
+    }
+
+    [data-tooltip]:after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    [data-tooltip]:hover:after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-5px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div
+    style="padding: 1rem 2rem; background: var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <h2 style="color:white; margin:0; font-size: 1.2rem;">NAFDAC PMS Portal</h2>
+    </div>
+    <button onclick="window.location.href='index.html'" class="btn btn-secondary"
+      style="padding: 0.5rem 1rem; border:none; border-radius: 4px;">← Back to Dashboard</button>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>Inspection Scheduler</h1>
+      <p>Automate Calendar Invites from Word Documents</p>
+    </header>
+
+    <div class="top-controls">
+      <!-- Settings Panel -->
+      <div class="glass-panel">
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary);">⚙️ Setup</h3>
+
+        <div class="form-group">
+          <label for="apiKey">Groq API Key (Free Open-Source Model)</label>
+          <input type="password" id="apiKey" class="form-control" placeholder="gsk_...">
+          <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem;">
+            Using Meta's Llama 3 70B via Groq (Free & Blazing Fast). Get your free key at <a
+              href="https://console.groq.com/keys" target="_blank" style="color: var(--brand);">console.groq.com</a>.
+          </small>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label for="reminderSelect">Default Reminder</label>
+          <select id="reminderSelect" class="form-control">
+            <option value="1440">1 day before</option>
+            <option value="2880">2 days before</option>
+            <option value="10080">1 week before</option>
+            <option value="0">No reminder</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Upload Panel -->
+      <div class="glass-panel">
+        <div id="dropzone" class="dropzone">
+          <div class="icon">📄</div>
+          <p><strong>Drag & Drop your .docx file here</strong></p>
+          <p style="font-size: 0.9rem;">or click to browse</p>
+          <input type="file" id="fileInput" accept=".docx" style="display: none;">
+          <div class="loader" id="uploadLoader"></div>
+          <p id="uploadStatus" style="font-size: 0.85rem; color: var(--brand); font-weight: 500;"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview & Action Panel -->
+    <div class="glass-panel" id="workspacePanel" style="display: none;">
+      <div class="toolbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <h3 style="color: var(--primary);">Data Preview</h3>
+          <span class="badge" id="eventCount">0 Events</span>
+        </div>
+        <div class="toolbar-actions">
+          <button class="btn btn-secondary" onclick="addNewRow()">+ Add Row</button>
+          <button class="btn btn-secondary" onclick="downloadBulkICS()">📥 Download All as .ics</button>
+          <button class="btn btn-primary" onclick="sendInvites()" id="sendBtn">✉️ Send Calendar Invites</button>
+        </div>
+      </div>
+
+      <div class="summary-panel" id="summaryPanel"></div>
+
+      <div class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th style="width: 40px;">
+                <input type="checkbox" id="selectAll" checked onchange="toggleSelectAll()">
+              </th>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Duration (Hrs)</th>
+              <th>Location</th>
+              <th>Inspector Name</th>
+              <th>Inspector Email</th>
+              <th>Type</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Rows injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Staff Email Directory
+    // Add all staff emails here. The system will auto-match names to these emails.
+    const STAFF_DIRECTORY = {
+      "Dr Regina K. Garba": "regina.garba@nafdac.gov.ng",
+      "Pharm. Adesanya Oluwaseun": "oluwaseun.adesanya@nafdac.gov.ng",
+      "Mr Omotuwa Adebayo": "omotuwa.adebayo@nafdac.gov.ng",
+      "Mrs Bisola Robert": "bisola.robert@nafdac.gov.ng",
+      "Mr Ifeanyi Okeke": "ifeanyi.okeke@nafdac.gov.ng",
+      "Dr Saad Abubakar": "saad.abubakar@nafdac.gov.ng",
+      "Mr Enilama Emmanuel": "enilama.oshoriamhe@nafdac.gov.ng",
+      "Mr Solomon Emeje Ileanwa": "emeje.ileanwa@nafdac.gov.ng",
+      "Ms Mary Adegbite": "adegbite.adeboyin@nafdac.gov.ng",
+      "Mr Adekunle Adeniran": "adekunle.adeniran@nafdac.gov.ng"
+    };
+
+    function lookupEmail(name) {
+      if (!name) return '';
+      const cleanName = name.toLowerCase().trim();
+      for (const [staffName, email] of Object.entries(STAFF_DIRECTORY)) {
+        if (cleanName.includes(staffName.toLowerCase().trim()) || staffName.toLowerCase().trim().includes(cleanName)) {
+          return email;
+        }
+      }
+      return '';
+    }
+
+    // App State
+    let inspections = [];
+
+    // Elements
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadLoader = document.getElementById('uploadLoader');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const workspacePanel = document.getElementById('workspacePanel');
+    const tableBody = document.getElementById('tableBody');
+    const eventCount = document.getElementById('eventCount');
+    const selectAllCb = document.getElementById('selectAll');
+    const summaryPanel = document.getElementById('summaryPanel');
+
+    // Drag & Drop Handlers
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    // File Processing
+    async function handleFile(file) {
+      if (!file.name.endsWith('.docx')) {
+        alert('Please upload a valid .docx file.');
+        return;
+      }
+
+      const apiKey = document.getElementById('apiKey').value.trim();
+      if (!apiKey) {
+        alert('Please enter your Groq API Key first.');
+        document.getElementById('apiKey').focus();
+        return;
+      }
+
+      uploadLoader.style.display = 'block';
+      uploadStatus.textContent = 'Extracting text from document...';
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        const text = result.value;
+
+        if (!text.trim()) {
+          throw new Error("No text found in document.");
+        }
+
+        uploadStatus.textContent = 'Analyzing schedule with AI...';
+        await parseTextWithAI(text, apiKey);
+
+      } catch (error) {
+        console.error(error);
+        alert(`Error processing file: ${error.message}`);
+        uploadStatus.textContent = 'Processing failed.';
+      } finally {
+        uploadLoader.style.display = 'none';
+      }
+    }
+
+    // AI Parsing (Groq Llama 3)
+    async function parseTextWithAI(text, apiKey) {
+      const systemPrompt = `You are a data extraction assistant. Return ONLY a JSON object with a single key "inspections" containing an array of objects. Each object must have: title (string), date (YYYY-MM-DD), time (HH:MM 24hr format), duration_hours (number), location (string), inspector (full name), inspector_email (string), type (string), notes (string). If a field is missing use empty string or 1 for duration.`;
+      const userPrompt = `Extract all inspection schedule entries from this text:\n\n${text.substring(0, 20000)}`;
+
+      const url = `https://api.groq.com/openai/v1/chat/completions`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'llama3-70b-8192',
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            temperature: 0.1,
+            response_format: { type: "json_object" }
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error.message);
+        }
+
+        let resultText = data.choices[0].message.content;
+
+        let parsedData = JSON.parse(resultText);
+        let inspectionsArray = parsedData.inspections;
+
+        if (!Array.isArray(inspectionsArray)) {
+          throw new Error("AI did not return a valid array of inspections.");
+        }
+
+        inspections = inspectionsArray.map((item, index) => {
+          // Auto-fill email from directory if missing
+          let email = item.inspector_email || '';
+          if (!email && item.inspector) {
+            email = lookupEmail(item.inspector);
+          }
+
+          return {
+            id: Date.now() + index,
+            selected: true,
+            ...item,
+            inspector_email: email
+          };
+        });
+
+        uploadStatus.textContent = `Successfully extracted ${inspections.length} events!`;
+        renderTable();
+        workspacePanel.style.display = 'block';
+
+      } catch (err) {
+        throw new Error(`AI Parsing Error: ${err.message}`);
+      }
+    }
+
+    // Email Validation Helper
+    function isValidEmail(email) {
+      if (!email) return false;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Render Table
+    function renderTable() {
+      tableBody.innerHTML = '';
+      eventCount.textContent = `${inspections.length} Events`;
+
+      inspections.forEach((insp, index) => {
+        const tr = document.createElement('tr');
+        const hasValidEmail = isValidEmail(insp.inspector_email);
+
+        if (!hasValidEmail) {
+          tr.classList.add('missing-email');
+        }
+
+        tr.innerHTML = `
+          <td>
+            <input type="checkbox" ${insp.selected ? 'checked' : ''} 
+                   onchange="updateField(${index}, 'selected', this.checked)">
+          </td>
+          <td><input type="text" class="inline-input" value="${escapeHtml(insp.title || '')}" onchange="updateField(${index}, 'title', this.value)"></td>
+          <td><input type="date" class="inline-input" value="${escapeHtml(insp.date || '')}" onchange="updateField(${index}, 'date', this.value)"></td>
+          <td><input type="time" class="inline-input" value="${escapeHtml(insp.time || '')}" onchange="updateField(${index}, 'time', this.value)"></td>
+          <td><input type="number" class="inline-input" value="${insp.duration_hours || 1}" min="0.5" step="0.5" onchange="updateField(${index}, 'duration_hours', parseFloat(this.value))"></td>
+          <td><input type="text" class="inline-input" value="${escapeHtml(insp.location || '')}" onchange="updateField(${index}, 'location', this.value)"></td>
+          <td><input type="text" class="inline-input" value="${escapeHtml(insp.inspector || '')}" onchange="updateField(${index}, 'inspector', this.value)"></td>
+          <td ${!hasValidEmail ? 'data-tooltip="Email missing or invalid — add before sending"' : ''}>
+            <input type="email" class="inline-input ${!hasValidEmail ? 'invalid' : ''}" value="${escapeHtml(insp.inspector_email || '')}" onchange="updateField(${index}, 'inspector_email', this.value)">
+          </td>
+          <td><input type="text" class="inline-input" value="${escapeHtml(insp.type || '')}" onchange="updateField(${index}, 'type', this.value)"></td>
+          <td><input type="text" class="inline-input" value="${escapeHtml(insp.notes || '')}" onchange="updateField(${index}, 'notes', this.value)"></td>
+          <td>
+            <button class="btn btn-danger" onclick="deleteRow(${index})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Edit Field
+    function updateField(index, field, value) {
+      inspections[index][field] = value;
+      if (field === 'inspector_email' || field === 'selected') {
+        renderTable(); // re-render to update validation styling
+      }
+    }
+
+    function toggleSelectAll() {
+      const checked = selectAllCb.checked;
+      inspections.forEach(insp => insp.selected = checked);
+      renderTable();
+    }
+
+    function deleteRow(index) {
+      inspections.splice(index, 1);
+      renderTable();
+    }
+
+    function addNewRow() {
+      inspections.unshift({
+        id: Date.now(),
+        selected: true,
+        title: 'New Inspection',
+        date: new Date().toISOString().split('T')[0],
+        time: '09:00',
+        duration_hours: 1,
+        location: '',
+        inspector: '',
+        inspector_email: '',
+        type: '',
+        notes: ''
+      });
+      renderTable();
+    }
+
+    function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') return unsafe;
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // ICS Generator Helper
+    function formatICSDate(dateStr, timeStr) {
+      if (!dateStr || !timeStr) return null;
+      const d = new Date(`${dateStr}T${timeStr}`);
+      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    }
+
+    function addHoursToICSDate(dateStr, timeStr, hours) {
+      if (!dateStr || !timeStr) return null;
+      const d = new Date(`${dateStr}T${timeStr}`);
+      d.setMinutes(d.getMinutes() + (hours * 60));
+      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    }
+
+    function generateICSEventString(insp, reminderMinutes) {
+      const start = formatICSDate(insp.date, insp.time);
+      const end = addHoursToICSDate(insp.date, insp.time, insp.duration_hours || 1);
+
+      if (!start || !end) return '';
+
+      const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const uid = insp.id + "@nafdac.gov.ng";
+
+      let eventStr = `BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${now}
+DTSTART:${start}
+DTEND:${end}
+SUMMARY:${insp.title || 'Inspection'}
+LOCATION:${insp.location || ''}
+DESCRIPTION:Type: ${insp.type || 'N/A'}\\nNotes: ${insp.notes || 'None'}\\nInspector: ${insp.inspector || 'Unassigned'}
+`;
+      if (insp.inspector_email) {
+        eventStr += `ORGANIZER;CN="NAFDAC Scheduling":mailto:no-reply@nafdac.gov.ng\n`;
+        eventStr += `ATTENDEE;RSVP=TRUE;CN="${insp.inspector}":mailto:${insp.inspector_email}\n`;
+      }
+
+      if (reminderMinutes > 0) {
+        eventStr += `BEGIN:VALARM
+TRIGGER:-PT${reminderMinutes}M
+ACTION:DISPLAY
+DESCRIPTION:Reminder: ${insp.title || 'Inspection'}
+END:VALARM\n`;
+      }
+
+      eventStr += `END:VEVENT\n`;
+      return eventStr;
+    }
+
+    function generateFullICSContent(selectedInspections, reminderMinutes) {
+      let ics = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NAFDAC//Inspection Scheduler//EN\nCALSCALE:GREGORIAN\n`;
+      selectedInspections.forEach(insp => {
+        ics += generateICSEventString(insp, reminderMinutes);
+      });
+      ics += `END:VCALENDAR`;
+      return ics;
+    }
+
+    // Action: Download Bulk ICS
+    function downloadBulkICS() {
+      const selected = inspections.filter(i => i.selected);
+      if (selected.length === 0) return alert('No inspections selected.');
+
+      const reminderMinutes = parseInt(document.getElementById('reminderSelect').value, 10);
+      const icsContent = generateFullICSContent(selected, reminderMinutes);
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `inspection-schedule-${new Date().toISOString().split('T')[0]}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Action: Send Emails
+    async function sendInvites() {
+      const selected = inspections.filter(i => i.selected);
+      if (selected.length === 0) return alert('No inspections selected.');
+
+      let sentCount = 0;
+      let missingCount = 0;
+      const reminderMinutes = parseInt(document.getElementById('reminderSelect').value, 10);
+
+      // Warning about browser limitations
+      alert("Note: Browsers cannot automatically attach files to mailto: links. \n\nWe will download the .ics file for each inspection and open your email client. Please drag & drop the downloaded .ics file into the email before sending.");
+
+      for (const insp of selected) {
+        if (!isValidEmail(insp.inspector_email)) {
+          missingCount++;
+          continue;
+        }
+
+        // 1. Generate & trigger download of individual .ics
+        const singleIcsContent = generateFullICSContent([insp], reminderMinutes);
+        const blob = new Blob([singleIcsContent], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Invite_${insp.title.replace(/\s+/g, '_')}_${insp.date}.ics`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 2. Trigger Mailto
+        const subject = encodeURIComponent(`Inspection Scheduled: ${insp.title} on ${insp.date}`);
+        const body = encodeURIComponent(
+          `Hello ${insp.inspector},
+
+You have been scheduled for an inspection.
+
+Title: ${insp.title}
+Date: ${insp.date}
+Time: ${insp.time}
+Location: ${insp.location}
+Type: ${insp.type}
+Notes: ${insp.notes}
+
+IMPORTANT: Please drag and drop the downloaded .ics file into this email to attach the calendar invite, or open the .ics file directly to add it to your calendar.
+
+Regards,
+NAFDAC Scheduling Team`
+        );
+
+        const mailtoLink = `mailto:${insp.inspector_email}?subject=${subject}&body=${body}`;
+        window.open(mailtoLink, '_blank');
+
+        sentCount++;
+
+        // Small delay to prevent browser blocking multiple popups/downloads
+        await new Promise(r => setTimeout(r, 1000));
+      }
+
+      summaryPanel.style.display = 'block';
+      summaryPanel.textContent = `Process Complete: ${sentCount} emails prepared. ${missingCount} skipped due to missing/invalid email.`;
+
+      if (missingCount > 0) {
+        summaryPanel.style.color = '#9a3412';
+        summaryPanel.style.backgroundColor = '#fff7ed';
+        summaryPanel.style.borderColor = '#fdba74';
+      } else {
+        summaryPanel.style.color = '#166534';
+        summaryPanel.style.backgroundColor = '#f0fdf4';
+        summaryPanel.style.borderColor = '#bbf7d0';
+      }
+    }
+  </script>
+</body>
+
+</html>
