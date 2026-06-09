@@ -405,10 +405,7 @@ END:VALARM\n`;
       link.download = `inspection-schedule-${new Date().toISOString().split('T')[0]}.ics`;
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-    }
-
-    // Action: Send Emails via Power Automate
+    // Action: Send Emails via Power Automate (Grouped by Inspector)
     async function sendInvites() {
       const selected = inspections.filter(i => i.selected);
       if (selected.length === 0) return alert('No inspections selected.');
@@ -428,48 +425,92 @@ END:VALARM\n`;
       sendBtn.textContent = 'Sending...';
       sendBtn.disabled = true;
 
+      // Group inspections by inspector email
+      const groupedByEmail = {};
       for (const insp of selected) {
         if (!isValidEmail(insp.inspector_email)) {
           missingCount++;
           continue;
         }
+        if (!groupedByEmail[insp.inspector_email]) {
+          groupedByEmail[insp.inspector_email] = [];
+        }
+        groupedByEmail[insp.inspector_email].push(insp);
+      }
 
-        const icsContent = generateFullICSContent([insp], reminderMinutes);
-        
-        // Prepare the payload for Power Automate
-        const subject = `Inspection Scheduled: ${insp.title} on ${insp.date}`;
-        const body = `Hello,\n\nYou have been scheduled for an inspection.\n\nFacility: ${insp.title}\nTeam: ${insp.inspector}\nType: ${insp.type || 'N/A'}\nDate: ${insp.date}\nTime: ${insp.time}\nLocation: ${insp.location}\nNotes: ${insp.notes || 'None'}\n\nPlease review the details and RSVP.\n\nRegards,\nNAFDAC Scheduling Team`;
-        
-        // Base64 encode the ICS string safely
+      for (const [email, userInspections] of Object.entries(groupedByEmail)) {
+        // Generate ONE single .ics file containing ALL inspections for this person
+        const icsContent = generateFullICSContent(userInspections, reminderMinutes);
         const base64Ics = btoa(unescape(encodeURIComponent(icsContent)));
 
-        const startTime = `${insp.date}T${insp.time || '10:00'}:00`;
-        const endD = new Date(startTime);
-        endD.setMinutes(endD.getMinutes() + ((insp.duration_hours || 1) * 60));
-        
-        // Format to YYYY-MM-DDTHH:mm:ss for Power Automate
-        const pad = (n) => n.toString().padStart(2, '0');
-        const endTime = `${endD.getFullYear()}-${pad(endD.getMonth()+1)}-${pad(endD.getDate())}T${pad(endD.getHours())}:${pad(endD.getMinutes())}:00`;
+        // Generate a beautiful HTML table for the email body
+        const tableRows = userInspections.map(insp => `
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;"><strong>${insp.date}</strong></td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.time || '10:00'}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; color: #008751; font-weight: 600;">${insp.title}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.location}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${insp.type || 'N/A'}</td>
+          </tr>
+        `).join('');
+
+        const bodyHtml = `
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="background-color: #008751; padding: 20px; text-align: center; color: white;">
+              <h2 style="margin: 0; font-size: 24px;">Your Inspection Schedule</h2>
+              <p style="margin: 5px 0 0 0; opacity: 0.9;">NAFDAC Post Marketing Surveillance</p>
+            </div>
+            
+            <div style="padding: 30px;">
+              <p style="font-size: 16px; color: #334155;">Hello,</p>
+              <p style="font-size: 16px; color: #334155;">You have been scheduled for <strong>${userInspections.length}</strong> upcoming inspection(s). Please review your complete itinerary below:</p>
+              
+              <table style="width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 14px; text-align: left;">
+                <thead>
+                  <tr style="background-color: #f8fafc;">
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Date</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Time</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Facility</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Location</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #008751; color: #475569;">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRows}
+                </tbody>
+              </table>
+
+              <div style="margin-top: 30px; padding: 15px; background-color: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 4px;">
+                <p style="margin: 0; color: #166534; font-size: 14px;">
+                  <strong>📅 Add to Calendar:</strong> We have attached a single <code>.ics</code> file to this email. Open or double-click the attachment to automatically add all of these events to your Outlook or Google Calendar at once!
+                </p>
+              </div>
+              
+              <p style="margin-top: 40px; color: #64748b; font-size: 13px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                Regards,<br><strong>NAFDAC Scheduling Team</strong>
+              </p>
+            </div>
+          </div>
+        `;
 
         try {
           await fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              to_email: insp.inspector_email,
-              subject: subject,
-              body: body,
-              location: insp.location || '',
-              start_time: startTime,
-              end_time: endTime
+              to_email: email,
+              subject: `Your NAFDAC Inspection Schedule (${userInspections.length} Facilities)`,
+              body: bodyHtml,
+              filename: `Inspection_Schedule.ics`,
+              ics_base64: base64Ics
             })
           });
           sentCount++;
         } catch (error) {
-          console.error("Failed to trigger webhook for", insp.inspector, error);
+          console.error("Failed to trigger webhook for", email, error);
         }
         
-        // Small delay to prevent rate-limiting
+        // Delay to prevent rate-limiting
         await new Promise(r => setTimeout(r, 500));
       }
 
@@ -477,7 +518,7 @@ END:VALARM\n`;
       sendBtn.disabled = false;
 
       summaryPanel.style.display = 'block';
-      summaryPanel.textContent = `Process Complete: ${sentCount} emails triggered via Power Automate. ${missingCount} skipped due to missing/invalid email.`;
+      summaryPanel.textContent = `Process Complete: ${sentCount} digest emails triggered via Power Automate. ${missingCount} records skipped due to missing/invalid email.`;
 
       if (missingCount > 0) {
         summaryPanel.style.color = '#9a3412';
