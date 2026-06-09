@@ -312,7 +312,7 @@
         selected: true,
         title: 'New Inspection',
         date: new Date().toISOString().split('T')[0],
-        time: '09:00',
+        time: '10:00',
         duration_hours: 1,
         location: '',
         inspector: '',
@@ -443,7 +443,7 @@ END:VALARM\n`;
         // Base64 encode the ICS string safely
         const base64Ics = btoa(unescape(encodeURIComponent(icsContent)));
 
-        const startTime = `${insp.date}T${insp.time || '09:00'}:00`;
+        const startTime = `${insp.date}T${insp.time || '10:00'}:00`;
         const endD = new Date(startTime);
         endD.setMinutes(endD.getMinutes() + ((insp.duration_hours || 1) * 60));
         
