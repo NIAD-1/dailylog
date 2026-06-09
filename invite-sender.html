@@ -54,7 +54,7 @@
 
       <div id="dropzone" class="dropzone" style="margin-top:24px;">
         <p><strong>Drag & Drop your .docx file here</strong> or click to browse</p>
-        <input type="file" id="fileInput" accept=".docx" style="display: none;">
+        <input type="file" id="fileInput" accept=".docx" style="display: none;" multiple>
         <div class="loader" id="uploadLoader"></div>
         <p id="uploadStatus" style="color: var(--accent); font-weight: bold; margin-top:8px;"></p>
       </div>
@@ -148,39 +148,43 @@
       e.preventDefault();
       dropzone.classList.remove('dragover');
       if (e.dataTransfer.files.length) {
-        handleFile(e.dataTransfer.files[0]);
+        handleFile(e.dataTransfer.files);
       }
     });
     dropzone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length) handleFile(e.target.files[0]);
+      if (e.target.files.length) handleFile(e.target.files);
     });
 
     // File Processing
-    async function handleFile(file) {
-      if (!file.name.endsWith('.docx')) {
-        alert('Please upload a valid .docx file.');
+    async function handleFile(fileList) {
+      const files = Array.from(fileList).filter(f => f.name.endsWith('.docx'));
+      if (files.length === 0) {
+        alert('Please upload at least one valid .docx file.');
         return;
       }
 
       uploadLoader.style.display = 'block';
-      uploadStatus.textContent = 'Extracting text from document...';
+      uploadStatus.textContent = `Extracting text from ${files.length} document(s)...`;
 
       try {
-        const arrayBuffer = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        const text = result.value;
+        let combinedText = '';
+        for (const file of files) {
+          const arrayBuffer = await file.arrayBuffer();
+          const result = await mammoth.extractRawText({ arrayBuffer });
+          combinedText += `\n\n--- Document: ${file.name} ---\n\n` + result.value;
+        }
 
-        if (!text.trim()) {
-          throw new Error("No text found in document.");
+        if (!combinedText.trim()) {
+          throw new Error("No text found in documents.");
         }
 
         uploadStatus.textContent = 'Analyzing schedule with AI...';
-        await parseTextWithAI(text);
+        await parseTextWithAI(combinedText);
 
       } catch (error) {
         console.error(error);
-        alert(`Error processing file: ${error.message}`);
+        alert(`Error processing files: ${error.message}`);
         uploadStatus.textContent = 'Processing failed.';
       } finally {
         uploadLoader.style.display = 'none';
