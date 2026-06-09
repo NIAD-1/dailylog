@@ -37,8 +37,13 @@
       
       <div class="row">
         <div class="col">
+          <label>Power Automate Webhook URL</label>
+          <input type="text" id="webhookUrl" placeholder="https://prod-..." style="padding: 12px; width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;">
+          <p class="muted small" style="margin-top:4px;">Paste your Power Automate HTTP trigger URL here.</p>
+        </div>
+        <div class="col">
           <label>Default Reminder</label>
-          <select id="reminderSelect" style="padding: 12px;">
+          <select id="reminderSelect" style="padding: 12px; width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;">
             <option value="1440">1 day before</option>
             <option value="2880">2 days before</option>
             <option value="10080">1 week before</option>
@@ -403,17 +408,25 @@ END:VALARM\n`;
       document.body.removeChild(link);
     }
 
-    // Action: Send Emails
+    // Action: Send Emails via Power Automate
     async function sendInvites() {
       const selected = inspections.filter(i => i.selected);
       if (selected.length === 0) return alert('No inspections selected.');
+
+      const webhookUrl = document.getElementById('webhookUrl').value.trim();
+      if (!webhookUrl) {
+        alert('Please paste your Power Automate Webhook URL in the setup section at the top of the page.');
+        document.getElementById('webhookUrl').focus();
+        return;
+      }
 
       let sentCount = 0;
       let missingCount = 0;
       const reminderMinutes = parseInt(document.getElementById('reminderSelect').value, 10);
 
-      // Warning about browser limitations
-      alert("Note: Browsers cannot automatically attach files to mailto: links. \n\nWe will download the .ics file for each inspection and open your email client. Please drag & drop the downloaded .ics file into the email before sending.");
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.textContent = 'Sending...';
+      sendBtn.disabled = true;
 
       for (const insp of selected) {
         if (!isValidEmail(insp.inspector_email)) {
@@ -421,47 +434,41 @@ END:VALARM\n`;
           continue;
         }
 
-        // 1. Generate & trigger download of individual .ics
-        const singleIcsContent = generateFullICSContent([insp], reminderMinutes);
-        const blob = new Blob([singleIcsContent], { type: 'text/calendar;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Invite_${insp.title.replace(/\s+/g, '_')}_${insp.date}.ics`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const icsContent = generateFullICSContent([insp], reminderMinutes);
+        
+        // Prepare the payload for Power Automate
+        const subject = `Inspection Scheduled: ${insp.title} on ${insp.date}`;
+        const body = `Hello ${insp.inspector},\n\nYou have been scheduled for an inspection.\n\nType: ${insp.type || 'N/A'}\nDate: ${insp.date}\nTime: ${insp.time}\nLocation: ${insp.location}\nNotes: ${insp.notes || 'None'}\n\nPlease find the calendar invitation attached.\n\nRegards,\nNAFDAC Scheduling Team`;
+        
+        // Base64 encode the ICS string safely
+        const base64Ics = btoa(unescape(encodeURIComponent(icsContent)));
 
-        // 2. Trigger Mailto
-        const subject = encodeURIComponent(`Inspection Scheduled: ${insp.title} on ${insp.date}`);
-        const body = encodeURIComponent(
-          `Hello ${insp.inspector},
-
-You have been scheduled for an inspection.
-
-Title: ${insp.title}
-Date: ${insp.date}
-Time: ${insp.time}
-Location: ${insp.location}
-Type: ${insp.type}
-Notes: ${insp.notes}
-
-IMPORTANT: Please drag and drop the downloaded .ics file into this email to attach the calendar invite, or open the .ics file directly to add it to your calendar.
-
-Regards,
-NAFDAC Scheduling Team`
-        );
-
-        const mailtoLink = `mailto:${insp.inspector_email}?subject=${subject}&body=${body}`;
-        window.open(mailtoLink, '_blank');
-
-        sentCount++;
-
-        // Small delay to prevent browser blocking multiple popups/downloads
-        await new Promise(r => setTimeout(r, 1000));
+        try {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to_email: insp.inspector_email,
+              subject: subject,
+              body: body,
+              filename: `inspection-${insp.date}.ics`,
+              ics_base64: base64Ics
+            })
+          });
+          sentCount++;
+        } catch (error) {
+          console.error("Failed to trigger webhook for", insp.inspector, error);
+        }
+        
+        // Small delay to prevent rate-limiting
+        await new Promise(r => setTimeout(r, 500));
       }
 
+      sendBtn.textContent = '✉️ Send Invites';
+      sendBtn.disabled = false;
+
       summaryPanel.style.display = 'block';
-      summaryPanel.textContent = `Process Complete: ${sentCount} emails prepared. ${missingCount} skipped due to missing/invalid email.`;
+      summaryPanel.textContent = `Process Complete: ${sentCount} emails triggered via Power Automate. ${missingCount} skipped due to missing/invalid email.`;
 
       if (missingCount > 0) {
         summaryPanel.style.color = '#9a3412';
