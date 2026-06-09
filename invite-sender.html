@@ -405,6 +405,9 @@ END:VALARM\n`;
       link.download = `inspection-schedule-${new Date().toISOString().split('T')[0]}.ics`;
       document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+    }
+
     // Action: Send Emails via Power Automate (Grouped by Inspector)
     async function sendInvites() {
       const selected = inspections.filter(i => i.selected);
