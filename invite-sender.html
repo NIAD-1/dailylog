@@ -438,7 +438,7 @@ END:VALARM\n`;
         
         // Prepare the payload for Power Automate
         const subject = `Inspection Scheduled: ${insp.title} on ${insp.date}`;
-        const body = `Hello ${insp.inspector},\n\nYou have been scheduled for an inspection.\n\nType: ${insp.type || 'N/A'}\nDate: ${insp.date}\nTime: ${insp.time}\nLocation: ${insp.location}\nNotes: ${insp.notes || 'None'}\n\nPlease find the calendar invitation attached.\n\nRegards,\nNAFDAC Scheduling Team`;
+        const body = `Hello,\n\nYou have been scheduled for an inspection.\n\nTeam: ${insp.inspector}\nType: ${insp.type || 'N/A'}\nDate: ${insp.date}\nTime: ${insp.time}\nLocation: ${insp.location}\nNotes: ${insp.notes || 'None'}\n\nPlease review the details and RSVP.\n\nRegards,\nNAFDAC Scheduling Team`;
         
         // Base64 encode the ICS string safely
         const base64Ics = btoa(unescape(encodeURIComponent(icsContent)));
