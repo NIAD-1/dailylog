@@ -115,13 +115,24 @@
 
     function lookupEmail(name) {
       if (!name) return '';
-      const cleanName = name.toLowerCase().trim();
-      for (const [staffName, email] of Object.entries(STAFF_DIRECTORY)) {
-        if (cleanName.includes(staffName.toLowerCase().trim()) || staffName.toLowerCase().trim().includes(cleanName)) {
-          return email;
+      // Split by common separators: comma, semicolon, 'and', '&'
+      const names = name.split(/,|\band\b|;|&/i);
+      const emails = [];
+      for (let n of names) {
+        n = n.trim();
+        if (!n) continue;
+        const cleanName = n.toLowerCase();
+        for (const [staffName, email] of Object.entries(STAFF_DIRECTORY)) {
+          const cleanStaff = staffName.toLowerCase().trim();
+          if (cleanName.includes(cleanStaff) || cleanStaff.includes(cleanName)) {
+            if (!emails.includes(email)) {
+              emails.push(email);
+            }
+            break;
+          }
         }
       }
-      return '';
+      return emails.join(', ');
     }
 
     // App State
@@ -432,17 +443,30 @@ END:VALARM\n`;
       sendBtn.textContent = 'Sending...';
       sendBtn.disabled = true;
 
-      // Group inspections by inspector email
+      // Group inspections by inspector email (supports comma-separated emails)
       const groupedByEmail = {};
       for (const insp of selected) {
-        if (!isValidEmail(insp.inspector_email)) {
+        if (!insp.inspector_email) {
           missingCount++;
           continue;
         }
-        if (!groupedByEmail[insp.inspector_email]) {
-          groupedByEmail[insp.inspector_email] = [];
+
+        const emails = insp.inspector_email.split(/[,;]/).map(e => e.trim()).filter(Boolean);
+        let validEmailsFound = 0;
+
+        for (const email of emails) {
+          if (isValidEmail(email)) {
+            validEmailsFound++;
+            if (!groupedByEmail[email]) {
+              groupedByEmail[email] = [];
+            }
+            groupedByEmail[email].push(insp);
+          }
         }
-        groupedByEmail[insp.inspector_email].push(insp);
+
+        if (validEmailsFound === 0) {
+          missingCount++;
+        }
       }
 
       for (const [email, userInspections] of Object.entries(groupedByEmail)) {
