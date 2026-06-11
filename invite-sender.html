@@ -265,6 +265,13 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
+    function areAllEmailsValid(emailString) {
+      if (!emailString) return false;
+      const emails = emailString.split(/[,;]/).map(e => e.trim()).filter(Boolean);
+      if (emails.length === 0) return false;
+      return emails.every(isValidEmail);
+    }
+
     // Render Table
     function renderTable() {
       tableBody.innerHTML = '';
@@ -272,7 +279,7 @@
 
       inspections.forEach((insp, index) => {
         const tr = document.createElement('tr');
-        const hasValidEmail = isValidEmail(insp.inspector_email);
+        const hasValidEmail = areAllEmailsValid(insp.inspector_email);
 
         if (!hasValidEmail) {
           tr.classList.add('missing-email');
