@@ -41,8 +41,8 @@ exports.handler = async function (event) {
 
     // ── Trigger start ──────────────────────────────────────────────────────
     if (state.step === STEPS.IDLE) {
-      if (!['log','start','begin','hi','hello','hey'].includes(msg.toLowerCase())) {
-        return respond(200, { reply: '👋 Hello! Type "log" to start filling in your daily activity log.' });
+      if (!['log','start','begin'].includes(msg.toLowerCase())) {
+        return respond(200, { reply: null });
       }
       state = { step: STEPS.ASK_COUNT, senderName: senderName || senderId };
     }
