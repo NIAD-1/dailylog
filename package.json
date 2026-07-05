@@ -1,0 +1,12 @@
+{
+  "name": "dailylog",
+  "version": "1.0.0",
+  "description": "DailyLog PMS Inspector Portal with Teams Bot integration",
+  "main": "app.js",
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.8.0"
+  }
+}

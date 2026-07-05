@@ -1,0 +1,4 @@
+node_modules/
+.DS_Store
+enilama-system-app-firebase-adminsdk-fbsvc-*.json
+netlify/functions/serviceAccountKey.json
