@@ -3,6 +3,8 @@
 //   1. Local dev:  Place serviceAccountKey.json in this folder
 //   2. Netlify:    Set FIREBASE_SERVICE_ACCOUNT env var (paste entire JSON as one string)
 const admin = require('firebase-admin');
+const fs = require('fs');
+const path = require('path');
 
 if (!admin.apps.length) {
   let credential;
@@ -14,12 +16,13 @@ if (!admin.apps.length) {
   }
   // Option 2: Local JSON file (for development/testing)
   else {
-    try {
-      const serviceAccount = require('./serviceAccountKey.json');
+    const localKeyPath = path.join(__dirname, 'serviceAccountKey.json');
+    if (fs.existsSync(localKeyPath)) {
+      const serviceAccount = JSON.parse(fs.readFileSync(localKeyPath, 'utf8'));
       credential = admin.credential.cert(serviceAccount);
-    } catch (e) {
+    } else {
       console.error('No Firebase credentials found. Set FIREBASE_SERVICE_ACCOUNT env var or place serviceAccountKey.json in netlify/functions/');
-      throw e;
+      throw new Error('No Firebase credentials found');
     }
   }
 
