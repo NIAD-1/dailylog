@@ -201,5 +201,8 @@ function httpPost(url, body) {
 }
 
 function respond(code, body) {
+  if (body && typeof body.reply === 'string') {
+    body.reply = body.reply.replace(/\n/g, '<br/>');
+  }
   return { statusCode: code, headers: CORS, body: JSON.stringify(body) };
 }
