@@ -2,7 +2,7 @@ import { db, collection, getDocs, addDoc, serverTimestamp, doc, getDoc, query, w
 import { clearRoot, addChoicesInstance, getChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
-const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran"];
+const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran, Dr. Lawal Saheed, Ms Chime Helen, Pharm. Murtala Abdulkadir, Pharm. Nazeef Umar, Pharm. Anas Haruna Rugahh, Pharm. Chiamaka Adibo, Pharm. Ismail Suraj"];
 const ACTIVITY_TYPES = ["Routine Surveillance", "GSDP", "GLSI", "Consumer Complaint", "COLD CHAIN Monitoring"];
 const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Donated Items/Drugs", "Service Drugs", "Orphan Drugs"];
 
