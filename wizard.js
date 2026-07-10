@@ -3,7 +3,7 @@ import { resolveFacility } from "./facility-utils.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, removeChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
-const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran", "Others"];
+const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran", "Dr. Lawal Saheed", "Ms Chime Helen", "Pharm. Murtala Abdulkadir", "Pharm. Nazeef Umar", "Pharm. Anas Haruna Rugahh", "Pharm. Chiamaka Adibo", "Pharm. Ismail Suraj", "Others"];
 const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/d1mla94c/upload';
 const CLOUDINARY_UPLOAD_PRESET = 'Daily-Activity';
@@ -264,7 +264,7 @@ function bindStep_FacilityForm(root) {
         const otherInspectorInput = container.querySelector('textarea[name="inspectorNameOther"]');
         if (currentData.inspectorNames) {
             choices.setValue(currentData.inspectorNames);
-            
+
             // Restore "Others" textarea if some names were manual entries
             const officialNames = INSPECTORS_LIST.filter(n => n !== 'Others');
             const manualNames = currentData.inspectorNames.filter(n => !officialNames.includes(n));
@@ -517,7 +517,7 @@ function bindStep_FacilityForm(root) {
                 }
             });
         }
-        
+
         const gsdpFacilitySelect = conditional.querySelector('[name="gsdpFacilityName"]');
         const gsdpSubActivitySelect = conditional.querySelector('[name="gsdpSubActivity"]');
         const ceviFacilitySection = conditional.querySelector('#ceviFacilitySection');
@@ -658,7 +658,7 @@ function saveCurrentFacilityData() {
     const facilityNameInput = container.querySelector('input[name="facilityName"]');
     const newFacNameInput = container.querySelector('input[name="newConsultativeFacilityName"]');
     const newGsdpFacNameInput = container.querySelector('input[name="newGsdpFacilityName"]');
-    
+
     const isConsultative = consultativeFacilitySelect != null;
     const isCevi = gsdpFacilitySelect != null && container.querySelector('#ceviFacilitySection') && container.querySelector('#ceviFacilitySection').style.display !== 'none';
 
@@ -819,9 +819,9 @@ async function handleSubmitWizard(root) {
                 const facName = (reportData.facilityName || "").trim();
                 if (facName) {
                     const resolved = await resolveFacility(
-                        facName, 
-                        reportData.facilityAddress, 
-                        "wizard", 
+                        facName,
+                        reportData.facilityAddress,
+                        "wizard",
                         reportData.activityType
                     );
                     // Link the report to the found/created record ID
