@@ -177,7 +177,7 @@ function renderStep_FacilityForm() {
             <textarea name="inspectorNameOther" placeholder="For 'Others', specify names here..." style="display:none; margin-top:8px; width: 100%;" rows="3"></textarea>
           </div>` : ''}
         <div class="row"><div class="col"><label>Date</label><input type="date" name="inspectionDate" required></div><div class="col"><label>Area</label><select name="area">${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div></div>
-        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
+        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>Special Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
         <div class="row" id="regularFacilityRow"><div class="col"><label>Facility Name</label><input name="facilityName" required></div><div class="col"><label>Facility Address</label><input name="facilityAddress" required></div></div>
         <div name="conditional" style="margin-top:8px"></div>
         <div style="margin-top:8px"><label>Action Taken / Remarks</label><textarea name="actionTaken" rows="4"></textarea></div>
@@ -337,7 +337,7 @@ function bindStep_FacilityForm(root) {
                 </div>
             </div>`;
 
-        if (['Routine Surveillance', 'Consumer Complaint'].includes(val)) {
+        if (['Routine Surveillance', 'Consumer Complaint', 'Special Surveillance'].includes(val)) {
             conditionalHTML = `
                 <div style="margin-top:8px">
                     <label>Main Product Type <span style="color:red">*</span></label>
@@ -1058,6 +1058,7 @@ async function triggerConsultativeMeetingWebhook(report) {
 function getActivityCode(activity) {
     const codes = {
         'Routine Surveillance': 'RS',
+        'Special Surveillance': 'SS',
         'Consumer Complaint': 'CC',
         'GSDP': 'GSDP',
         'GLSI': 'GLSI',
@@ -1091,12 +1092,21 @@ function getFolderConfig(report) {
             }
             
             let root = '/ROUTINE SURVEILLANCE/DRUGS';
-            if (mainProductType) {
-                root = \`/ROUTINE SURVEILLANCE/\${mainProductType.toUpperCase()}\`;
+            if (mainProductType === 'Medical Devices') {
+                root = '/MEDICAL DEVICES/ROUTINE SURVEILLANCE FOR MEDICAL DEVICES';
+            } else if (mainProductType) {
+                root = `/ROUTINE SURVEILLANCE/${mainProductType.toUpperCase()}`;
             }
             return {
                 rootFolder: root,
                 productType: mainProductType || 'Drugs',
+                subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
+            };
+            
+        case 'Special Surveillance':
+            return {
+                rootFolder: '/Special Surveillance',
+                productType: mainProductType || null,
                 subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
             };
 

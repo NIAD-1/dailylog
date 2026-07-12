@@ -1,7 +1,7 @@
 // ─── Constants mirrored from wizard.js ───────────────────────────────────────
 const LAGOS_LGAs = ["Agege","Ajeromi-Ifelodun","Alimosho","Amuwo-Odofin","Apapa","Badagry","Epe","Eti-Osa","Ibeju-Lekki","Ifako-Ijaiye","Ikeja","Ikorodu","Kosofe","Lagos Island","Lagos Mainland","Mushin","Ojo","Oshodi-Isolo","Shomolu","Surulere"];
 const INSPECTORS_LIST = ["Dr Regina K. Garba","Pharm. Mmamel Victor","Pharm. Adesanya Oluwaseun","Mr Omotuwa Adebayo","Mrs Bisola Robert","Mr Ifeanyi Okeke","Dr Saad Abubakar","Mr Enilama Emmanuel","Mr Solomon Emeje Ileanwa","Ms Mary Adegbite","Mr Adekunle Adeniran"];
-const ACTIVITY_TYPES = ["Consultative Meeting","GLSI","Routine Surveillance","GSDP","Consumer Complaint","RASFF","Survey","Laboratory Analysis","COLD CHAIN Monitoring"];
+const ACTIVITY_TYPES = ["Consultative Meeting","GLSI","Routine Surveillance","Special Surveillance","GSDP","Consumer Complaint","RASFF","Survey","Laboratory Analysis","COLD CHAIN Monitoring"];
 const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Veterinary Drugs", "Chemicals", "Vaccines & Biologicals", "Herbals"];
 const MAIN_PRODUCT_TYPES = ["Drugs", "Food", "Cosmetics", "Medical Devices", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 // ─── Wizard step identifiers ─────────────────────────────────────────────────
@@ -39,7 +39,7 @@ function numberedList(arr) {
 }
 
 function getActivityCode(activity) {
-  const codes = { 'Routine Surveillance':'RS','Consumer Complaint':'CC','GSDP':'GSDP','GLSI':'GLSI','COLD CHAIN Monitoring':'CCM','Consultative Meeting':'CM','Laboratory Analysis':'LA','RASFF':'RASFF','Survey':'SRV' };
+  const codes = { 'Routine Surveillance':'RS','Special Surveillance':'SS','Consumer Complaint':'CC','GSDP':'GSDP','GLSI':'GLSI','COLD CHAIN Monitoring':'CCM','Consultative Meeting':'CM','Laboratory Analysis':'LA','RASFF':'RASFF','Survey':'SRV' };
   return codes[activity] || 'OTH';
 }
 
@@ -51,10 +51,14 @@ function getFolderConfig(activityType, productTypes, mainProductType) {
       if (isSpecial) return { rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS', productType: mainProductType, subfolders: ['Surveillance_Report','Consultative_Meeting','Extra_Data'] };
       
       let root = '/ROUTINE SURVEILLANCE/DRUGS';
-      if (mainProductType) {
+      if (mainProductType === 'Medical Devices') {
+        root = '/MEDICAL DEVICES/ROUTINE SURVEILLANCE FOR MEDICAL DEVICES';
+      } else if (mainProductType) {
         root = `/ROUTINE SURVEILLANCE/${mainProductType.toUpperCase()}`;
       }
       return { rootFolder: root, productType: mainProductType || 'Drugs', subfolders: ['Surveillance_Report','Consultative_Meeting','Extra_Data'] };
+    case 'Special Surveillance':
+      return { rootFolder: '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report','Consultative_Meeting','Extra_Data'] };
     case 'Consumer Complaint':
       return { rootFolder: '/CONSUMER COMPLAINT', productType: (productTypes||[]).join(', ')||null, subfolders: ['Inspection_Report','Consultative_Meeting','Investigation_Data'] };
     case 'GSDP':
