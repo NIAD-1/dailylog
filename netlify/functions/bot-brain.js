@@ -91,6 +91,7 @@ async function submitReports(state, senderId, senderName) {
     const reportData = {
       submissionId,
       inspectorNames: finalInspectors,
+      mainProductType: fac.mainProductType || null,
       productTypes: fac.productTypes || [],
       inspectionDate: admin.firestore.Timestamp.fromDate(dateObj),
       area: fac.area || '',
@@ -148,7 +149,7 @@ async function triggerWebhook(url, report) {
   const activityCode = getActivityCode(report.activityType);
   const reportId = `${activityCode}-${year}-${Date.now()}`;
   const deadline = new Date(); deadline.setDate(deadline.getDate() + 2); deadline.setHours(23,59,59,0);
-  const folderConfig = getFolderConfig(report.activityType, report.productTypes);
+  const folderConfig = getFolderConfig(report.activityType, report.productTypes, report.mainProductType);
   const sanitized = (report.facilityName||'').trim().replace(/["*:<>?/\\|]/g, '').replace(/\.+$/, '').trim();
 
   const payload = {

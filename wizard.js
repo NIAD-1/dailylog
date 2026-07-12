@@ -340,7 +340,20 @@ function bindStep_FacilityForm(root) {
         if (['Routine Surveillance', 'Consumer Complaint'].includes(val)) {
             conditionalHTML = `
                 <div style="margin-top:8px">
-                    <label>Product Type(s)</label>
+                    <label>Main Product Type <span style="color:red">*</span></label>
+                    <select name="mainProductType" required>
+                        <option value="">Select Main Product Type...</option>
+                        <option value="Drugs">Drugs</option>
+                        <option value="Food">Food</option>
+                        <option value="Cosmetics">Cosmetics</option>
+                        <option value="Medical Devices">Medical Devices</option>
+                        <option value="Service Drugs">Service Drugs</option>
+                        <option value="Donated Items/Drugs">Donated Items/Drugs</option>
+                        <option value="Orphan Drugs">Orphan Drugs</option>
+                    </select>
+                </div>
+                <div style="margin-top:8px">
+                    <label>Product Type(s) (Subtypes)</label>
                     <select name="productTypeSelect" multiple></select>
                 </div>
                 ${mopUpHTML}
@@ -423,11 +436,16 @@ function bindStep_FacilityForm(root) {
         const productSelect = conditional.querySelector('select[name="productTypeSelect"]');
         if (productSelect) {
             productSelect.innerHTML = PRODUCT_TYPES.map(pt => `<option value="${pt}">${pt}</option>`).join('');
-            const choices = new Choices(productSelect, { removeItemButton: true, placeholder: true, placeholderValue: 'Select Product Type(s)...' });
+            const choices = new Choices(productSelect, { removeItemButton: true, placeholder: true, placeholderValue: 'Select Subtypes...' });
             addChoicesInstance('productTypeSelect', choices);
             if (currentData.productTypes) {
                 choices.setValue(currentData.productTypes);
             }
+        }
+
+        const mainProductSelect = conditional.querySelector('select[name="mainProductType"]');
+        if (mainProductSelect && currentData.mainProductType) {
+            mainProductSelect.value = currentData.mainProductType;
         }
 
         const categorySelect = conditional.querySelector('[name="consultativeMeetingCategory"]');
@@ -707,6 +725,9 @@ function saveCurrentFacilityData() {
 
     const productChoicesItem = getChoicesInstance('productTypeSelect');
     data.productTypes = productChoicesItem ? productChoicesItem.instance.getValue(true) : [];
+    
+    const mainProductSelect = container.querySelector('select[name="mainProductType"]');
+    data.mainProductType = mainProductSelect ? mainProductSelect.value : null;
 
     const fields = [
         'inspectionDate', 'area', 'facilityName', 'facilityAddress', 'activityType', 'actionTaken',
@@ -776,6 +797,7 @@ async function handleSubmitWizard(root) {
             const reportData = {
                 submissionId,
                 inspectorNames: finalInspectorNames,
+                mainProductType: facilityData.mainProductType || null,
                 productTypes: facilityData.productTypes || [],
                 inspectionDate: facilityData.inspectionDate ? new Date(facilityData.inspectionDate) : new Date(),
                 area: facilityData.area,
@@ -1051,24 +1073,30 @@ function getActivityCode(activity) {
 // Helper: Get folder configuration based on activity type
 function getFolderConfig(report) {
     const activity = report.activityType;
+    const mainProductType = report.mainProductType;
     const productTypes = report.productTypes || [];
 
     // Check if this is Service/Donated/Orphan drugs
     const specialDrugs = ['Service Drugs', 'Donated Items/Drugs', 'Orphan Drugs'];
-    const hasSpecialDrugs = productTypes.some(pt => specialDrugs.includes(pt));
+    const isSpecial = mainProductType && specialDrugs.includes(mainProductType);
 
     switch (activity) {
         case 'Routine Surveillance':
-            if (hasSpecialDrugs) {
+            if (isSpecial) {
                 return {
                     rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS',
-                    productType: productTypes.join(', '),
+                    productType: mainProductType,
                     subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
                 };
             }
+            
+            let root = '/ROUTINE SURVEILLANCE/DRUGS';
+            if (mainProductType) {
+                root = \`/ROUTINE SURVEILLANCE/\${mainProductType.toUpperCase()}\`;
+            }
             return {
-                rootFolder: '/ROUTINE SURVEILLANCE/DRUGS',
-                productType: 'Drugs',
+                rootFolder: root,
+                productType: mainProductType || 'Drugs',
                 subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
             };
 

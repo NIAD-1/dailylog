@@ -1,4 +1,4 @@
-const { LAGOS_LGAs, INSPECTORS_LIST, ACTIVITY_TYPES, PRODUCT_TYPES, STEPS, numberedList } = require('./bot-constants');
+const { LAGOS_LGAs, INSPECTORS_LIST, ACTIVITY_TYPES, PRODUCT_TYPES, MAIN_PRODUCT_TYPES, STEPS, numberedList } = require('./bot-constants');
 
 // Process a message against the current conversation state, return { newState, reply }
 function processStep(state, message) {
@@ -148,7 +148,16 @@ function processStep(state, message) {
     return routeAfterAddress(s);
   }
 
-  // ── PRODUCT TYPES (Routine Surveillance / Consumer Complaint) ──────────────
+  // ── MAIN PRODUCT TYPE (Routine Surveillance / Consumer Complaint) ──────────────
+  if (step === STEPS.ASK_MAIN_PRODUCT_TYPE) {
+    const selected = parseNumberedSelection(msg, MAIN_PRODUCT_TYPES);
+    if (selected.length !== 1) return { newState: state, reply: `Please select exactly ONE main product type:\n\n${numberedList(MAIN_PRODUCT_TYPES)}` };
+    const fac = { ...getCurrentFacility(state), mainProductType: selected[0] };
+    const s = setCurrentFacility(state, fac);
+    return { newState: { ...s, step: STEPS.ASK_PRODUCT_TYPES }, reply: `Select sub-product types (comma-separated numbers):\n\n${numberedList(PRODUCT_TYPES)}` };
+  }
+
+  // ── SUB PRODUCT TYPES (Routine Surveillance / Consumer Complaint) ──────────────
   if (step === STEPS.ASK_PRODUCT_TYPES) {
     const selected = parseNumberedSelection(msg, PRODUCT_TYPES);
     if (selected.length === 0) return { newState: state, reply: `Select product types (comma-separated numbers):\n\n${numberedList(PRODUCT_TYPES)}` };
@@ -255,7 +264,7 @@ function routeAfterAddress(state) {
   const act = fac.activityType;
 
   if (['Routine Surveillance','Consumer Complaint'].includes(act)) {
-    return { newState: { ...state, step: STEPS.ASK_PRODUCT_TYPES }, reply: `Select product types (comma-separated numbers):\n\n${numberedList(PRODUCT_TYPES)}` };
+    return { newState: { ...state, step: STEPS.ASK_MAIN_PRODUCT_TYPE }, reply: `Select MAIN product type (reply with 1 number):\n\n${numberedList(MAIN_PRODUCT_TYPES)}` };
   }
   if (['GLSI','RASFF','COLD CHAIN Monitoring'].includes(act)) {
     return { newState: { ...state, step: STEPS.ASK_MOP_UP }, reply: 'Did you mop up?\n1. Yes\n2. No' };
