@@ -177,7 +177,7 @@ function renderStep_FacilityForm() {
             <textarea name="inspectorNameOther" placeholder="For 'Others', specify names here..." style="display:none; margin-top:8px; width: 100%;" rows="3"></textarea>
           </div>` : ''}
         <div class="row"><div class="col"><label>Date</label><input type="date" name="inspectionDate" required></div><div class="col"><label>Area</label><select name="area">${LAGOS_LGAs.map(a => `<option>${a}</option>`).join('')}</select></div></div>
-        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>Special Surveillance</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
+        <div style="margin-top:8px"><label>Activity Type</label><select name="activityType" required><option value=""></option><option>Consultative Meeting</option><option>GLSI</option><option>Routine Surveillance</option><option>Special Surveillance</option><option>Advert</option><option>GSDP</option><option>Consumer Complaint</option><option>RASFF</option><option>Survey</option><option>Laboratory Analysis</option><option>COLD CHAIN Monitoring</option></select></div>
         <div class="row" id="regularFacilityRow"><div class="col"><label>Facility Name</label><input name="facilityName" required></div><div class="col"><label>Facility Address</label><input name="facilityAddress" required></div></div>
         <div name="conditional" style="margin-top:8px"></div>
         <div style="margin-top:8px"><label>Action Taken / Remarks</label><textarea name="actionTaken" rows="4"></textarea></div>
@@ -337,7 +337,7 @@ function bindStep_FacilityForm(root) {
                 </div>
             </div>`;
 
-        if (['Routine Surveillance', 'Consumer Complaint', 'Special Surveillance'].includes(val)) {
+        if (['Routine Surveillance', 'Consumer Complaint', 'Special Surveillance', 'Advert'].includes(val)) {
             conditionalHTML = `
                 <div style="margin-top:8px">
                     <label>Main Product Type <span style="color:red">*</span></label>
@@ -371,12 +371,13 @@ function bindStep_FacilityForm(root) {
                             <option value="Routine Surveillance">Routine Surveillance</option>
                             <option value="GLSI">GLSI</option>
                             <option value="Consumer Complaint">Consumer Complaint</option>
+                            <option value="Advert">Advert</option>
                             <option value="GSDP">GSDP</option>
                             <option value="Monitoring">Monitoring of Service Drugs, Orphan Drugs & Donated Items</option>
                         </select>
                     </div>
                     <div class="col" id="consultativeSubCategoryContainer" style="display: none;">
-                        <label>Product Type</label>
+                        <label>Main Product Type</label>
                         <select name="consultativeProductType"></select>
                     </div>
                 </div>
@@ -468,8 +469,12 @@ function bindStep_FacilityForm(root) {
                 const selectedCategory = categorySelect.value;
 
                 // Handle product type sub-dropdown
-                if (selectedCategory && ['Routine Surveillance', 'Consumer Complaint'].includes(selectedCategory)) {
-                    const options = selectedCategory === 'Routine Surveillance' ? surveillanceProducts : complaintProducts;
+                if (selectedCategory && ['Routine Surveillance', 'Consumer Complaint', 'Advert'].includes(selectedCategory)) {
+                    let options = [];
+                    if (selectedCategory === 'Routine Surveillance') options = surveillanceProducts;
+                    else if (selectedCategory === 'Consumer Complaint') options = complaintProducts;
+                    else if (selectedCategory === 'Advert') options = MAIN_PRODUCT_TYPES;
+                    
                     subCategorySelect.innerHTML = options.map(p => `<option value="${p}">${p}</option>`).join('');
                     subCategoryContainer.style.display = 'block';
                 } else {
@@ -991,6 +996,7 @@ async function triggerConsultativeMeetingWebhook(report) {
         // based on the consultative category (e.g., RS → /ROUTINE SURVEILLANCE/DRUGS)
         const folderReport = {
             activityType: report.consultativeMeetingCategory || 'Routine Surveillance',
+            mainProductType: report.consultativeProductType || null,
             productTypes: report.consultativeProductType ? [report.consultativeProductType] : []
         };
         const folderConfig = getFolderConfig(folderReport);
@@ -1000,8 +1006,8 @@ async function triggerConsultativeMeetingWebhook(report) {
         const activityCode = getActivityCode('Consultative Meeting');
         const reportId = `${activityCode}-${year}-${timestamp}`;
 
-        // Consultative meetings always get these two subfolders
-        const cmSubfolders = ['Consultative_Meeting', 'Extra_Data'];
+        // Consultative meetings only get this subfolder
+        const cmSubfolders = ['Consultative_Meeting'];
 
         const payload = {
             // PA uses this to identify the activity type (matches the field name in the other webhook)

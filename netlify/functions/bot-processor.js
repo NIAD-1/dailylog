@@ -263,7 +263,7 @@ function routeAfterAddress(state) {
   const fac = getCurrentFacility(state);
   const act = fac.activityType;
 
-  if (['Routine Surveillance','Consumer Complaint', 'Special Surveillance'].includes(act)) {
+  if (['Routine Surveillance','Consumer Complaint', 'Special Surveillance', 'Advert'].includes(act)) {
     return { newState: { ...state, step: STEPS.ASK_MAIN_PRODUCT_TYPE }, reply: `Select MAIN product type (reply with 1 number):\n\n${numberedList(MAIN_PRODUCT_TYPES)}` };
   }
   if (['GLSI','RASFF','COLD CHAIN Monitoring'].includes(act)) {
