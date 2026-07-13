@@ -1,7 +1,7 @@
 // ─── Constants mirrored from wizard.js ───────────────────────────────────────
-const LAGOS_LGAs = ["Agege","Ajeromi-Ifelodun","Alimosho","Amuwo-Odofin","Apapa","Badagry","Epe","Eti-Osa","Ibeju-Lekki","Ifako-Ijaiye","Ikeja","Ikorodu","Kosofe","Lagos Island","Lagos Mainland","Mushin","Ojo","Oshodi-Isolo","Shomolu","Surulere"];
-const INSPECTORS_LIST = ["Dr Regina K. Garba","Pharm. Mmamel Victor","Pharm. Adesanya Oluwaseun","Mr Omotuwa Adebayo","Mrs Bisola Robert","Mr Ifeanyi Okeke","Dr Saad Abubakar","Mr Enilama Emmanuel","Mr Solomon Emeje Ileanwa","Ms Mary Adegbite","Mr Adekunle Adeniran"];
-const ACTIVITY_TYPES = ["Consultative Meeting","GLSI","Routine Surveillance","Special Surveillance","Advert","GSDP","Consumer Complaint","RASFF","Survey","Laboratory Analysis","COLD CHAIN Monitoring"];
+const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
+const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran", "Dr. Lawal Mohammed Saheed", "Pharm. Nazeef Umar", "Pharm. Anas Haruna Rugahh", "Pharm. Chiamaka Adibo", "Pharm. Ismail Suraj", "Pharm. Murtala Abdulkadir"];
+const ACTIVITY_TYPES = ["Consultative Meeting", "GLSI", "Routine Surveillance", "Special Surveillance", "Advert", "GSDP", "Consumer Complaint", "RASFF", "Survey", "Laboratory Analysis", "COLD CHAIN Monitoring"];
 const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Veterinary Drugs", "Chemicals", "Vaccines & Biologicals", "Herbals"];
 const MAIN_PRODUCT_TYPES = ["Drugs", "Food", "Cosmetics", "Medical Devices", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 // ─── Wizard step identifiers ─────────────────────────────────────────────────
@@ -39,36 +39,36 @@ function numberedList(arr) {
 }
 
 function getActivityCode(activity) {
-  const codes = { 'Routine Surveillance':'RS','Special Surveillance':'SS','Advert':'ADV','Consumer Complaint':'CC','GSDP':'GSDP','GLSI':'GLSI','COLD CHAIN Monitoring':'CCM','Consultative Meeting':'CM','Laboratory Analysis':'LA','RASFF':'RASFF','Survey':'SRV' };
+  const codes = { 'Routine Surveillance': 'RS', 'Special Surveillance': 'SS', 'Advert': 'ADV', 'Consumer Complaint': 'CC', 'GSDP': 'GSDP', 'GLSI': 'GLSI', 'COLD CHAIN Monitoring': 'CCM', 'Consultative Meeting': 'CM', 'Laboratory Analysis': 'LA', 'RASFF': 'RASFF', 'Survey': 'SRV' };
   return codes[activity] || 'OTH';
 }
 
 function getFolderConfig(activityType, productTypes, mainProductType) {
-  const specialDrugs = ['Service Drugs','Donated Items/Drugs','Orphan Drugs'];
+  const specialDrugs = ['Service Drugs', 'Donated Items/Drugs', 'Orphan Drugs'];
   const isSpecial = mainProductType && specialDrugs.includes(mainProductType);
   switch (activityType) {
     case 'Routine Surveillance':
-      if (isSpecial) return { rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS', productType: mainProductType, subfolders: ['Surveillance_Report','Consultative_Meeting','Extra_Data'] };
-      
+      if (isSpecial) return { rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS', productType: mainProductType, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
+
       let root = '/ROUTINE SURVEILLANCE/DRUGS';
       if (mainProductType === 'Medical Devices') {
         root = '/MEDICAL DEVICES/ROUTINE SURVEILLANCE FOR MEDICAL DEVICES';
       } else if (mainProductType) {
         root = `/ROUTINE SURVEILLANCE/${mainProductType.toUpperCase()}`;
       }
-      return { rootFolder: root, productType: mainProductType || 'Drugs', subfolders: ['Surveillance_Report','Consultative_Meeting','Extra_Data'] };
+      return { rootFolder: root, productType: mainProductType || 'Drugs', subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Special Surveillance':
-      return { rootFolder: '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report','Consultative_Meeting','Extra_Data'] };
+      return { rootFolder: '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Advert':
-      return { rootFolder: mainProductType ? `/ADVERTS/${mainProductType.toUpperCase()}` : '/ADVERTS', productType: mainProductType || null, subfolders: ['Inspection_Report','Consultative_Meeting','Extra_Data'] };
+      return { rootFolder: mainProductType ? `/ADVERTS/${mainProductType.toUpperCase()}` : '/ADVERTS', productType: mainProductType || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Consumer Complaint':
-      return { rootFolder: '/CONSUMER COMPLAINT', productType: (productTypes||[]).join(', ')||null, subfolders: ['Inspection_Report','Consultative_Meeting','Investigation_Data'] };
+      return { rootFolder: '/CONSUMER COMPLAINT', productType: (productTypes || []).join(', ') || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Investigation_Data'] };
     case 'GSDP':
-      return { rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES', productType: null, subfolders: ['GSDP/Inspection_Report','GSDP/Compliance_Directives','GSDP/CAPA_Template','GSDP/Risk_Categorization','CEVI/Inspection_Report','CEVI/Compliance_Directives','CEVI/CAPA_Template','CEVI/Risk_Categorization','Company_Submissions'] };
+      return { rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES', productType: null, subfolders: ['GSDP/Inspection_Report', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'GSDP/Risk_Categorization', 'CEVI/Inspection_Report', 'CEVI/Compliance_Directives', 'CEVI/CAPA_Template', 'CEVI/Risk_Categorization', 'Company_Submissions'] };
     case 'GLSI':
-      return { rootFolder: '/GLSI MONITORING', productType: null, subfolders: ['Inspection_Report','Consultative_Meeting','Inspection_Data'] };
+      return { rootFolder: '/GLSI MONITORING', productType: null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Data'] };
     case 'COLD CHAIN Monitoring':
-      return { rootFolder: '/COLD-CHAIN-MONITORING', productType: null, subfolders: ['Inspection_Report','Consultative_Meeting','Inspection_Field_Data'] };
+      return { rootFolder: '/COLD-CHAIN-MONITORING', productType: null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Field_Data'] };
     default:
       return { rootFolder: '/OTHER', productType: null, subfolders: [] };
   }
