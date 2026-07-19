@@ -3,7 +3,7 @@ import { resolveFacility } from "./facility-utils.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, removeChoicesInstance, navigate } from "./ui.js";
 
 const LAGOS_LGAs = ["Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye", "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland", "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"];
-const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran", "Dr. Lawal Saheed", "Ms Chime Helen", "Pharm. Murtala Abdulkadir", "Pharm. Nazeef Umar", "Pharm. Anas Haruna Rugahh", "Pharm. Chiamaka Adibo", "Pharm. Ismail Suraj", "Others"];
+const INSPECTORS_LIST = ["Dr Regina K. Garba", "Pharm. Mmamel Victor", "Pharm. Adesanya Oluwaseun", "Mr Omotuwa Adebayo", "Mrs Bisola Robert", "Mr Ifeanyi Okeke", "Dr Saad Abubakar", "Mr Enilama Emmanuel", "Mr Solomon Emeje Ileanwa", "Ms Mary Adegbite", "Mr Adekunle Adeniran", "Dr. Lawal Saheed", "Pharm. Chime Helen", "Pharm. Murtala Abdulkadir", "Pharm. Nazeef Umar", "Pharm. Anas Haruna Rugahh", "Pharm. Chiamaka Adibo", "Pharm. Ismail Suraj", "Others"];
 const PRODUCT_TYPES = ["Drugs", "Food", "Medical Devices", "Cosmetics", "Vaccines & Biologics", "Herbals", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 const MAIN_PRODUCT_TYPES = ["Drugs", "Food", "Cosmetics", "Medical Devices", "Service Drugs", "Donated Items/Drugs", "Orphan Drugs"];
 const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/d1mla94c/upload';
@@ -475,7 +475,7 @@ function bindStep_FacilityForm(root) {
                     if (selectedCategory === 'Routine Surveillance') options = surveillanceProducts;
                     else if (selectedCategory === 'Consumer Complaint') options = complaintProducts;
                     else if (selectedCategory === 'Advert') options = MAIN_PRODUCT_TYPES;
-                    
+
                     subCategorySelect.innerHTML = options.map(p => `<option value="${p}">${p}</option>`).join('');
                     subCategoryContainer.style.display = 'block';
                 } else {
@@ -731,7 +731,7 @@ function saveCurrentFacilityData() {
 
     const productChoicesItem = getChoicesInstance('productTypeSelect');
     data.productTypes = productChoicesItem ? productChoicesItem.instance.getValue(true) : [];
-    
+
     const mainProductSelect = container.querySelector('select[name="mainProductType"]');
     data.mainProductType = mainProductSelect ? mainProductSelect.value : null;
 
@@ -1097,7 +1097,7 @@ function getFolderConfig(report) {
                     subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
                 };
             }
-            
+
             let root = '/ROUTINE SURVEILLANCE/DRUGS';
             if (mainProductType === 'Medical Devices') {
                 root = '/MEDICAL DEVICES/ROUTINE SURVEILLANCE FOR MEDICAL DEVICES';
@@ -1109,7 +1109,7 @@ function getFolderConfig(report) {
                 productType: mainProductType || 'Drugs',
                 subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
             };
-            
+
         case 'Special Surveillance':
             return {
                 rootFolder: '/Special Surveillance',
