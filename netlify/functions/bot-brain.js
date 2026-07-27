@@ -123,7 +123,7 @@ async function submitReports(state, senderId, senderName) {
     successCount++;
 
     // Trigger Teams folder creation webhook
-    const folderActivities = ['Routine Surveillance','Consumer Complaint','GSDP','GLSI','COLD CHAIN Monitoring'];
+    const folderActivities = ['Routine Surveillance','Consumer Complaint','GSDP','GLSI','COLD CHAIN Monitoring','Consultative Meeting'];
     if (folderActivities.includes(reportData.activityType) && webhookUrl) {
       try { await triggerWebhook(webhookUrl, reportData); } catch (e) { console.error('Webhook error:', e); }
     }

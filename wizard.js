@@ -866,7 +866,8 @@ async function handleSubmitWizard(root) {
                 'Consumer Complaint',
                 'GSDP',
                 'GLSI',
-                'COLD CHAIN Monitoring'
+                'COLD CHAIN Monitoring',
+                'Consultative Meeting'
             ];
             if (folderActivities.includes(reportData.activityType)) {
                 await triggerTeamsWebhook(reportData);
