@@ -1151,6 +1151,36 @@ function getFolderConfig(report) {
                 subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Field_Data']
             };
 
+        case 'Advert':
+            return {
+                rootFolder: `/ADVERTS/${(mainProductType || 'GENERAL').toUpperCase()}`,
+                productType: mainProductType || null,
+                subfolders: ['Consultative_Meeting']
+            };
+
+        case 'Consultative Meeting': {
+            // Re-route based on the consultative category (e.g., Advert, Consumer Complaint)
+            const cmCategory = report.consultativeMeetingCategory;
+            if (cmCategory && cmCategory !== 'Consultative Meeting') {
+                const cmReport = {
+                    activityType: cmCategory,
+                    mainProductType: report.consultativeProductType || report.mainProductType || null,
+                    productTypes: report.consultativeProductType ? [report.consultativeProductType] : (report.productTypes || [])
+                };
+                const cmConfig = getFolderConfig(cmReport);
+                return {
+                    rootFolder: cmConfig.rootFolder,
+                    productType: cmConfig.productType,
+                    subfolders: ['Consultative_Meeting']
+                };
+            }
+            return {
+                rootFolder: '/OTHER',
+                productType: null,
+                subfolders: ['Consultative_Meeting']
+            };
+        }
+
         default:
             return {
                 rootFolder: '/OTHER',
