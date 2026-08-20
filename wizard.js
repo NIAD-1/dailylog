@@ -863,6 +863,8 @@ async function handleSubmitWizard(root) {
             // Trigger Teams Webhook for activities that need folder creation
             const folderActivities = [
                 'Routine Surveillance',
+                'Special Surveillance',
+                'Advert',
                 'Consumer Complaint',
                 'GSDP',
                 'GLSI',
@@ -1155,7 +1157,7 @@ function getFolderConfig(report) {
             return {
                 rootFolder: `/ADVERTS/${(mainProductType || 'GENERAL').toUpperCase()}`,
                 productType: mainProductType || null,
-                subfolders: ['Consultative_Meeting']
+                subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Extra_Data']
             };
 
         case 'Consultative Meeting': {
