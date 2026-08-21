@@ -752,6 +752,7 @@ function saveCurrentFacilityData() {
     // Override facilityName and facilityAddress from consultative meeting fields
     // (must be AFTER fields.forEach so it doesn't get overwritten by the hidden regular inputs)
     if (isConsultative) {
+        data.isNewFacility = (consultativeFacilitySelect.value === '__ADD_NEW__');
         if (consultativeFacilitySelect.value === '__ADD_NEW__') {
             // Use manually entered name + address
             data.facilityName = newFacNameInput ? newFacNameInput.value.trim() : '';
@@ -835,6 +836,7 @@ async function handleSubmitWizard(root) {
                 Samplescount: parseInt(facilityData.Samplescount || 0),
                 consultativeMeetingCategory: facilityData.consultativeMeetingCategory || '',
                 consultativeProductType: facilityData.consultativeProductType || '',
+                isNewFacility: facilityData.isNewFacility || (facilityData.consultativeFacilityName === '__ADD_NEW__'),
                 createdBy: currentUser.uid,
                 createdAt: serverTimestamp()
             };
@@ -868,10 +870,10 @@ async function handleSubmitWizard(root) {
                 'Consumer Complaint',
                 'GSDP',
                 'GLSI',
-                'COLD CHAIN Monitoring',
-                'Consultative Meeting'
+                'COLD CHAIN Monitoring'
             ];
-            if (folderActivities.includes(reportData.activityType)) {
+            const isNewConsultativeFacility = reportData.activityType === 'Consultative Meeting' && reportData.isNewFacility;
+            if (folderActivities.includes(reportData.activityType) || isNewConsultativeFacility) {
                 await triggerTeamsWebhook(reportData);
             }
 
