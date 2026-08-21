@@ -58,7 +58,7 @@ function getFolderConfig(activityType, productTypes, mainProductType) {
       }
       return { rootFolder: root, productType: mainProductType || 'Drugs', subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Special Surveillance':
-      return { rootFolder: '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
+      return { rootFolder: mainProductType ? `/Special Surveillance/${mainProductType.toUpperCase()}` : '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Advert':
       return { rootFolder: mainProductType ? `/ADVERTS/${mainProductType.toUpperCase()}` : '/ADVERTS', productType: mainProductType || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Consumer Complaint':

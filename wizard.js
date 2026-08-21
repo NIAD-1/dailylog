@@ -470,9 +470,9 @@ function bindStep_FacilityForm(root) {
                 const selectedCategory = categorySelect.value;
 
                 // Handle product type sub-dropdown
-                if (selectedCategory && ['Routine Surveillance', 'Consumer Complaint', 'Advert'].includes(selectedCategory)) {
+                if (selectedCategory && ['Routine Surveillance', 'Special Surveillance', 'Consumer Complaint', 'Advert'].includes(selectedCategory)) {
                     let options = [];
-                    if (selectedCategory === 'Routine Surveillance') options = surveillanceProducts;
+                    if (selectedCategory === 'Routine Surveillance' || selectedCategory === 'Special Surveillance') options = surveillanceProducts;
                     else if (selectedCategory === 'Consumer Complaint') options = complaintProducts;
                     else if (selectedCategory === 'Advert') options = MAIN_PRODUCT_TYPES;
 
@@ -1116,7 +1116,7 @@ function getFolderConfig(report) {
 
         case 'Special Surveillance':
             return {
-                rootFolder: '/Special Surveillance',
+                rootFolder: mainProductType ? `/Special Surveillance/${mainProductType.toUpperCase()}` : '/Special Surveillance',
                 productType: mainProductType || null,
                 subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
             };
