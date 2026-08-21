@@ -868,11 +868,10 @@ async function handleSubmitWizard(root) {
                 'Consumer Complaint',
                 'GSDP',
                 'GLSI',
-                'COLD CHAIN Monitoring'
+                'COLD CHAIN Monitoring',
+                'Consultative Meeting'
             ];
-            const isNewConsultativeFacility = reportData.activityType === 'Consultative Meeting'
-                && facilityData.consultativeFacilityName === '__ADD_NEW__';
-            if (folderActivities.includes(reportData.activityType) || isNewConsultativeFacility) {
+            if (folderActivities.includes(reportData.activityType)) {
                 await triggerTeamsWebhook(reportData);
             }
 
