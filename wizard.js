@@ -994,9 +994,13 @@ async function triggerConsultativeMeetingWebhook(report) {
             .replace(/\.+$/, '')
             .trim();
 
-        const inspectors = Array.isArray(report.inspectorNames)
+        const rawInspectors = Array.isArray(report.inspectorNames)
             ? report.inspectorNames
-            : [report.inspectorNames || ''];
+            : [report.inspectorNames];
+        const inspectors = rawInspectors.map(n => (n || '').trim()).filter(n => n.length > 0);
+        if (inspectors.length === 0 && report.inspectorName) {
+            inspectors.push(report.inspectorName.trim());
+        }
 
         // Build a temporary report object to get the correct root folder
         // based on the consultative category (e.g., RS → /ROUTINE SURVEILLANCE/DRUGS)
