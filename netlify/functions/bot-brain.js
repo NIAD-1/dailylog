@@ -153,10 +153,12 @@ async function triggerWebhook(url, report) {
   const folderConfig = getFolderConfig(report.activityType, report.productTypes, report.mainProductType);
   const sanitized = (report.facilityName||'').trim().replace(/["*:<>?/\\|]/g, '').replace(/\.+$/, '').trim();
 
+  const cleanRemarks = (report.actionTaken||'').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
   const payload = {
     reportId, lookupKey: `${sanitized}_${report.activityType}`, facilityName: sanitized,
-    area: report.area, inspectionDate: dateObj.toISOString().split('T')[0],
+    area: report.area || '', inspectionDate: dateObj.toISOString().split('T')[0],
     inspectors: (report.inspectorNames||[]).join(', '), activity: report.activityType,
+    activityType: report.activityType, remarks: cleanRemarks, actionTaken: cleanRemarks,
     year, month, productType: folderConfig.productType, rootFolder: folderConfig.rootFolder,
     subfolders: folderConfig.subfolders, deadline: deadline.toISOString(),
     gsdpSubActivity: report.gsdpSubActivity || null, companyEmail: report.companyEmail || null
@@ -172,17 +174,19 @@ async function triggerCMWebhook(url, report) {
   const month = dateObj.toLocaleString('default', { month: 'long' }).toUpperCase();
   const sanitized = (report.facilityName||'').trim().replace(/["*:<>?/\\|]/g, '').replace(/\.+$/, '').trim();
   const inspectors = report.inspectorNames || [];
-  const folderConfig = getFolderConfig(report.consultativeMeetingCategory || 'Routine Surveillance', []);
+  const folderConfig = getFolderConfig(report.consultativeMeetingCategory || 'Routine Surveillance', [], report.consultativeProductType || null);
   const reportId = `CM-${year}-${Date.now()}`;
   const deadline = new Date(dateObj); deadline.setDate(deadline.getDate()+3); deadline.setHours(23,59,59,0);
+  const cleanRemarks = (report.actionTaken||'').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
 
   const payload = {
-    activity: 'Consultative Meeting', lookupKey: `${sanitized}_Consultative Meeting`,
+    activity: 'Consultative Meeting', activityType: 'Consultative Meeting', lookupKey: `${sanitized}_Consultative Meeting`,
     facilityName: sanitized, area: report.area||'', year, month, meetingDate: dateObj.toISOString().split('T')[0],
     meetingInspectors: inspectors.join(', '), meetingInspectorsArray: inspectors, meetingInspectorCount: inspectors.length,
-    remarks: report.actionTaken||'', consultativeMeetingCategory: report.consultativeMeetingCategory||'',
+    remarks: cleanRemarks, actionTaken: cleanRemarks, consultativeMeetingCategory: report.consultativeMeetingCategory||'',
     consultativeCategory: report.consultativeMeetingCategory||'', consultativeProductType: report.consultativeProductType||'',
-    reportId, rootFolder: folderConfig.rootFolder, subfolders: ['Consultative_Meeting','Extra_Data'],
+    productType: report.consultativeProductType || folderConfig.productType || null,
+    reportId, rootFolder: folderConfig.rootFolder, subfolders: ['Consultative_Meeting'],
     inspectors: inspectors.join(', '), inspectionDate: dateObj.toISOString().split('T')[0], deadline: deadline.toISOString()
   };
 

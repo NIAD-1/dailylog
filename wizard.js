@@ -932,21 +932,29 @@ async function triggerTeamsWebhook(report) {
             .replace(/\.+$/, '')  // Remove trailing periods
             .trim();
 
+        const formattedDate = (dateObj && !isNaN(dateObj.getTime()))
+            ? dateObj.toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0];
+        const cleanRemarks = (report.actionTaken || '').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
+
         // Prepare enhanced payload
         const payload = {
             reportId: reportId,
             lookupKey: `${sanitizedFacilityName}_${report.activityType}`, // UNIQUE KEY FOR FLOW LOOKUP
             facilityName: sanitizedFacilityName,
-            area: report.area,
-            inspectionDate: report.inspectionDate.toISOString().split('T')[0],
-            inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : report.inspectorName,
+            area: report.area || '',
+            inspectionDate: formattedDate,
+            inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : (report.inspectorName || ''),
             activity: report.activityType,
+            activityType: report.activityType,
             year: year,
             month: month,
             productType: folderConfig.productType || null,
             rootFolder: folderConfig.rootFolder,
             subfolders: folderConfig.subfolders,
             deadline: deadline.toISOString(),
+            remarks: cleanRemarks,
+            actionTaken: cleanRemarks,
             gsdpSubActivity: report.gsdpSubActivity || null,
             companyEmail: report.companyEmail || null
         };
@@ -1019,9 +1027,12 @@ async function triggerConsultativeMeetingWebhook(report) {
         // Consultative meetings only get this subfolder
         const cmSubfolders = ['Consultative_Meeting'];
 
+        const cleanRemarks = (report.actionTaken || '').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
+
         const payload = {
             // PA uses this to identify the activity type (matches the field name in the other webhook)
             activity: 'Consultative Meeting',
+            activityType: 'Consultative Meeting',
             lookupKey: `${sanitizedFacilityName}_Consultative Meeting`, // UNIQUE KEY FOR FLOW LOOKUP
 
             // Facility info — used to find the right SharePoint list row
@@ -1038,10 +1049,12 @@ async function triggerConsultativeMeetingWebhook(report) {
             meetingInspectorCount: inspectors.length,
 
             // Additional context for the approval card
-            remarks: report.actionTaken || '',
+            remarks: cleanRemarks,
+            actionTaken: cleanRemarks,
             consultativeMeetingCategory: report.consultativeMeetingCategory || '',
             consultativeCategory: report.consultativeMeetingCategory || '', // used by PA to know which SP path
             consultativeProductType: report.consultativeProductType || '',
+            productType: report.consultativeProductType || folderConfig.productType || null,
 
             // Folder creation info — used by Flow A when facility doesn't exist in SharePoint
             reportId,
