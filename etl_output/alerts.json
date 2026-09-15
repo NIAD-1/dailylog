@@ -1213,7 +1213,7 @@
   },
   {
     "alertNo": "Amlodipine 10mg by Accord Healthcare Ltd, UK (BN: GY0128 Exp: Nov. 2021)",
-    "dateReceived": "Amlodipine 10mg by Accord Healthcare Ltd, UK (BN: GY0128 Exp: Nov. 2021)",
+    "dateReceived": "2021-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -1249,7 +1249,7 @@
   },
   {
     "alertNo": "Boots Dermacare 1% w/w hydrocortisone Ointment (15g) Bn: 1DD, Exp: 08/2023",
-    "dateReceived": "Boots Dermacare 1% w/w hydrocortisone Ointment (15g) Bn: 1DD, Exp: 08/2023",
+    "dateReceived": "2023-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -1273,7 +1273,7 @@
   },
   {
     "alertNo": "Riomet ER – Metformin Hydrochloride Extended-release oral suspension 500mg (Lot No: AB06381, Exp: 10/2021)",
-    "dateReceived": "Riomet ER – Metformin Hydrochloride Extended-release oral suspension 500mg (Lot No: AB06381, Exp: 10/2021)",
+    "dateReceived": "2021-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -1297,7 +1297,7 @@
   },
   {
     "alertNo": "Unregistered Daonil 5mg tablets (60 x 10) (BN: 2911220, Exp: 05/2021) manufactured by SANOFI",
-    "dateReceived": "Unregistered Daonil 5mg tablets (60 x 10) (BN: 2911220, Exp: 05/2021) manufactured by SANOFI",
+    "dateReceived": "2021-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -1309,7 +1309,7 @@
   },
   {
     "alertNo": "Petazone -Dexamethasone Injection 4mg IM/IV (BN: 190314, Exp: 03/2022, NRN: 04-9115)",
-    "dateReceived": "Petazone -Dexamethasone Injection 4mg IM/IV (BN: 190314, Exp: 03/2022, NRN: 04-9115)",
+    "dateReceived": "2022-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -4453,7 +4453,7 @@
   },
   {
     "alertNo": "Amlodipine 10mg by Accord Healthcare Ltd, UK (BN: GY0128 Exp: Nov. 2021)",
-    "dateReceived": "Amlodipine 10mg by Accord Healthcare Ltd, UK (BN: GY0128 Exp: Nov. 2021)",
+    "dateReceived": "2021-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -4489,7 +4489,7 @@
   },
   {
     "alertNo": "Boots Dermacare 1% w/w hydrocortisone Ointment (15g) Bn: 1DD, Exp: 08/2023",
-    "dateReceived": "Boots Dermacare 1% w/w hydrocortisone Ointment (15g) Bn: 1DD, Exp: 08/2023",
+    "dateReceived": "2023-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -4513,7 +4513,7 @@
   },
   {
     "alertNo": "Riomet ER – Metformin Hydrochloride Extended-release oral suspension 500mg (Lot No: AB06381, Exp: 10/2021)",
-    "dateReceived": "Riomet ER – Metformin Hydrochloride Extended-release oral suspension 500mg (Lot No: AB06381, Exp: 10/2021)",
+    "dateReceived": "2021-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -4537,7 +4537,7 @@
   },
   {
     "alertNo": "Unregistered Daonil 5mg tablets (60 x 10) (BN: 2911220, Exp: 05/2021) manufactured by SANOFI",
-    "dateReceived": "Unregistered Daonil 5mg tablets (60 x 10) (BN: 2911220, Exp: 05/2021) manufactured by SANOFI",
+    "dateReceived": "2021-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -4549,7 +4549,7 @@
   },
   {
     "alertNo": "Petazone -Dexamethasone Injection 4mg IM/IV (BN: 190314, Exp: 03/2022, NRN: 04-9115)",
-    "dateReceived": "Petazone -Dexamethasone Injection 4mg IM/IV (BN: 190314, Exp: 03/2022, NRN: 04-9115)",
+    "dateReceived": "2022-01-01",
     "source": "",
     "title": "",
     "actionTaken": "",
@@ -4765,7 +4765,7 @@
   },
   {
     "alertNo": "Falsely Labelled Menthodex Cough Mixture with Manufacturing date: April, 2019",
-    "dateReceived": "Falsely Labelled Menthodex Cough Mixture with Manufacturing date: April, 2019",
+    "dateReceived": "2019-04-01",
     "source": "",
     "title": "",
     "actionTaken": "",

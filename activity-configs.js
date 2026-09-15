@@ -230,6 +230,21 @@ export const COMPLAINTS_CONFIG = {
 };
 
 // 3. GSDP (GOOD STORAGE & DISTRIBUTION PRACTICES) CONFIGURATION
+function isCatA(item) {
+  const r = ((item && item.riskCategory) || (item && item.findings) || "").toLowerCase();
+  return r.includes("category a") || r.includes("low") || /\bcat\s*a\b/.test(r) || /\(a\)/.test(r);
+}
+
+function isCatB(item) {
+  const r = ((item && item.riskCategory) || (item && item.findings) || "").toLowerCase();
+  return !isCatA(item) && (r.includes("category b") || r.includes("medium") || /\bcat\s*b\b/.test(r) || /\(b\)/.test(r));
+}
+
+function isCatC(item) {
+  const r = ((item && item.riskCategory) || (item && item.findings) || "").toLowerCase();
+  return !isCatA(item) && !isCatB(item) && (r.includes("category c") || r.includes("high") || /\bcat\s*c\b/.test(r) || /\(c\)/.test(r) || r.includes("©"));
+}
+
 export const GSDP_CONFIG = {
   key: "gsdp",
   title: "Good Storage & Distribution Practice (GSDP)",
@@ -252,9 +267,9 @@ export const GSDP_CONFIG = {
   ],
   kpis: [
     { id: "totalInspected", label: "Inspected Facilities", color: "accent-green", calc: (items) => items.length },
-    { id: "categoryA", label: "Low Risk (Cat A)", color: "accent-green", calc: (items) => items.filter(g => (g.riskCategory || "").toUpperCase().includes("A")).length },
-    { id: "categoryB", label: "Medium Risk (Cat B)", color: "accent-amber", calc: (items) => items.filter(g => (g.riskCategory || "").toUpperCase().includes("B")).length },
-    { id: "categoryC", label: "High Risk (Cat C)", color: "accent-red", calc: (items) => items.filter(g => (g.riskCategory || "").toUpperCase().includes("C")).length }
+    { id: "categoryA", label: "Low Risk (Cat A)", color: "accent-green", calc: (items) => items.filter(isCatA).length },
+    { id: "categoryB", label: "Medium Risk (Cat B)", color: "accent-amber", calc: (items) => items.filter(isCatB).length },
+    { id: "categoryC", label: "High Risk (Cat C)", color: "accent-red", calc: (items) => items.filter(isCatC).length }
   ],
   charts: [
     {
@@ -262,9 +277,9 @@ export const GSDP_CONFIG = {
       type: "doughnut",
       title: "Risk Categorization Distribution",
       generate: (items) => {
-        const catA = items.filter(g => (g.riskCategory || "").toUpperCase().includes("A")).length;
-        const catB = items.filter(g => (g.riskCategory || "").toUpperCase().includes("B")).length;
-        const catC = items.filter(g => (g.riskCategory || "").toUpperCase().includes("C")).length;
+        const catA = items.filter(isCatA).length;
+        const catB = items.filter(isCatB).length;
+        const catC = items.filter(isCatC).length;
         const unassigned = items.length - (catA + catB + catC);
         return {
           labels: ["Category A (Low)", "Category B (Medium)", "Category C (High)", "Pending Classification"],
@@ -281,7 +296,7 @@ export const GSDP_CONFIG = {
       title: "CAPA Compliance Progress",
       generate: (items) => {
         const submitted = items.filter(g => (g.capaSubmitted || "").toLowerCase().includes("yes") || (g.capaSubmitted || "").toLowerCase().includes("submitt") || (g.capaSubmitted || "").toLowerCase().includes("closed")).length;
-        const pending = items.filter(g => (g.capaSubmitted || "").toLowerCase().includes("pend") || (g.capaSubmitted || "").toLowerCase().includes("await") || (g.capaSubmitted || "").toLowerCase().includes("no")).length;
+        const pending = items.filter(g => (g.capaSubmitted || "").toLowerCase().includes("pend") || (g.capaSubmitted || "").toLowerCase().includes("await") || (g.capaSubmitted || "").toLowerCase().includes("no") || (g.capaSubmitted || "").toLowerCase().includes("overdue")).length;
         const notIssued = items.length - (submitted + pending);
         return {
           labels: ["CAPA Submitted/Closed", "CAPA Awaiting Submission", "No Directives Issued"],
@@ -300,10 +315,10 @@ export const GSDP_CONFIG = {
     const total = items.length;
     if (total === 0) return ["No GSDP inspection records found."];
 
-    const catC = items.filter(g => (g.riskCategory || "").toUpperCase().includes("C")).length;
+    const catC = items.filter(isCatC).length;
     insights.push(`Audited ${total} distribution facilities; ${catC} facilities classified as High Risk (Category C) requiring priority follow-up.`);
 
-    const capaPending = items.filter(g => (g.capaSubmitted || "").toLowerCase().includes("pend") || (g.capaSubmitted || "").toLowerCase().includes("no")).length;
+    const capaPending = items.filter(g => (g.capaSubmitted || "").toLowerCase().includes("pend") || (g.capaSubmitted || "").toLowerCase().includes("no") || (g.capaSubmitted || "").toLowerCase().includes("overdue")).length;
     insights.push(`${capaPending} facilities have pending or overdue CAPA submissions.`);
 
     return insights;
@@ -433,25 +448,25 @@ export const GLSI_CONFIG = {
   ],
   kpis: [
     { id: "totalGlsi", label: "Total Facilities Monitored", color: "accent-green", calc: (items) => items.length },
-    { id: "activeGlsi", label: "Active Compliant", color: "accent-blue", calc: (items) => items.filter(g => (g.status || "Active").toLowerCase() === "active").length },
-    { id: "defaultersGlsi", label: "Defaulters Flagged", color: "accent-amber", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("default")).length },
-    { id: "notLocatedGlsi", label: "Not Located", color: "accent-red", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("not located")).length }
+    { id: "compliantGlsi", label: "Compliant / Monitored", color: "accent-blue", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("compliant") || (g.status || "").toLowerCase().includes("monitored") || (g.status || "").toLowerCase() === "active").length },
+    { id: "actionGlsi", label: "Action Taken / Lapses", color: "accent-amber", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("non-compliant") || (g.status || "").toLowerCase().includes("action") || (g.status || "").toLowerCase().includes("default")).length },
+    { id: "notLocatedGlsi", label: "Not Located Outlets", color: "accent-red", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("not located")).length }
   ],
   charts: [
     {
       id: "chartGlsiStatus",
       type: "doughnut",
-      title: "Facility Operational Status",
+      title: "Facility Operational & Compliance Status",
       generate: (items) => {
-        const active = items.filter(g => (g.status || "Active").toLowerCase() === "active").length;
-        const defaulters = items.filter(g => (g.status || "").toLowerCase().includes("default")).length;
+        const action = items.filter(g => (g.status || "").toLowerCase().includes("non-compliant") || (g.status || "").toLowerCase().includes("action") || (g.status || "").toLowerCase().includes("default")).length;
+        const compliant = items.filter(g => (g.status || "").toLowerCase().includes("compliant") || (g.status || "").toLowerCase().includes("monitored") || (g.status || "").toLowerCase() === "active").length;
         const notLocated = items.filter(g => (g.status || "").toLowerCase().includes("not located")).length;
-        const other = items.length - (active + defaulters + notLocated);
+        const other = items.length - (action + compliant + notLocated);
         return {
-          labels: ["Active", "Defaulters", "Not Located", "Other"],
+          labels: ["Action Taken / Lapses", "Compliant / Monitored", "Not Located", "Other"],
           datasets: [{
-            data: [active, defaulters, notLocated, Math.max(0, other)],
-            backgroundColor: ["#10b981", "#f59e0b", "#ef4444", "#6b7280"]
+            data: [action, compliant, notLocated, Math.max(0, other)],
+            backgroundColor: ["#f59e0b", "#10b981", "#ef4444", "#6b7280"]
           }]
         };
       }
@@ -459,20 +474,20 @@ export const GLSI_CONFIG = {
     {
       id: "chartGlsiLga",
       type: "bar",
-      title: "GLSI Inspections by LGA",
+      title: "GLSI Inspections by LGA / Zone",
       generate: (items) => {
         const lgas = {};
         items.forEach(g => {
           const a = g.area || g.zone || "Unspecified";
           lgas[a] = (lgas[a] || 0) + 1;
         });
-        const top = Object.entries(lgas).sort((a, b) => b[1] - a[1]).slice(0, 6);
+        const top = Object.entries(lgas).sort((a, b) => b[1] - a[1]).slice(0, 7);
         return {
           labels: top.map(t => t[0]),
           datasets: [{
             label: "Facilities Inspected",
             data: top.map(t => t[1]),
-            backgroundColor: "#059669",
+            backgroundColor: "#008751",
             borderRadius: 4
           }]
         };
@@ -484,17 +499,17 @@ export const GLSI_CONFIG = {
     const total = items.length;
     if (total === 0) return ["No GLSI records found."];
 
+    const actionCount = items.filter(g => (g.status || "").toLowerCase().includes("non-compliant") || (g.status || "").toLowerCase().includes("action") || (g.status || "").toLowerCase().includes("default")).length;
+    if (actionCount > 0) {
+      insights.push(`${actionCount} facilities required regulatory interventions, inventory mop-up, or consultative sanctions.`);
+    }
+
     const notLocated = items.filter(g => (g.status || "").toLowerCase().includes("not located")).length;
     if (notLocated > 0) {
       insights.push(`Flagged ${notLocated} facilities as "Not Located" requiring surveillance verification.`);
     }
 
-    const defaulters = items.filter(g => (g.status || "").toLowerCase().includes("default")).length;
-    if (defaulters > 0) {
-      insights.push(`${defaulters} facilities identified with outstanding compliance directives or payment default.`);
-    }
-
-    insights.push(`Total active GLSI monitoring portfolio: ${total} facilities recorded.`);
+    insights.push(`Total active GLSI monitoring portfolio: ${total} facilities recorded across Lagos LGAs.`);
     return insights;
   },
   logFields: [

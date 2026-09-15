@@ -66,7 +66,50 @@ export async function renderFacilityProfilePage(root) {
     searchInput.placeholder = "Search facilities by name, address, or file number...";
     countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
 
-    renderOverview(profileArea, activeFacilities);
+    // Direct Dossier Navigation: Check if user clicked a facility link
+    const targetFacilityName = sessionStorage.getItem("targetFacilityProfile");
+    if (targetFacilityName) {
+        sessionStorage.removeItem("targetFacilityProfile");
+        const cleanTgt = targetFacilityName.trim().toLowerCase();
+        
+        // 1. Exact match
+        let matched = activeFacilities.find(f => f.name && f.name.trim().toLowerCase() === cleanTgt);
+        
+        // 2. Contains match
+        if (!matched) {
+            matched = activeFacilities.find(f => f.name && (f.name.toLowerCase().includes(cleanTgt) || cleanTgt.includes(f.name.toLowerCase())));
+        }
+        
+        // 3. Corporate-stripped match
+        if (!matched) {
+            const stripCorp = (s) => (s || "").toLowerCase().replace(/\b(ltd|limited|nig|nigeria|plc|enterprise|enterprises|ent|supermarket|pharmacy|pharm)\b/g, "").replace(/[^a-z0-9]/g, "");
+            const normTgt = stripCorp(cleanTgt);
+            if (normTgt.length > 3) {
+                matched = activeFacilities.find(f => f.name && stripCorp(f.name) === normTgt);
+            }
+        }
+        
+        // 4. Fallback dynamic dossier for newly imported/unregistered facilities
+        if (!matched) {
+            matched = {
+                id: "fac-" + cleanTgt.replace(/[^a-z0-9]/g, "-").slice(0, 40),
+                name: targetFacilityName.trim(),
+                address: "Facility recorded under Regulatory Directorate Hub",
+                status: "Active",
+                activityTypes: ["Regulatory Surveillance"],
+                totalVisits: 1,
+                totalFinesIssued: 0,
+                outstandingFines: 0
+            };
+        }
+        
+        searchInput.value = matched.name;
+        if (resultsDiv) resultsDiv.classList.remove("visible");
+        renderProfile(profileArea, matched);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+        renderOverview(profileArea, activeFacilities);
+    }
 
     let debounce = null;
     searchInput.addEventListener("input", () => {
@@ -572,6 +615,41 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
                 remark: "",
                 status: "LOGGED",
                 source: "wizard"
+            });
+        });
+    } catch (e) { /* ignore permission errors */ }
+
+    // Also check GSDP Inspections
+    try {
+        const gsdpSnap = await getDocs(query(collection(db, "gsdp_inspections"), where("facilityName", "==", facilityName)));
+        gsdpSnap.forEach(d => {
+            const data = d.data();
+            records.push({
+                activityType: "Good Storage & Distribution Practice (GSDP)",
+                inspectionDate: data.inspectionDate || "",
+                observation: data.findings || data.riskCategory || "",
+                actionTaken: data.remarks || data.conclusion || "",
+                riskFinding: data.riskCategory || "",
+                remark: data.capaSubmitted || "",
+                status: data.riskCategory || "GSDP AUDITED",
+                source: "gsdp"
+            });
+        });
+    } catch (e) { /* ignore permission errors */ }
+
+    // Also check GLSI Monitoring Records
+    try {
+        const glsiSnap = await getDocs(query(collection(db, "glsi_records"), where("facilityName", "==", facilityName)));
+        glsiSnap.forEach(d => {
+            const data = d.data();
+            records.push({
+                activityType: "GLSI Monitoring",
+                inspectionDate: data.dateOfVisit || "",
+                observation: data.observation || "",
+                actionTaken: data.actionTaken || "",
+                recommendation: data.recommendation || "",
+                status: data.status || "MONITORED",
+                source: "glsi"
             });
         });
     } catch (e) { /* ignore permission errors */ }

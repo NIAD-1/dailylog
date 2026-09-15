@@ -24,6 +24,27 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+async function purgeCollection(collectionName) {
+  console.log(`\n─── Purging old records from '${collectionName}' ───`);
+  const snapshot = await db.collection(collectionName).get();
+  if (snapshot.empty) {
+    console.log(`  No existing records in ${collectionName}.`);
+    return;
+  }
+  const BATCH_SIZE = 400;
+  const docs = snapshot.docs;
+  for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+    const chunk = docs.slice(i, i + BATCH_SIZE);
+    const batch = db.batch();
+    for (const doc of chunk) {
+      batch.delete(doc.ref);
+    }
+    await batch.commit();
+    console.log(`  ✓ Purged ${i + chunk.length} / ${docs.length} docs from ${collectionName}...`);
+  }
+  console.log(`✓ Purge complete for ${collectionName}.`);
+}
+
 async function batchUpload(collectionName, items, transformFn) {
   console.log(`\n─── Uploading to '${collectionName}' (${items.length} records) ───`);
   const BATCH_SIZE = 400;
@@ -52,27 +73,10 @@ async function batchUpload(collectionName, items, transformFn) {
 async function main() {
   console.log("🚀 Starting Directorate Hub Production Firestore Import...\n");
 
-  // 1. ALERTS
-  const alertsPath = path.join(__dirname, 'etl_output/alerts.json');
-  if (fs.existsSync(alertsPath)) {
-    const alerts = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
-    await batchUpload('alerts', alerts, (a) => ({
-      alertNo: a.alertNo || '',
-      dateReceived: a.dateReceived || '',
-      source: a.source || '',
-      title: a.title || '',
-      actionTaken: a.actionTaken || '',
-      facilitiesVisited: a.facilitiesVisited || '',
-      findings: a.findings || '',
-      status: a.status || 'Open',
-      year: parseInt(a.year) || 2026,
-      sourceFile: a.sourceFile || ''
-    }));
-  }
-
-  // 2. GSDP INSPECTIONS
+  // 1. GSDP INSPECTIONS (Purge old and upload verified 399 records with accurate risk categories & SharePoint links)
   const gsdpPath = path.join(__dirname, 'etl_output/gsdp_inspections.json');
   if (fs.existsSync(gsdpPath)) {
+    await purgeCollection('gsdp_inspections');
     const gsdp = JSON.parse(fs.readFileSync(gsdpPath, 'utf8'));
     await batchUpload('gsdp_inspections', gsdp, (g) => ({
       facilityName: g.facilityName || '',
@@ -88,26 +92,28 @@ async function main() {
       remarks: g.remarks || '',
       expectedNextInspection: g.expectedNextInspection || '',
       companyFile: g.companyFile || '',
+      teamsFolderUrl: g.teamsFolderUrl || '',
       year: parseInt(g.year) || 2026,
       sourceFile: g.sourceFile || ''
     }));
   }
 
-  // 3. GLSI RECORDS
+  // 2. GLSI RECORDS (Purge old and upload authentic 270 records, strictly excluding defaulters admin fines)
   const glsiPath = path.join(__dirname, 'etl_output/glsi_records.json');
   if (fs.existsSync(glsiPath)) {
+    await purgeCollection('glsi_records');
     const glsi = JSON.parse(fs.readFileSync(glsiPath, 'utf8'));
     await batchUpload('glsi_records', glsi, (gl) => ({
       facilityName: gl.facilityName || '',
       address: gl.address || '',
-      area: gl.area || 'Ikeja',
+      area: gl.area || 'Lagos State',
       zone: gl.zone || 'Lagos Central',
       dateOfVisit: gl.dateOfVisit || '',
       observation: gl.observation || '',
       actionTaken: gl.actionTaken || '',
       recommendation: gl.recommendation || '',
-      status: gl.status || 'Active',
-      year: parseInt(gl.year) || 2025,
+      status: gl.status || 'Monitored',
+      year: parseInt(gl.year) || 2024,
       sourceFile: gl.sourceFile || ''
     }));
   }

@@ -19,25 +19,81 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_DIR = os.path.join(BASE_DIR, "EXCEL FOLDERS")
 OUTPUT_DIR = os.path.join(BASE_DIR, "etl_output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+MONTHS_MAP = {
+    'jan': 1, 'january': 1,
+    'feb': 2, 'february': 2, 'feruary': 2,
+    'mar': 3, 'march': 3,
+    'apr': 4, 'april': 4,
+    'may': 5,
+    'jun': 6, 'june': 6,
+    'jul': 7, 'july': 7,
+    'aug': 8, 'august': 8,
+    'sep': 9, 'sept': 9, 'september': 9,
+    'oct': 10, 'october': 10,
+    'nov': 11, 'november': 11,
+    'dec': 12, 'december': 12
+}
 
 def parse_excel_date(val):
     if not val:
         return ""
     val_str = str(val).strip()
-    # If Excel serial number (e.g. 46114)
-    if val_str.isdigit() and len(val_str) == 5:
+    # 1. Excel serial number (e.g. 44642)
+    if val_str.isdigit() and 30000 <= int(val_str) <= 65000:
         try:
-            days = int(val_str)
-            d = datetime(1899, 12, 30) + timedelta(days=days)
+            d = datetime(1899, 12, 30) + timedelta(days=int(val_str))
             return d.strftime("%Y-%m-%d")
         except:
             pass
-    # If standard date string DD/MM/YYYY or YYYY-MM-DD
-    m = re.search(r"(\d{1,2})[/-](\d{1,2})[/-](\d{4})", val_str)
-    if m:
-        day, month, year = m.groups()
-        return f"{year}-{int(month):02d}-{int(day):02d}"
+    # 2. ISO date YYYY-MM-DD
+    m_iso = re.match(r"^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$", val_str)
+    if m_iso:
+        yr, mo, dy = m_iso.groups()
+        return f"{yr}-{int(mo):02d}-{int(dy):02d}"
+    # 3. Standard date string DD/MM/YYYY
+    m_dmy = re.match(r"^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$", val_str)
+    if m_dmy:
+        dy, mo, yr = m_dmy.groups()
+        return f"{yr}-{int(mo):02d}-{int(dy):02d}"
+    # 4. Text date e.g. "22nd March, 2022" or "16TH SEPTEMBER, 2019" or "2ND FERUARY 2024"
+    m_text = re.search(r"(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+),?\s+(\d{4})", val_str, re.I)
+    if m_text:
+        dy, mon_str, yr = m_text.groups()
+        mon = MONTHS_MAP.get(mon_str.lower()[:3]) or MONTHS_MAP.get(mon_str.lower())
+        if mon:
+            return f"{yr}-{mon:02d}-{int(dy):02d}"
+    # 5. Month YYYY e.g. "March 2022"
+    m_my = re.search(r"([A-Za-z]+),?\s+(\d{4})", val_str, re.I)
+    if m_my:
+        mon_str, yr = m_my.groups()
+        mon = MONTHS_MAP.get(mon_str.lower()[:3]) or MONTHS_MAP.get(mon_str.lower())
+        if mon:
+            return f"{yr}-{mon:02d}-01"
+    # 6. Year only
+    m_y = re.search(r"\b(20\d{2})\b", val_str)
+    if m_y:
+        return f"{m_y.group(1)}-01-01"
+
     return val_str
+
+def extract_year_from_date(date_str, fallback_year=2024):
+    if not date_str:
+        return fallback_year
+    m = re.search(r"\b(20\d{2})\b", str(date_str))
+    return int(m.group(1)) if m else fallback_year
+
+def classify_gsdp_risk(raw_findings, conclusion=""):
+    combined = (str(raw_findings or "") + " " + str(conclusion or "")).lower()
+    cleaned = re.sub(r"\s+", " ", combined).strip()
+    if not cleaned or cleaned in ["n/a", "none", "—"]:
+        return "Pending Classification"
+    if "low" in cleaned or "(a)" in cleaned or "category a" in cleaned or "cat a" in cleaned:
+        return "Category A (Low)"
+    if "high" in cleaned or "(c)" in cleaned or "©" in cleaned or "category c" in cleaned or "cat c" in cleaned:
+        return "Category C (High)"
+    if "med" in cleaned or "(b)" in cleaned or "category b" in cleaned or "cat b" in cleaned:
+        return "Category B (Medium)"
+    return "Pending Classification"
 
 def read_sheet(xlsx_path, sheet_name=None):
     if not os.path.exists(xlsx_path):
@@ -110,7 +166,6 @@ def extract_alerts():
         if len(rows) < 2:
             continue
         
-        # Determine column layout by inspecting header
         header_idx = -1
         for idx, r in enumerate(rows[:5]):
             line = " ".join(r.values()).lower()
@@ -121,7 +176,6 @@ def extract_alerts():
         start_row = header_idx + 1 if header_idx >= 0 else 1
         
         for r in rows[start_row:]:
-            # Find Alert No or S/N
             alert_no = r.get('B') or r.get('A') or ""
             date_raw = r.get('C') or r.get('B') or ""
             source = r.get('D') or r.get('C') or ""
@@ -131,7 +185,6 @@ def extract_alerts():
             findings = r.get('H') or r.get('G') or ""
             status_val = r.get('I') or "Open"
             
-            # Skip noise or empty rows
             if not title and not alert_no:
                 continue
             if "alert no" in alert_no.lower() or "s/n" in str(alert_no).lower():
@@ -193,7 +246,6 @@ def extract_complaints():
             status_val = r.get('G') or ""
             remarks = r.get('H') or ""
             
-            # Legacy sheets (2018 format)
             if not case_info and r.get('B'):
                 product = r.get('B')
                 outlet = r.get('C')
@@ -212,7 +264,6 @@ def extract_complaints():
             clean_date = parse_excel_date(date_mode)
             clean_ref = ref.replace("\n", "").strip()
             
-            # Detect feedback and closure
             combined_text = f"{status_val} {remarks} {action}".lower()
             is_feedback_issued = "feedback has been issued" in combined_text or "feedback issued" in combined_text
             
@@ -222,7 +273,6 @@ def extract_complaints():
             elif "investig" in combined_text or "visited" in combined_text or "sanction" in combined_text or "meeting" in combined_text:
                 status = "Under Investigation"
                 
-            # Detect product category
             ptype = "Food"
             if any(k in case_info.lower() for k in ["drug", "syrup", "tablet", "capsule", "injection", "pharma"]):
                 ptype = "Drugs"
@@ -256,76 +306,158 @@ def extract_complaints():
 
 # ─── 3. EXTRACT GSDP INSPECTED FACILITIES ────────────────────────────────────
 def extract_gsdp():
-    files = [
-        ("GSDP INSPECTED FACILITIES 2021.xlsx", 2021),
-        ("GSDP INSPECTED FACILITIES 2022.xlsx", 2022),
-        ("INSPECTED FACILITIES 2023.xlsx", 2023),
-        ("inspected facilities 2024.xlsx", 2024),
-        ("GSDP INSPECTED FACILITIES 2025.xlsx", 2025),
-        ("GSDP INSPECTED FACILITIES 2026.xlsx", 2026)
-    ]
+    """
+    Extracts verified Good Storage & Distribution Practice (GSDP) inspection records.
+    Primary dataset: 'GDP UPDATED INSPECTED FACILITIES current one DIrector.xlsx'
+    Accurately extracts risk categorization (Category A Low / Category B Medium / Category C High),
+    CAPA directives and submission status, dates, and direct SharePoint links.
+    """
+    master_file = "GDP UPDATED INSPECTED FACILITIES current one DIrector.xlsx"
+    path = os.path.join(EXCEL_DIR, master_file)
+    
+    if not os.path.exists(path):
+        print(f"Master file {master_file} not found, checking individual year files...")
+        sheets_map = [
+            ("GSDP INSPECTED FACILITIES 2021.xlsx", "INSPECTED FACILITIES 2021", 2021),
+            ("GSDP INSPECTED FACILITIES 2022.xlsx", "INSPECTED FACILITIES 2022", 2022),
+            ("INSPECTED FACILITIES 2023.xlsx", "INSPECTED FACILITIES 2023", 2023),
+            ("inspected facilities 2024.xlsx", "INSPECTED FACILITIES 2024", 2024),
+            ("GSDP INSPECTED FACILITIES 2025.xlsx", "INSPECTED FACILITIES 2025", 2025),
+            ("GSDP INSPECTED FACILITIES 2026.xlsx", "INSPECTED FACILITIES 2026", 2026)
+        ]
+    else:
+        sheets_map = [
+            (master_file, "INSPECTED FACILITIES 2021", 2021),
+            (master_file, "INSPECTED FACILITIES 2022", 2022),
+            (master_file, "INSPECTED FACILITIES 2023", 2023),
+            (master_file, "INSPECTED FACILITIES 2024", 2024),
+            (master_file, "INSPECTED FACILITIES 2025", 2025),
+            (master_file, "INSPECTED FACILITIES 2026", 2026)
+        ]
+
     gsdp_list = []
     
-    for filename, yr in files:
-        path = os.path.join(EXCEL_DIR, filename)
-        sheets = get_all_sheet_names(path)
-        main_sheet = next((s for s in sheets if "inspect" in s.lower() or "sheet" in s.lower()), sheets[0] if sheets else None)
-        if not main_sheet:
+    for filename, sheet_name, yr in sheets_map:
+        file_path = os.path.join(EXCEL_DIR, filename)
+        if not os.path.exists(file_path):
             continue
             
-        rows = read_sheet(path, main_sheet)
+        rows = read_sheet(file_path, sheet_name)
         if len(rows) < 2:
             continue
             
+        # Detect header row dynamically
         header_idx = -1
+        col_map = {}
         for idx, r in enumerate(rows[:5]):
             line = " ".join(r.values()).lower()
-            if "manufacturer" in line or "facility" in line or "location" in line:
+            if "manufacturer" in line or "location" in line or "findings" in line:
                 header_idx = idx
+                for col_letter, header_val in r.items():
+                    hv = header_val.lower().replace("\n", " ").strip()
+                    if "manufacturer" in hv or ("name" in hv and "company" not in hv and "file" not in hv):
+                        col_map["name"] = col_letter
+                    elif "address" in hv or "location" in hv:
+                        col_map["address"] = col_letter
+                    elif "contact" in hv:
+                        col_map["contact"] = col_letter
+                    elif "type" in hv:
+                        col_map["type"] = col_letter
+                    elif "date of last inspection" in hv:
+                        if "2" not in hv and "date" not in col_map:
+                            col_map["date"] = col_letter
+                    elif "findings" in hv:
+                        col_map["findings"] = col_letter
+                    elif "capa issued" in hv or "date capa" in hv:
+                        col_map["capa_issued"] = col_letter
+                    elif "capa sub" in hv:
+                        col_map["capa_submitted"] = col_letter
+                    elif "conclusion" in hv:
+                        col_map["conclusion"] = col_letter
+                    elif "remark" in hv:
+                        col_map["remarks"] = col_letter
+                    elif "expected" in hv:
+                        col_map["expected_date"] = col_letter
+                    elif "company file" in hv or "file" in hv:
+                        col_map["file"] = col_letter
                 break
-        start_row = header_idx + 1 if header_idx >= 0 else 1
+                
+        # Defaults if headers were slightly off
+        col_name = col_map.get("name", "B")
+        col_addr = col_map.get("address", "C")
+        col_contact = col_map.get("contact", "D")
+        col_type = col_map.get("type", "E")
+        col_date = col_map.get("date", "F")
+        col_findings = col_map.get("findings", "G")
+        col_capa_issued = col_map.get("capa_issued", "H")
+        col_capa_sub = col_map.get("capa_submitted", "I")
+        col_conclusion = col_map.get("conclusion", "J")
+        col_remarks = col_map.get("remarks", "K")
+        col_next = col_map.get("expected_date", "L")
+        
+        start_row = header_idx + 1 if header_idx >= 0 else 2
         
         for r in rows[start_row:]:
-            fac_name = r.get('B') or ""
-            addr = r.get('C') or ""
-            contact = r.get('D') or ""
-            itype = r.get('E') or "GSDP"
-            idate = r.get('F') or ""
-            findings = r.get('G') or ""
-            capa_issued = r.get('H') or ""
-            capa_sub = r.get('I') or ""
-            conclusion = r.get('J') or ""
-            remarks = r.get('K') or ""
-            next_date = r.get('L') or ""
-            file_no = r.get('M') or ""
-            
-            if not fac_name or "name of" in fac_name.lower() or "s/n" in str(r.get('A', '')).lower():
+            fac_name = r.get(col_name) or ""
+            if not fac_name or "name of" in fac_name.lower() or "s/n" in str(r.get("A", "")).lower():
                 continue
                 
-            # Classify risk category A/B/C from findings
-            risk = "Category B (Medium)"
-            f_lower = (findings + " " + conclusion).lower()
-            if "category a" in f_lower or "low risk" in f_lower:
-                risk = "Category A (Low)"
-            elif "category c" in f_lower or "high risk" in f_lower:
-                risk = "Category C (High)"
-            elif "category b" in f_lower or "medium risk" in f_lower:
-                risk = "Category B (Medium)"
+            addr = r.get(col_addr) or ""
+            contact = r.get(col_contact) or ""
+            itype = r.get(col_type) or "GSDP"
+            idate = r.get(col_date) or ""
+            raw_findings = r.get(col_findings) or ""
+            capa_issued = r.get(col_capa_issued) or ""
+            capa_sub = r.get(col_capa_sub) or ""
+            conclusion = r.get(col_conclusion) or ""
+            remarks = r.get(col_remarks) or ""
+            next_date = r.get(col_next) or ""
+            
+            # Find SharePoint URL from remaining columns M, N, O, P
+            sp_url = ""
+            file_name = ""
+            for cl in ["M", "N", "O", "P", "Q"]:
+                val = (r.get(cl) or "").strip()
+                if not val:
+                    continue
+                if "http://" in val or "https://" in val or "sharepoint" in val.lower():
+                    sp_url = val
+                elif not file_name and len(val) > 2 and "column" not in val.lower() and val.upper() != "CC":
+                    file_name = val
+            
+            # Classify risk accurately
+            risk = classify_gsdp_risk(raw_findings, conclusion)
+            
+            # Clean inspection date
+            clean_idate = parse_excel_date(idate)
+            
+            # Clean CAPA status
+            capa_status = "Pending"
+            cs_lower = str(capa_sub).lower()
+            if "yes" in cs_lower or "submit" in cs_lower or "closed" in cs_lower:
+                capa_status = "Submitted / Closed"
+            elif "no" in cs_lower or "pend" in cs_lower or "yet" in cs_lower:
+                capa_status = "Pending / Overdue"
+            elif "n/a" in cs_lower:
+                capa_status = "N/A"
+            elif str(capa_sub).strip():
+                capa_status = str(capa_sub).strip()
                 
             gsdp_list.append({
-                "facilityName": (fac_name or "").replace("\n", " ").strip(),
-                "address": (addr or "").replace("\n", " ").strip(),
-                "contact": (contact or "").replace("\n", " ").strip(),
+                "facilityName": fac_name.replace("\n", " ").strip(),
+                "address": addr.replace("\n", " ").strip(),
+                "contact": contact.replace("\n", " ").strip(),
                 "inspectionType": (itype or "GSDP").strip(),
-                "inspectionDate": parse_excel_date(idate),
+                "inspectionDate": clean_idate,
                 "riskCategory": risk,
-                "findings": (findings or "").replace("\n", " ").strip(),
+                "findings": raw_findings.replace("\n", " ").strip(),
                 "capaIssuedDate": parse_excel_date(capa_issued),
-                "capaSubmitted": (capa_sub or "Pending").strip(),
-                "conclusion": (conclusion or "").replace("\n", " ").strip(),
-                "remarks": (remarks or "").replace("\n", " ").strip(),
+                "capaSubmitted": capa_status,
+                "conclusion": conclusion.replace("\n", " ").strip(),
+                "remarks": remarks.replace("\n", " ").strip(),
                 "expectedNextInspection": parse_excel_date(next_date),
-                "companyFile": (file_no or "").strip(),
+                "companyFile": file_name or fac_name.replace("\n", " ").strip(),
+                "teamsFolderUrl": sp_url,
                 "year": yr,
                 "sourceFile": filename
             })
@@ -337,19 +469,25 @@ def extract_gsdp():
 
 # ─── 4. EXTRACT GLSI MONITORING ──────────────────────────────────────────────
 def extract_glsi():
+    """
+    Extracts authentic Global Laboratory Sample / Receptivity Inspection (GLSI) records.
+    Strictly excludes Administrative Sanction fines ('GLSI Defaulters.xlsx').
+    Processes Central, East, West, and Not Located inspection files.
+    """
     zone_files = [
         ("GLSI for Lagos Central.xlsx", "Lagos Central"),
         ("GLSI for Lagos East.xlsx", "Lagos East"),
         ("GLSI for Lagos West.xlsx", "Lagos West"),
-        ("GLSI Defaulters.xlsx", "Defaulters"),
         ("GLSI NOT LOCATED.xlsx", "Not Located")
     ]
     glsi_records = []
     
     for filename, default_zone in zone_files:
         path = os.path.join(EXCEL_DIR, filename)
+        if not os.path.exists(path):
+            continue
+            
         sheets = get_all_sheet_names(path)
-        
         for sheet in sheets:
             rows = read_sheet(path, sheet)
             if len(rows) < 2:
@@ -358,42 +496,65 @@ def extract_glsi():
             header_idx = -1
             for idx, r in enumerate(rows[:5]):
                 line = " ".join(r.values()).lower()
-                if "name" in line or "location" in line or "observation" in line:
+                if "name" in line and ("location" in line or "address" in line):
                     header_idx = idx
                     break
             start_row = header_idx + 1 if header_idx >= 0 else 1
             
+            last_facility_name = ""
             for r in rows[start_row:]:
-                name = r.get('B') or ""
-                addr = r.get('C') or ""
-                date_val = r.get('D') or ""
-                obs = r.get('E') or ""
-                act = r.get('F') or ""
-                rec = r.get('G') or ""
+                name = (r.get('B') or "").strip()
+                addr = (r.get('C') or "").strip()
+                date_val = (r.get('D') or "").strip()
+                obs = (r.get('E') or "").strip()
+                act = (r.get('F') or "").strip()
+                rec = (r.get('G') or "").strip()
                 
+                # If name is blank but address exists (merged branch in Excel)
+                if not name and addr and last_facility_name:
+                    name = f"{last_facility_name} (Branch)"
+                elif name:
+                    last_facility_name = name
+                    
                 if not name or "name" in name.lower() or "s/n" in str(r.get('A', '')).lower():
                     continue
+                if name.lower().startswith("table") or name.lower().startswith("total"):
+                    continue
                     
-                status = "Active"
-                if "defaulter" in filename.lower():
-                    status = "Defaulter"
-                elif "not located" in filename.lower() or "not located" in (obs or "").lower() or "not located" in (act or "").lower():
-                    status = "Not Located"
-                    
-                # Use sheet name as LGA if valid
-                lga_zone = sheet.strip().title()
+                clean_date = parse_excel_date(date_val)
+                rec_year = extract_year_from_date(clean_date or date_val, fallback_year=2024)
                 
+                # Determine accurate status
+                obs_lower = obs.lower()
+                act_lower = act.lower()
+                rec_lower = rec.lower()
+                all_text = f"{obs_lower} {act_lower} {rec_lower}"
+                
+                if "not located" in filename.lower() or "not located" in sheet.lower() or "not located" in all_text:
+                    status = "Not Located"
+                elif any(k in all_text for k in ["unregistered", "mopped", "sanction", "defaulter", "non-compliance", "warning", "invitation", "lapses"]):
+                    status = "Non-Compliant / Action Taken"
+                elif any(k in all_text for k in ["complies", "continuous monitoring", "satisfactory", "none taken"]):
+                    status = "Compliant"
+                else:
+                    status = "Monitored"
+                    
+                # Clean LGA Area from sheet name
+                lga_zone = sheet.replace("_", " ").strip().title()
+                if lga_zone.upper() in ["OUTLET NOT LOCATED", "SHEET1", "SHEET2", "SHEET3"]:
+                    lga_zone = "Lagos State"
+                    
                 glsi_records.append({
-                    "facilityName": (name or "").replace("\n", " ").strip(),
-                    "address": (addr or "").replace("\n", " ").strip(),
+                    "facilityName": name.replace("\n", " ").strip(),
+                    "address": addr.replace("\n", " ").strip(),
                     "area": lga_zone,
                     "zone": default_zone,
-                    "dateOfVisit": parse_excel_date(date_val),
-                    "observation": (obs or "").replace("\n", " ").strip(),
-                    "actionTaken": (act or "").replace("\n", " ").strip(),
-                    "recommendation": (rec or "").replace("\n", " ").strip(),
+                    "dateOfVisit": clean_date,
+                    "observation": obs.replace("\n", " ").strip(),
+                    "actionTaken": act.replace("\n", " ").strip(),
+                    "recommendation": rec.replace("\n", " ").strip(),
                     "status": status,
-                    "year": 2025,
+                    "year": rec_year,
                     "sourceFile": filename
                 })
                 
@@ -409,3 +570,4 @@ if __name__ == "__main__":
     extract_gsdp()
     extract_glsi()
     print("─── ETL Pipeline Complete ───")
+

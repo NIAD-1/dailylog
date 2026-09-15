@@ -343,20 +343,15 @@ export async function renderActivityHub(root, config) {
       });
     });
 
-    // Facility link-through
+    // Facility link-through: Immediate dossier navigation
     tbody.querySelectorAll("[data-facility-link]").forEach(el => {
       el.addEventListener("click", (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const facName = el.dataset.facilityLink;
         if (facName) {
+          sessionStorage.setItem("targetFacilityProfile", facName.trim());
           navigate("facilities");
-          setTimeout(() => {
-            const input = document.getElementById("fpSearchInput");
-            if (input) {
-              input.value = facName;
-              input.dispatchEvent(new Event("input"));
-            }
-          }, 200);
         }
       });
     });
@@ -393,10 +388,10 @@ export async function renderActivityHub(root, config) {
       return `<td><span style="display:inline-block;padding:2px 8px;background:#f3f4f6;border-radius:12px;font-size:11px;font-weight:600;color:#374151;">${escapeHTML(val)}</span></td>`;
     }
 
-    if (col.format === "bold") {
-      const isFacility = col.key === "facilityName" || col.key === "name";
+    if (col.format === "bold" || col.key === "facilityName" || col.key === "name" || col.key === "outletVisited") {
+      const isFacility = col.key === "facilityName" || col.key === "name" || col.key === "outletVisited" || col.format === "facility";
       if (isFacility && val) {
-        return `<td><span data-facility-link="${escapeHTML(val)}" style="font-weight:700;color:var(--accent);cursor:pointer;">${escapeHTML(val)}</span></td>`;
+        return `<td><span data-facility-link="${escapeHTML(val)}" title="View complete facility profile dossier" style="font-weight:700;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;">${escapeHTML(val)}</span></td>`;
       }
       return `<td><strong>${escapeHTML(val || "—")}</strong></td>`;
     }
@@ -677,6 +672,19 @@ async function renderComplaintDocket(container, complaints, cfg, baseUrl) {
       const isExp = body.classList.contains("expanded");
       body.classList.toggle("expanded", !isExp);
       btn.textContent = isExp ? "View Docket ▼" : "Collapse ▲";
+    });
+  });
+
+  // Bind facility link-through in docket cards
+  docketList.querySelectorAll("[data-facility-link]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const facName = el.dataset.facilityLink;
+      if (facName) {
+        sessionStorage.setItem("targetFacilityProfile", facName.trim());
+        navigate("facilities");
+      }
     });
   });
 
