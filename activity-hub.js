@@ -134,6 +134,9 @@ export async function renderActivityHub(root, config) {
     });
   });
 
+  // Pre-initialize Log Tab so it renders immediately
+  updateLogTab([], config);
+
   // 4. Data State
   let cachedItems = [];
 
@@ -142,11 +145,9 @@ export async function renderActivityHub(root, config) {
     try {
       let q;
       if (config.activityFilter) {
-        // e.g. Routine Surveillance inside facilityReports
         q = query(
           collection(db, config.collection),
-          where("activityType", "==", config.activityFilter),
-          orderBy("inspectionDate", "desc")
+          where("activityType", "==", config.activityFilter)
         );
       } else {
         q = query(collection(db, config.collection));
@@ -158,8 +159,19 @@ export async function renderActivityHub(root, config) {
         ...docSnap.data()
       }));
 
-      // Sort in-memory if needed (for collections without composite indices)
+      // Filter out invalid/header rows
+      cachedItems = cachedItems.filter(item => {
+        const ref = String(item.referenceCode || item.alertNo || "");
+        if (ref.includes("DATE RECEIVED") || ref.includes("REFERENCE CODE") || ref.includes("COMPLAINTS NO")) return false;
+        if (!item.product && !item.facilityName && !item.caseInfo && !item.title && !item.alertNo && !item.name) return false;
+        return true;
+      });
+
+      // Sort by Year DESC, then Date DESC
       cachedItems.sort((a, b) => {
+        const yrA = parseInt(a.year) || 0;
+        const yrB = parseInt(b.year) || 0;
+        if (yrB !== yrA) return yrB - yrA;
         const dateA = a.dateReceived || a.inspectionDate || a.dateOfVisit || a.dateLogged || a.createdAt || "";
         const dateB = b.dateReceived || b.inspectionDate || b.dateOfVisit || b.dateLogged || b.createdAt || "";
         return String(dateB).localeCompare(String(dateA));
@@ -171,24 +183,11 @@ export async function renderActivityHub(root, config) {
       updateLogTab(cachedItems, config);
     } catch (e) {
       console.error("Error loading activity data:", e);
-      // If index error or fallback needed
-      try {
-        const snap = await getDocs(collection(db, config.collection));
-        cachedItems = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
-        if (config.activityFilter) {
-          cachedItems = cachedItems.filter(i => i.activityType === config.activityFilter);
-        }
-        populateYearFilters(cachedItems);
-        updateDashboard(cachedItems, config);
-        updateRecordsTable(cachedItems, config, sharepointBaseUrl);
-        updateLogTab(cachedItems, config);
-      } catch (err) {
-        root.querySelector("#hubTableBody").innerHTML = `
-          <tr><td colspan="10" style="text-align:center;color:var(--danger);padding:40px;">
-            Error loading records: ${escapeHTML(err.message)}
-          </td></tr>
-        `;
-      }
+      root.querySelector("#hubTableBody").innerHTML = `
+        <tr><td colspan="10" style="text-align:center;color:var(--danger);padding:40px;">
+          Error loading records: ${escapeHTML(e.message)}
+        </td></tr>
+      `;
     }
   }
 
@@ -366,8 +365,32 @@ export async function renderActivityHub(root, config) {
   function formatCell(item, col, baseUrl, cfg) {
     const val = item[col.key];
 
-    if (col.format === "code") {
-      return `<td><span style="font-family:monospace;font-weight:700;color:var(--accent-dark);">${escapeHTML(val || "—")}</span></td>`;
+    // 1. Specialized Case Info formatter for Complaints
+    if (col.key === "caseInfo") {
+      const prod = item.product || "";
+      const details = item.caseInfo || item.complaint || item.observation || "";
+      return `
+        <td>
+          ${prod ? `<div style="font-weight:700;color:var(--primary-text);margin-bottom:2px;">${escapeHTML(prod)}</div>` : ""}
+          <div class="muted small" style="line-height:1.4;max-width:380px;">${escapeHTML(details || "—")}</div>
+        </td>
+      `;
+    }
+
+    // 2. Reference Code / Alert No. badge
+    if (col.format === "code" || col.key === "referenceCode" || col.key === "alertNo") {
+      const code = val || (item.year ? `${item.year}/REF-PENDING` : "—");
+      return `<td><span style="display:inline-block;padding:3px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;font-family:monospace;font-weight:700;font-size:11px;color:#1e40af;letter-spacing:0.02em;">${escapeHTML(code)}</span></td>`;
+    }
+
+    // 3. Complainant styling
+    if (col.key === "complainant") {
+      return `<td><strong style="color:var(--primary-text);">${escapeHTML(val || "Anonymous Consumer")}</strong></td>`;
+    }
+
+    // 4. Product Type badge
+    if (col.key === "productType" && val) {
+      return `<td><span style="display:inline-block;padding:2px 8px;background:#f3f4f6;border-radius:12px;font-size:11px;font-weight:600;color:#374151;">${escapeHTML(val)}</span></td>`;
     }
 
     if (col.format === "bold") {
@@ -379,17 +402,27 @@ export async function renderActivityHub(root, config) {
     }
 
     if (col.format === "badge") {
-      const str = String(val || cfg.defaultStatus || "Open");
+      const str = String(val || cfg.defaultStatus || "Open").trim();
       let cls = "hub-status-open";
-      if (str.toLowerCase().includes("investig") || str.toLowerCase().includes("cevi")) cls = "hub-status-investigation";
-      if (str.toLowerCase().includes("close") || str.toLowerCase().includes("submit") || str.toLowerCase().includes("active") || str.toLowerCase().includes("cat a")) cls = "hub-status-closed";
-      if (str.toLowerCase().includes("default") || str.toLowerCase().includes("overdue") || str.toLowerCase().includes("not located") || str.toLowerCase().includes("cat c")) cls = "hub-status-ongoing";
-      return `<td><span class="hub-status-badge ${cls}">${escapeHTML(str)}</span></td>`;
+      let icon = "● ";
+      if (str.toLowerCase().includes("investig") || str.toLowerCase().includes("cevi")) {
+        cls = "hub-status-investigation";
+        icon = "⏳ ";
+      }
+      if (str.toLowerCase().includes("close") || str.toLowerCase().includes("submit") || str.toLowerCase().includes("active") || str.toLowerCase().includes("cat a")) {
+        cls = "hub-status-closed";
+        icon = "✓ ";
+      }
+      if (str.toLowerCase().includes("default") || str.toLowerCase().includes("overdue") || str.toLowerCase().includes("not located") || str.toLowerCase().includes("cat c")) {
+        cls = "hub-status-ongoing";
+        icon = "⚠ ";
+      }
+      return `<td><span class="hub-status-badge ${cls}">${icon}${escapeHTML(str.toUpperCase())}</span></td>`;
     }
 
     if (col.format === "feedback") {
       if (item.feedbackIssued) {
-        return `<td><span class="hub-status-badge hub-status-closed">✓ Feedback Issued (${escapeHTML(item.feedbackDate || "")})</span></td>`;
+        return `<td><span class="hub-status-badge hub-status-closed">✓ Feedback Issued (${escapeHTML(formatDate(item.feedbackDate, item.year))})</span></td>`;
       }
       return `<td><span class="hub-status-badge hub-status-ongoing">Pending Feedback</span></td>`;
     }
@@ -423,7 +456,7 @@ export async function renderActivityHub(root, config) {
     }
 
     if (col.format === "date") {
-      return `<td>${escapeHTML(formatDate(val))}</td>`;
+      return `<td style="white-space:nowrap;font-weight:500;">${escapeHTML(formatDate(val, item.year))}</td>`;
     }
 
     if (col.format === "number") {
@@ -746,7 +779,7 @@ function exportActivityCSV(items, cfg) {
   const rows = items.map(item => {
     return cfg.columns.map(c => {
       let val = item[c.key] || "";
-      if (c.format === "date") val = formatDate(val);
+      if (c.format === "date") val = formatDate(val, item.year);
       if (typeof val === "object") val = JSON.stringify(val);
       return `"${String(val).replace(/"/g, '""').replace(/\n/g, " ")}"`;
     }).join(",");
@@ -773,18 +806,40 @@ function escapeHTML(str) {
     .replace(/'/g, "&#039;");
 }
 
-function formatDate(d) {
-  if (!d) return "—";
+function formatDate(d, fallbackYear) {
+  if (!d) return fallbackYear ? String(fallbackYear) : "—";
   if (d.toDate && typeof d.toDate === "function") {
-    return d.toDate().toISOString().split("T")[0];
+    d = d.toDate();
   }
-  const str = String(d);
-  if (str.length >= 10 && str.charAt(4) === "-" && str.charAt(7) === "-") {
-    return str.substring(0, 10);
+  if (d instanceof Date) {
+    if (isNaN(d.getTime())) return fallbackYear ? String(fallbackYear) : "—";
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
-  const dateObj = new Date(d);
-  if (!isNaN(dateObj.getTime())) {
-    return dateObj.toISOString().split("T")[0];
+  const str = String(d).trim();
+  // YYYY-MM-DD
+  const ymd = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (ymd) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${String(parseInt(ymd[3])).padStart(2, '0')} ${months[parseInt(ymd[2]) - 1]} ${ymd[1]}`;
+  }
+  // DD/MM/YYYY
+  const dmy = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
+  if (dmy) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let yr = dmy[3];
+    if (yr.length === 2) yr = "20" + yr;
+    return `${String(parseInt(dmy[1])).padStart(2, '0')} ${months[parseInt(dmy[2]) - 1]} ${yr}`;
+  }
+  // Month text fallback (e.g. October -> Oct 2024)
+  const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+  const mIdx = monthNames.findIndex(m => str.toLowerCase().includes(m));
+  if (mIdx >= 0) {
+    const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${shortMonths[mIdx]} ${fallbackYear || ""}`.trim();
+  }
+  if (str.length > 20 || str.includes("DATE") || str.includes("COSMETIC") || str.includes("COMPLAINT")) {
+    return fallbackYear ? String(fallbackYear) : "—";
   }
   return str;
 }
