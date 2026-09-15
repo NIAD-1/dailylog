@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, where } from "./db.js";
+import { db, collection, addDoc, serverTimestamp, doc, getDoc, getDocs, query, where, setDoc } from "./db.js";
 import { resolveFacility } from "./facility-utils.js";
 import { clearRoot, addChoicesInstance, getChoicesInstance, removeChoicesInstance, navigate } from "./ui.js";
 
@@ -357,6 +357,32 @@ function bindStep_FacilityForm(root) {
                     <label>Product Type(s) (Subtypes)</label>
                     <select name="productTypeSelect" multiple></select>
                 </div>
+                ${val === 'Consumer Complaint' ? `
+                <div style="margin-top:12px; padding:12px; background:#f0f7ff; border:1px solid #bfdbfe; border-radius:4px;">
+                    <label style="color:#1e40af; font-weight:700;">Linked Consumer Complaint Case</label>
+                    <select name="linkedComplaintId">
+                        <option value="">Loading complaint cases...</option>
+                    </select>
+                    <p class="muted small" style="margin-top:4px;">Selecting an open complaint docket links this inspection visit and advances the case to "Under Investigation".</p>
+                </div>` : ''}
+                ${val === 'Routine Surveillance' ? `
+                <div style="margin-top:12px; padding:12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px;">
+                    <label style="color:#065f46; font-weight:700;">Was any product on Regulatory Alert encountered?</label>
+                    <select name="regulatoryAlertEncountered">
+                        <option value="false">No</option>
+                        <option value="true">Yes, Alerted Product Intercepted</option>
+                    </select>
+                    <div id="alertDropdownContainer" style="display:none; margin-top:8px;">
+                        <label class="small" style="font-weight:700; color:#065f46;">Select Regulatory Alert</label>
+                        <select name="linkedAlertId">
+                            <option value="">Loading alerts...</option>
+                        </select>
+                        <div style="margin-top:6px;">
+                            <label class="small" style="font-weight:700; color:#065f46;">Alert Mop-up Action / Remarks</label>
+                            <input name="alertAction" placeholder="Specific action taken regarding alerted product...">
+                        </div>
+                    </div>
+                </div>` : ''}
                 ${mopUpHTML}
                 ${holdHTML}
             `;
@@ -448,6 +474,55 @@ function bindStep_FacilityForm(root) {
         const mainProductSelect = conditional.querySelector('select[name="mainProductType"]');
         if (mainProductSelect && currentData.mainProductType) {
             mainProductSelect.value = currentData.mainProductType;
+        }
+
+        // ─── Field Linking: Consumer Complaint Dropdown ───────────────────
+        const complaintSelect = conditional.querySelector('select[name="linkedComplaintId"]');
+        if (complaintSelect) {
+            getDocs(query(collection(db, 'complaints'))).then(snap => {
+                const cases = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                cases.sort((a, b) => (a.status === 'Open' ? -1 : 1));
+                complaintSelect.innerHTML = '<option value="">-- Standalone / Unlinked Complaint --</option>' +
+                    cases.map(c => `<option value="${c.id}">${c.referenceCode || 'REF'} — ${(c.product || c.caseInfo || '').substring(0, 45)} [${c.status || 'Open'}]</option>`).join('');
+                if (currentData.linkedComplaintId) {
+                    complaintSelect.value = currentData.linkedComplaintId;
+                }
+            }).catch(e => {
+                complaintSelect.innerHTML = '<option value="">-- Standalone Complaint --</option>';
+            });
+        }
+
+        // ─── Field Linking: Regulatory Alerts in Routine Surveillance ─────
+        const alertEncounteredSelect = conditional.querySelector('select[name="regulatoryAlertEncountered"]');
+        const alertDropdownContainer = conditional.querySelector('#alertDropdownContainer');
+        const alertSelect = conditional.querySelector('select[name="linkedAlertId"]');
+        const alertActionInput = conditional.querySelector('input[name="alertAction"]');
+
+        if (alertEncounteredSelect && alertDropdownContainer) {
+            alertEncounteredSelect.addEventListener('change', () => {
+                const isYes = alertEncounteredSelect.value === 'true';
+                alertDropdownContainer.style.display = isYes ? 'block' : 'none';
+                if (isYes && alertSelect && alertSelect.children.length <= 1) {
+                    getDocs(query(collection(db, 'alerts'))).then(snap => {
+                        const alerts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                        alertSelect.innerHTML = '<option value="">Select Regulatory Alert...</option>' +
+                            alerts.map(a => `<option value="${a.id}">${a.alertNo || 'ALT'} — ${(a.title || '').substring(0, 45)}</option>`).join('');
+                        if (currentData.linkedAlertId) {
+                            alertSelect.value = currentData.linkedAlertId;
+                        }
+                    }).catch(e => {
+                        alertSelect.innerHTML = '<option value="">No alerts loaded</option>';
+                    });
+                }
+            });
+
+            if (currentData.regulatoryAlertEncountered === 'true') {
+                alertEncounteredSelect.value = 'true';
+                alertEncounteredSelect.dispatchEvent(new Event('change'));
+                if (alertActionInput && currentData.alertAction) {
+                    alertActionInput.value = currentData.alertAction;
+                }
+            }
         }
 
         const categorySelect = conditional.querySelector('[name="consultativeMeetingCategory"]');
@@ -739,7 +814,8 @@ function saveCurrentFacilityData() {
         'inspectionDate', 'area', 'facilityName', 'facilityAddress', 'activityType', 'actionTaken',
         'sanctionGiven', 'gsdpSubActivity', 'companyEmail', 'Samplescount', 'consultativeMeetingCategory', 'consultativeProductType',
         'mopUp', 'mopUpDrugs', 'mopUpCosmetics', 'mopUpMedicalDevices', 'mopUpFood',
-        'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood'
+        'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood',
+        'linkedComplaintId', 'regulatoryAlertEncountered', 'linkedAlertId', 'alertAction'
     ];
 
     fields.forEach(fieldName => {
@@ -837,12 +913,40 @@ async function handleSubmitWizard(root) {
                 consultativeMeetingCategory: facilityData.consultativeMeetingCategory || '',
                 consultativeProductType: facilityData.consultativeProductType || '',
                 isNewFacility: facilityData.isNewFacility || (facilityData.consultativeFacilityName === '__ADD_NEW__'),
+                linkedComplaintId: facilityData.linkedComplaintId || null,
+                regulatoryAlertEncountered: facilityData.regulatoryAlertEncountered === 'true',
+                linkedAlertId: facilityData.linkedAlertId || null,
+                alertAction: facilityData.alertAction || '',
                 createdBy: currentUser.uid,
                 createdAt: serverTimestamp()
             };
 
             // Add to Firestore
             await addDoc(collection(db, 'facilityReports'), reportData);
+
+            // Advance linked complaint docket status to "Under Investigation"
+            if (reportData.linkedComplaintId) {
+                try {
+                    await setDoc(doc(db, 'complaints', reportData.linkedComplaintId), {
+                        status: 'Under Investigation',
+                        lastInspectionDate: new Date().toISOString()
+                    }, { merge: true });
+                } catch (err) {
+                    console.warn('Could not update linked complaint:', err);
+                }
+            }
+
+            // Update regulatory alert status to "Under Investigation" if alerted product intercepted
+            if (reportData.linkedAlertId) {
+                try {
+                    await setDoc(doc(db, 'alerts', reportData.linkedAlertId), {
+                        status: 'Under Investigation',
+                        lastVisitDate: new Date().toISOString()
+                    }, { merge: true });
+                } catch (err) {
+                    console.warn('Could not update linked alert:', err);
+                }
+            }
 
             // Sync with master facilities database
             try {

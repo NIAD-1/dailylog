@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PMS Inspector App</title>
+  <title>NAFDAC PMS Directorate Hub</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <link rel="stylesheet" href="styles.css">
@@ -14,17 +14,27 @@
 
 <body>
   <header>
-    <div class="logo-container">
-      <img src="logo.png" alt="NAFDAC Logo" class="logo-img">
-      <div class="logo-text">NAFDAC Post Marketing Surveillance</div>
+    <div class="header-left">
+      <button id="btnHamburger" class="hamburger-btn" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="logo-container">
+        <img src="logo.png" alt="NAFDAC Logo" class="logo-img">
+        <div class="logo-text">NAFDAC PMS Directorate Hub</div>
+      </div>
     </div>
     <div id="authPanel" class="flex">
       <div id="userInfo" class="muted small">Not signed in</div>
       <button id="btnSignIn" class="secondary">Sign in</button>
-      <button id="btnKpiSettings" class="hidden secondary">Settings</button>
       <button id="btnSignOut" class="hidden secondary">Sign out</button>
     </div>
   </header>
+
+  <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+  <aside id="sidebar">
+    <nav id="sidebarNav"></nav>
+  </aside>
 
   <main id="app">
   </main>
