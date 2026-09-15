@@ -99,13 +99,21 @@ export async function renderActivityHub(root, config) {
           </div>` : ""}
         </div>
 
+        <div class="hub-table-toolbar">
+          <div class="hub-table-count" id="hubTableCount">Showing <strong>0</strong> records</div>
+          <div class="hub-table-scroll-hint">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M3 12h18"/></svg>
+            Scroll horizontally to view all ${config.columns.length} columns (Facility Name is pinned)
+          </div>
+        </div>
+
         <div class="hub-table-wrap">
           <table class="hub-table">
             <thead>
               <tr id="hubTableHead"></tr>
             </thead>
             <tbody id="hubTableBody">
-              <tr><td colspan="10" style="text-align:center;padding:40px;" class="muted">Loading records...</td></tr>
+              <tr><td colspan="${config.columns.length}" style="text-align:center;padding:40px;" class="muted">Loading records...</td></tr>
             </tbody>
           </table>
         </div>
@@ -307,6 +315,11 @@ export async function renderActivityHub(root, config) {
 
   function renderTableRows(items, cfg, baseUrl) {
     const tbody = root.querySelector("#hubTableBody");
+    const countEl = root.querySelector("#hubTableCount");
+    if (countEl) {
+      countEl.innerHTML = `Showing <strong>${items.length}</strong> records`;
+    }
+
     if (items.length === 0) {
       tbody.innerHTML = `
         <tr><td colspan="${cfg.columns.length}" style="text-align:center;padding:48px;" class="muted">
@@ -351,7 +364,9 @@ export async function renderActivityHub(root, config) {
         const facName = el.dataset.facilityLink;
         if (facName) {
           sessionStorage.setItem("targetFacilityProfile", facName.trim());
+          window.location.hash = "facilities?name=" + encodeURIComponent(facName.trim());
           navigate("facilities");
+          window.scrollTo({ top: 0, behavior: "instant" });
         }
       });
     });
@@ -367,7 +382,7 @@ export async function renderActivityHub(root, config) {
       return `
         <td>
           ${prod ? `<div style="font-weight:700;color:var(--primary-text);margin-bottom:2px;">${escapeHTML(prod)}</div>` : ""}
-          <div class="muted small" style="line-height:1.4;max-width:380px;">${escapeHTML(details || "—")}</div>
+          <div class="muted small" style="line-height:1.4;max-width:340px;">${escapeHTML(details || "—")}</div>
         </td>
       `;
     }
@@ -375,7 +390,7 @@ export async function renderActivityHub(root, config) {
     // 2. Reference Code / Alert No. badge
     if (col.format === "code" || col.key === "referenceCode" || col.key === "alertNo") {
       const code = val || (item.year ? `${item.year}/REF-PENDING` : "—");
-      return `<td><span style="display:inline-block;padding:3px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;font-family:monospace;font-weight:700;font-size:11px;color:#1e40af;letter-spacing:0.02em;">${escapeHTML(code)}</span></td>`;
+      return `<td><span style="display:inline-block;padding:3px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;font-family:monospace;font-weight:700;font-size:11px;color:#1e40af;letter-spacing:0.02em;white-space:nowrap;">${escapeHTML(code)}</span></td>`;
     }
 
     // 3. Complainant styling
@@ -385,32 +400,50 @@ export async function renderActivityHub(root, config) {
 
     // 4. Product Type badge
     if (col.key === "productType" && val) {
-      return `<td><span style="display:inline-block;padding:2px 8px;background:#f3f4f6;border-radius:12px;font-size:11px;font-weight:600;color:#374151;">${escapeHTML(val)}</span></td>`;
+      return `<td><span style="display:inline-block;padding:2px 8px;background:#f3f4f6;border-radius:12px;font-size:11px;font-weight:600;color:#374151;white-space:nowrap;">${escapeHTML(val)}</span></td>`;
     }
 
     if (col.format === "bold" || col.key === "facilityName" || col.key === "name" || col.key === "outletVisited") {
       const isFacility = col.key === "facilityName" || col.key === "name" || col.key === "outletVisited" || col.format === "facility";
       if (isFacility && val) {
-        return `<td><span data-facility-link="${escapeHTML(val)}" title="View complete facility profile dossier" style="font-weight:700;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;">${escapeHTML(val)}</span></td>`;
+        return `<td data-facility-link="${escapeHTML(val)}" style="cursor:pointer;"><a href="#facilities?name=${encodeURIComponent(val)}" data-facility-link="${escapeHTML(val)}" class="hub-facility-link" title="Open facility profile dossier: ${escapeHTML(val)}">${escapeHTML(val)}</a></td>`;
       }
       return `<td><strong>${escapeHTML(val || "—")}</strong></td>`;
     }
 
+    if (col.key === "address" || col.key === "facilityAddress") {
+      return `<td><div style="min-width:200px;max-width:320px;font-size:12px;color:#475569;line-height:1.4;">${escapeHTML(val || "—")}</div></td>`;
+    }
+
+    if (col.key === "contact") {
+      return `<td><div style="max-width:160px;font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(val || "—")}</div></td>`;
+    }
+
+    if (col.key === "conclusion" || col.key === "remarks" || col.key === "actionTaken" || col.key === "observation" || col.key === "recommendation") {
+      return `<td><div style="min-width:200px;max-width:300px;font-size:12px;color:#334155;line-height:1.4;">${escapeHTML(val || "—")}</div></td>`;
+    }
+
+    if (col.key === "companyFile") {
+      return `<td><span style="display:inline-block;padding:2px 8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px;font-family:monospace;font-size:11px;color:#475569;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHTML(val || '')}">${escapeHTML(val || "—")}</span></td>`;
+    }
+
     if (col.format === "badge") {
       const str = String(val || cfg.defaultStatus || "Open").trim();
-      let cls = "hub-status-open";
+      const sLower = str.toLowerCase();
+      let cls = "hub-status-pending";
       let icon = "● ";
-      if (str.toLowerCase().includes("investig") || str.toLowerCase().includes("cevi")) {
+      if (sLower.includes("cat a") || sLower.includes("low") || sLower.includes("closed") || sLower.includes("active") || sLower.includes("compliant") || sLower.includes("submit")) {
+        cls = "hub-status-low";
+        icon = "✓ ";
+      } else if (sLower.includes("cat c") || sLower.includes("high") || sLower.includes("default") || sLower.includes("not located") || sLower.includes("overdue") || sLower.includes("action")) {
+        cls = "hub-status-high";
+        icon = "⚠ ";
+      } else if (sLower.includes("cat b") || sLower.includes("medium") || sLower.includes("open") || sLower.includes("pending")) {
+        cls = "hub-status-medium";
+        icon = "● ";
+      } else if (sLower.includes("investig") || sLower.includes("cevi")) {
         cls = "hub-status-investigation";
         icon = "⏳ ";
-      }
-      if (str.toLowerCase().includes("close") || str.toLowerCase().includes("submit") || str.toLowerCase().includes("active") || str.toLowerCase().includes("cat a")) {
-        cls = "hub-status-closed";
-        icon = "✓ ";
-      }
-      if (str.toLowerCase().includes("default") || str.toLowerCase().includes("overdue") || str.toLowerCase().includes("not located") || str.toLowerCase().includes("cat c")) {
-        cls = "hub-status-ongoing";
-        icon = "⚠ ";
       }
       return `<td><span class="hub-status-badge ${cls}">${icon}${escapeHTML(str.toUpperCase())}</span></td>`;
     }
@@ -451,7 +484,7 @@ export async function renderActivityHub(root, config) {
     }
 
     if (col.format === "date") {
-      return `<td style="white-space:nowrap;font-weight:500;">${escapeHTML(formatDate(val, item.year))}</td>`;
+      return `<td style="white-space:nowrap;font-weight:600;font-size:12px;color:#334155;">${escapeHTML(formatDate(val, item.year))}</td>`;
     }
 
     if (col.format === "number") {

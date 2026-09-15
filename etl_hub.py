@@ -398,8 +398,11 @@ def extract_gsdp():
         start_row = header_idx + 1 if header_idx >= 0 else 2
         
         for r in rows[start_row:]:
-            fac_name = r.get(col_name) or ""
-            if not fac_name or "name of" in fac_name.lower() or "s/n" in str(r.get("A", "")).lower():
+            fac_name = (r.get(col_name) or "").strip()
+            fn_low = fac_name.lower()
+            if not fac_name or "name of" in fn_low or fn_low.startswith("total") or fn_low.startswith("grand") or "s/n" in str(r.get("A", "")).lower():
+                continue
+            if not re.search(r"[a-zA-Z]", fac_name):
                 continue
                 
             addr = r.get(col_addr) or ""
@@ -425,8 +428,11 @@ def extract_gsdp():
                 elif not file_name and len(val) > 2 and "column" not in val.lower() and val.upper() != "CC":
                     file_name = val
             
-            # Classify risk accurately
-            risk = classify_gsdp_risk(raw_findings, conclusion)
+            # Classify risk accurately (2021 official rule: all 48 facilities are Medium Risk)
+            if yr == 2021:
+                risk = "Category B (Medium)"
+            else:
+                risk = classify_gsdp_risk(raw_findings, conclusion)
             
             # Clean inspection date
             clean_idate = parse_excel_date(idate)
@@ -470,7 +476,7 @@ def extract_gsdp():
 # ─── 4. EXTRACT GLSI MONITORING ──────────────────────────────────────────────
 def extract_glsi():
     """
-    Extracts authentic Global Laboratory Sample / Receptivity Inspection (GLSI) records.
+    Extracts authentic Global Listing of Supermarket Items (GLSI) records.
     Strictly excludes Administrative Sanction fines ('GLSI Defaulters.xlsx').
     Processes Central, East, West, and Not Located inspection files.
     """

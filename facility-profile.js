@@ -55,59 +55,69 @@ export async function renderFacilityProfilePage(root) {
     const countDiv = document.getElementById("fpSearchCount");
     const profileArea = document.getElementById("fpProfileArea");
 
-    searchInput.disabled = true;
-    searchInput.placeholder = "Loading facility database...";
-    const facilities = await loadAllFacilities();
-    
-    // Filter out logically deleted or merged facilities from the UI
-    const activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
-    
-    searchInput.disabled = false;
-    searchInput.placeholder = "Search facilities by name, address, or file number...";
-    countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
+    // Direct Dossier Navigation: Check FIRST if user clicked a facility link or passed via hash
+    const hashParams = new URLSearchParams(window.location.hash.includes("?") ? window.location.hash.split("?")[1] : "");
+    const targetFacilityName = sessionStorage.getItem("targetFacilityProfile") || hashParams.get("name");
 
-    // Direct Dossier Navigation: Check if user clicked a facility link
-    const targetFacilityName = sessionStorage.getItem("targetFacilityProfile");
     if (targetFacilityName) {
         sessionStorage.removeItem("targetFacilityProfile");
-        const cleanTgt = targetFacilityName.trim().toLowerCase();
-        
-        // 1. Exact match
-        let matched = activeFacilities.find(f => f.name && f.name.trim().toLowerCase() === cleanTgt);
-        
-        // 2. Contains match
-        if (!matched) {
-            matched = activeFacilities.find(f => f.name && (f.name.toLowerCase().includes(cleanTgt) || cleanTgt.includes(f.name.toLowerCase())));
-        }
-        
-        // 3. Corporate-stripped match
-        if (!matched) {
-            const stripCorp = (s) => (s || "").toLowerCase().replace(/\b(ltd|limited|nig|nigeria|plc|enterprise|enterprises|ent|supermarket|pharmacy|pharm)\b/g, "").replace(/[^a-z0-9]/g, "");
-            const normTgt = stripCorp(cleanTgt);
-            if (normTgt.length > 3) {
-                matched = activeFacilities.find(f => f.name && stripCorp(f.name) === normTgt);
-            }
-        }
-        
-        // 4. Fallback dynamic dossier for newly imported/unregistered facilities
-        if (!matched) {
-            matched = {
-                id: "fac-" + cleanTgt.replace(/[^a-z0-9]/g, "-").slice(0, 40),
-                name: targetFacilityName.trim(),
-                address: "Facility recorded under Regulatory Directorate Hub",
-                status: "Active",
-                activityTypes: ["Regulatory Surveillance"],
-                totalVisits: 1,
-                totalFinesIssued: 0,
-                outstandingFines: 0
-            };
-        }
-        
-        searchInput.value = matched.name;
+        const cleanTgt = targetFacilityName.trim();
+        searchInput.value = cleanTgt;
         if (resultsDiv) resultsDiv.classList.remove("visible");
-        renderProfile(profileArea, matched);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // 1. Check if facilities already cached in memory
+        let matched = allFacilities.length > 0 ? allFacilities.find(f => f.name && f.name.trim().toLowerCase() === cleanTgt.toLowerCase()) : null;
+        if (!matched && allFacilities.length > 0) {
+            matched = allFacilities.find(f => f.name && (f.name.toLowerCase().includes(cleanTgt.toLowerCase()) || cleanTgt.toLowerCase().includes(f.name.toLowerCase())));
+        }
+
+        // 2. Build immediate dossier model (instant 0ms response)
+        const activeFacility = matched || {
+            id: "fac-" + cleanTgt.toLowerCase().replace(/[^a-z0-9]/g, "-").slice(0, 40),
+            name: cleanTgt,
+            address: "Directorate Regulatory Record",
+            status: "Active",
+            activityTypes: ["Directorate Surveillance"],
+            totalVisits: 1,
+            totalFinesIssued: 0,
+            outstandingFines: 0
+        };
+
+        // Render profile immediately so user never waits!
+        renderProfile(profileArea, activeFacility);
+        window.scrollTo({ top: 0, behavior: "instant" });
+
+        // In parallel, load/refresh full catalog in background for autocomplete & enrichment
+        loadAllFacilities().then(facilities => {
+            const activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
+            searchInput.disabled = false;
+            searchInput.placeholder = "Search facilities by name, address, or file number...";
+            if (countDiv) countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
+
+            const cleanTgtLower = cleanTgt.toLowerCase();
+            let enriched = activeFacilities.find(f => f.name && f.name.trim().toLowerCase() === cleanTgtLower);
+            if (!enriched) {
+                enriched = activeFacilities.find(f => f.name && (f.name.toLowerCase().includes(cleanTgtLower) || cleanTgtLower.includes(f.name.toLowerCase())));
+            }
+            if (!enriched) {
+                const stripCorp = (s) => (s || "").toLowerCase().replace(/\b(ltd|limited|nig|nigeria|plc|enterprise|enterprises|ent|supermarket|pharmacy|pharm)\b/g, "").replace(/[^a-z0-9]/g, "");
+                const normTgt = stripCorp(cleanTgtLower);
+                if (normTgt.length > 3) {
+                    enriched = activeFacilities.find(f => f.name && stripCorp(f.name) === normTgt);
+                }
+            }
+            if (enriched && (!matched || enriched.id !== matched.id)) {
+                renderProfile(profileArea, enriched);
+            }
+        });
     } else {
+        searchInput.disabled = true;
+        searchInput.placeholder = "Loading facility database...";
+        const facilities = await loadAllFacilities();
+        const activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
+        searchInput.disabled = false;
+        searchInput.placeholder = "Search facilities by name, address, or file number...";
+        if (countDiv) countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
         renderOverview(profileArea, activeFacilities);
     }
 
@@ -621,7 +631,10 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
 
     // Also check GSDP Inspections
     try {
-        const gsdpSnap = await getDocs(query(collection(db, "gsdp_inspections"), where("facilityName", "==", facilityName)));
+        let gsdpSnap = await getDocs(query(collection(db, "gsdp_inspections"), where("facilityName", "==", facilityName)));
+        if (gsdpSnap.empty && facilityName && facilityName.toUpperCase() !== facilityName) {
+            gsdpSnap = await getDocs(query(collection(db, "gsdp_inspections"), where("facilityName", "==", facilityName.toUpperCase())));
+        }
         gsdpSnap.forEach(d => {
             const data = d.data();
             records.push({
@@ -639,11 +652,14 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
 
     // Also check GLSI Monitoring Records
     try {
-        const glsiSnap = await getDocs(query(collection(db, "glsi_records"), where("facilityName", "==", facilityName)));
+        let glsiSnap = await getDocs(query(collection(db, "glsi_records"), where("facilityName", "==", facilityName)));
+        if (glsiSnap.empty && facilityName && facilityName.toUpperCase() !== facilityName) {
+            glsiSnap = await getDocs(query(collection(db, "glsi_records"), where("facilityName", "==", facilityName.toUpperCase())));
+        }
         glsiSnap.forEach(d => {
             const data = d.data();
             records.push({
-                activityType: "GLSI Monitoring",
+                activityType: "Global Listing of Supermarket Items (GLSI)",
                 inspectionDate: data.dateOfVisit || "",
                 observation: data.observation || "",
                 actionTaken: data.actionTaken || "",
@@ -655,6 +671,12 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
     } catch (e) { /* ignore permission errors */ }
 
     records.sort((a, b) => (b.inspectionDate || "").localeCompare(a.inspectionDate || ""));
+
+    // Sync inspection stat card in header
+    const visitStatEl = document.getElementById("fpStatTotalVisits");
+    if (visitStatEl && records.length > 0) {
+        visitStatEl.textContent = records.length;
+    }
 
     if (records.length === 0) {
         container.innerHTML = `
@@ -762,9 +784,30 @@ async function renderSanctionsTab(container, facilityId, facilityName) {
 }
 
 async function renderComplaintsTab(container, facilityId, facilityName) {
-    const snap = await getDocs(query(collection(db, "complaints"), where("facilityId", "==", facilityId)));
     const records = [];
-    snap.forEach(d => records.push(d.data()));
+    try {
+        const snap = await getDocs(query(collection(db, "complaints"), where("facilityId", "==", facilityId)));
+        snap.forEach(d => records.push(d.data()));
+
+        if (facilityName) {
+            const outSnap = await getDocs(query(collection(db, "complaints"), where("outletVisited", "==", facilityName)));
+            outSnap.forEach(d => {
+                const data = d.data();
+                if (!records.some(r => r.referenceCode && r.referenceCode === data.referenceCode)) {
+                    records.push(data);
+                }
+            });
+            const nameSnap = await getDocs(query(collection(db, "complaints"), where("facilityName", "==", facilityName)));
+            nameSnap.forEach(d => {
+                const data = d.data();
+                if (!records.some(r => r.referenceCode && r.referenceCode === data.referenceCode)) {
+                    records.push(data);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn("Complaints query error:", e);
+    }
     records.sort((a, b) => (b.year || 0) - (a.year || 0));
 
     if (records.length === 0) {

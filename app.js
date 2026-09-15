@@ -272,7 +272,8 @@ initAuth(db, (user, role) => {
 
   if (!authReady) {
     authReady = true;
-    const page = window.location.hash.substring(1);
+    const rawPage = window.location.hash.substring(1);
+    const page = rawPage.split('?')[0];
     const validPages = [
       'report', 'alerts', 'complaints', 'gsdp', 'surveillance', 'glsi',
       'facilities', 'map', 'dashboard', 'kpi-settings', 'scheduler',
@@ -315,52 +316,53 @@ window.addEventListener('navigate', (event) => {
 });
 
 function renderPage(page) {
-  currentPage = page;
-  renderSidebar(currentUser, currentUserRole, page);
+  const basePage = (page || 'report').split('?')[0];
+  currentPage = basePage;
+  renderSidebar(currentUser, currentUserRole, basePage);
   clearRoot(root);
 
   // 1. Landing / Start New Log
-  if (page === 'report' || page === 'welcome') {
+  if (basePage === 'report' || basePage === 'welcome') {
     startReportWizard(root);
     return;
   }
 
   // 2. Activity Hubs
-  if (page === 'alerts') {
+  if (basePage === 'alerts') {
     renderActivityHub(root, ALERTS_CONFIG);
     return;
   }
-  if (page === 'complaints') {
+  if (basePage === 'complaints') {
     renderActivityHub(root, COMPLAINTS_CONFIG);
     return;
   }
-  if (page === 'gsdp') {
+  if (basePage === 'gsdp') {
     renderActivityHub(root, GSDP_CONFIG);
     return;
   }
-  if (page === 'surveillance') {
+  if (basePage === 'surveillance') {
     renderActivityHub(root, SURVEILLANCE_CONFIG);
     return;
   }
-  if (page === 'glsi') {
+  if (basePage === 'glsi') {
     renderActivityHub(root, GLSI_CONFIG);
     return;
   }
 
   // 3. Facility Dossiers
-  if (page === 'facilities') {
+  if (basePage === 'facilities') {
     renderFacilityProfilePage(root);
     return;
   }
 
   // 4. Map
-  if (page === 'map') {
+  if (basePage === 'map') {
     renderMapPage(root);
     return;
   }
 
   // 5. Dashboard
-  if (page === 'dashboard') {
+  if (basePage === 'dashboard') {
     if (currentUserRole === 'admin') {
       bindDashboard(root);
     } else {
@@ -371,7 +373,7 @@ function renderPage(page) {
   }
 
   // 6. Settings
-  if (page === 'kpi-settings') {
+  if (basePage === 'kpi-settings') {
     if (currentUserRole === 'admin') {
       root.innerHTML = pageKpiSettings;
       bindKpiSettings();
@@ -383,30 +385,30 @@ function renderPage(page) {
   }
 
   // 7. Success
-  if (page === 'success') {
+  if (basePage === 'success') {
     root.innerHTML = pageSuccess;
     document.getElementById('backToNewLog').onclick = () => navigate('report');
     return;
   }
 
   // 8. Other modules
-  if (page === 'scheduler') {
+  if (basePage === 'scheduler') {
     renderSchedulerPage(root);
     return;
   }
-  if (page === 'weekly') {
+  if (basePage === 'weekly') {
     renderWeeklySummaryPage(root);
     return;
   }
-  if (page === 'live-movement') {
+  if (basePage === 'live-movement') {
     renderWorkflowPage(root);
     return;
   }
-  if (page === 'log-complaint') {
+  if (basePage === 'log-complaint') {
     navigate('complaints');
     return;
   }
-  if (page === 'log-sanction') {
+  if (basePage === 'log-sanction') {
     if (currentUserRole === 'admin') {
       renderSanctionLoggerPage(root);
     } else {
@@ -415,7 +417,7 @@ function renderPage(page) {
     }
     return;
   }
-  if (page === 'import') {
+  if (basePage === 'import') {
     if (currentUserRole === 'admin') {
       renderImportPage(root);
     } else {

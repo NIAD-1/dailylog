@@ -427,11 +427,11 @@ export const SURVEILLANCE_CONFIG = {
   useWizardForLog: true // Redirects to Start New Log
 };
 
-// 5. GLSI (GLOBAL LABORATORY SAMPLE / RECEPTIVITY INSPECTIONS) CONFIGURATION
+// 5. GLSI (GLOBAL LISTING OF SUPERMARKET ITEMS) CONFIGURATION
 export const GLSI_CONFIG = {
   key: "glsi",
-  title: "GLSI Monitoring",
-  subtitle: "Good Laboratory Practice and Sample Inspection Records across Lagos State LGAs",
+  title: "Global Listing of Supermarket Items (GLSI)",
+  subtitle: "Supermarket Surveillance, Product Mopping, Compliance Auditing & Verification across Lagos State",
   collection: "glsi_records",
   teamsRootFolder: "/GLSI MONITORING",
   defaultStatus: "Active",
