@@ -3,8 +3,14 @@ import { normalizeFacilityName, fuzzyMatch, normalizeAddress } from "./facility-
 import { clearRoot } from "./ui.js";
 
 let allFacilities = [];
-let facilityCache = {};
 let currentUserRole = null;
+let lastFetchedFacilities = 0;
+const FACILITIES_CACHE_TTL = 5 * 60 * 1000;
+
+export const invalidateFacilitiesCache = () => {
+    allFacilities = [];
+    lastFetchedFacilities = 0;
+};
 let dirState = { letter: "A", activity: "All", zone: "All", status: "All", year: "All" };
 let selectedFacilities = new Set();
 let isMergeMode = false;
@@ -13,8 +19,10 @@ export const setFacilityProfileUser = (user, role) => {
     currentUserRole = role;
 };
 
-async function loadAllFacilities() {
-    if (allFacilities.length > 0) return allFacilities;
+async function loadAllFacilities(forceRefresh = false) {
+    if (!forceRefresh && allFacilities.length > 0 && (Date.now() - lastFetchedFacilities < FACILITIES_CACHE_TTL)) {
+        return allFacilities;
+    }
     try {
         const snap = await getDocs(collection(db, "facilities"));
         allFacilities = [];
@@ -24,6 +32,7 @@ async function loadAllFacilities() {
             allFacilities.push(data);
         });
         allFacilities.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+        lastFetchedFacilities = Date.now();
     } catch (err) {
         console.error("Error loading facilities:", err);
     }
@@ -54,6 +63,9 @@ export async function renderFacilityProfilePage(root) {
     const resultsDiv = document.getElementById("fpResults");
     const countDiv = document.getElementById("fpSearchCount");
     const profileArea = document.getElementById("fpProfileArea");
+
+    let facilities = [];
+    let activeFacilities = [];
 
     // Direct Dossier Navigation: Check FIRST if user clicked a facility link or passed via hash
     const hashParams = new URLSearchParams(window.location.hash.includes("?") ? window.location.hash.split("?")[1] : "");
@@ -88,8 +100,9 @@ export async function renderFacilityProfilePage(root) {
         window.scrollTo({ top: 0, behavior: "instant" });
 
         // In parallel, load/refresh full catalog in background for autocomplete & enrichment
-        loadAllFacilities().then(facilities => {
-            const activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
+        loadAllFacilities().then(facs => {
+            facilities = facs;
+            activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
             searchInput.disabled = false;
             searchInput.placeholder = "Search facilities by name, address, or file number...";
             if (countDiv) countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
@@ -113,8 +126,8 @@ export async function renderFacilityProfilePage(root) {
     } else {
         searchInput.disabled = true;
         searchInput.placeholder = "Loading facility database...";
-        const facilities = await loadAllFacilities();
-        const activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
+        facilities = await loadAllFacilities();
+        activeFacilities = facilities.filter(f => !f.deleted && f.status !== "MERGED");
         searchInput.disabled = false;
         searchInput.placeholder = "Search facilities by name, address, or file number...";
         if (countDiv) countDiv.textContent = `${activeFacilities.length.toLocaleString()} active facilities`;
@@ -170,12 +183,15 @@ export async function renderFacilityProfilePage(root) {
         }, 200);
     });
 
-
-    document.addEventListener("click", (e) => {
-        if (!e.target.closest(".fp-search-container")) {
+    if (window.__fpDocClickHandler) {
+        document.removeEventListener("click", window.__fpDocClickHandler);
+    }
+    window.__fpDocClickHandler = (e) => {
+        if (!e.target.closest(".fp-search-container") && resultsDiv) {
             resultsDiv.classList.remove("visible");
         }
-    });
+    };
+    document.addEventListener("click", window.__fpDocClickHandler);
 }
 
 function highlight(text, query) {
@@ -512,7 +528,7 @@ async function renderProfile(container, facility) {
                 <div class="fp-stat-icon fp-stat-icon-sm" style="background: var(--fp-green-light); color: var(--fp-green);">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
                 </div>
-                <div><div class="fp-stat-label">Total Inspections</div><div class="fp-stat-value">${facility.totalVisits || 0}</div></div>
+                <div><div class="fp-stat-label">Total Inspections</div><div class="fp-stat-value" id="fpStatTotalVisits">${facility.totalVisits || 0}</div></div>
             </div>
             <div class="fp-stat-card fp-stat-compact">
                 <div class="fp-stat-icon fp-stat-icon-sm" style="background: #FFF3E0; color: #E65100;">
@@ -728,9 +744,15 @@ async function renderSanctionsTab(container, facilityId, facilityName) {
     snap.forEach(d => records.push(d.data()));
     records.sort((a, b) => (b.year || 0) - (a.year || 0));
 
+    const isFinePaid = (status) => {
+        if (!status) return false;
+        const s = String(status).toUpperCase().trim();
+        return s === "PAID" || s.startsWith("₦") || s.startsWith("#") || (!isNaN(parseFloat(s.replace(/[^0-9.]/g, ''))) && !s.includes("PENDING") && !s.includes("UNPAID"));
+    };
+
     const totalIssued = records.reduce((s, r) => s + (r.amount || 0), 0);
-    const totalPaid = records.filter(r => r.paymentStatus === "PAID").reduce((s, r) => s + (r.amount || 0), 0);
-    const totalOutstanding = totalIssued - totalPaid;
+    const totalPaid = records.filter(r => isFinePaid(r.paymentStatus)).reduce((s, r) => s + (r.amount || 0), 0);
+    const totalOutstanding = Math.max(0, totalIssued - totalPaid);
 
     if (records.length === 0) {
         container.innerHTML = `
@@ -785,25 +807,24 @@ async function renderSanctionsTab(container, facilityId, facilityName) {
 
 async function renderComplaintsTab(container, facilityId, facilityName) {
     const records = [];
+    const seenIds = new Set();
+    const addRecord = (d) => {
+        if (seenIds.has(d.id)) return;
+        const data = d.data();
+        if (data.referenceCode && records.some(r => r.referenceCode === data.referenceCode)) return;
+        seenIds.add(d.id);
+        records.push(data);
+    };
+
     try {
         const snap = await getDocs(query(collection(db, "complaints"), where("facilityId", "==", facilityId)));
-        snap.forEach(d => records.push(d.data()));
+        snap.forEach(addRecord);
 
         if (facilityName) {
             const outSnap = await getDocs(query(collection(db, "complaints"), where("outletVisited", "==", facilityName)));
-            outSnap.forEach(d => {
-                const data = d.data();
-                if (!records.some(r => r.referenceCode && r.referenceCode === data.referenceCode)) {
-                    records.push(data);
-                }
-            });
+            outSnap.forEach(addRecord);
             const nameSnap = await getDocs(query(collection(db, "complaints"), where("facilityName", "==", facilityName)));
-            nameSnap.forEach(d => {
-                const data = d.data();
-                if (!records.some(r => r.referenceCode && r.referenceCode === data.referenceCode)) {
-                    records.push(data);
-                }
-            });
+            nameSnap.forEach(addRecord);
         }
     } catch (e) {
         console.warn("Complaints query error:", e);
@@ -919,10 +940,11 @@ function statusBadge(status) {
 
 function paymentBadge(status) {
     if (!status) return `<span class="fp-badge fp-badge-warning">PENDING</span>`;
-    const s = status.toUpperCase().trim();
-    if (s === "PAID") return `<span class="fp-badge fp-badge-success">PAID</span>`;
+    const s = String(status).toUpperCase().trim();
+    if (s === "PAID" || s.startsWith("₦") || s.startsWith("#")) return `<span class="fp-badge fp-badge-success">${s.startsWith("₦") || s.startsWith("#") ? s : "PAID"}</span>`;
     if (s === "PARTIAL") return `<span class="fp-badge fp-badge-warning">PARTIAL</span>`;
-    return `<span class="fp-badge fp-badge-danger">${s}</span>`;
+    if (s.includes("PENDING") || s.includes("UNPAID")) return `<span class="fp-badge fp-badge-warning">${s}</span>`;
+    return `<span class="fp-badge fp-badge-neutral">${s}</span>`;
 }
 
 function renderTeamsLinks(links) {

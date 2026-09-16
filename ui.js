@@ -7,11 +7,18 @@ export const clearRoot = (root) => {
         }
     });
     activeChoicesInstances = [];
+    const modalContainer = document.getElementById("modalContainer");
+    if (modalContainer) modalContainer.innerHTML = '';
+    const hubEditModal = document.getElementById("hubEditModalContainer");
+    if (hubEditModal) hubEditModal.innerHTML = '';
     root.innerHTML = '';
 };
 
 export const addChoicesInstance = (key, instance) => {
-    // If instance with this key already exists, remove it first to avoid stale references
+    const existing = activeChoicesInstances.find(item => item.key === key);
+    if (existing && existing.instance && typeof existing.instance.destroy === 'function') {
+        existing.instance.destroy();
+    }
     activeChoicesInstances = activeChoicesInstances.filter(item => item.key !== key);
     activeChoicesInstances.push({ key, instance });
 };
@@ -29,9 +36,10 @@ export const removeChoicesInstance = (key) => {
 };
 
 export const navigate = (page, pushState = true) => {
-    const currentHash = window.location.hash.substring(1);
-    if (pushState && page !== currentHash) {
-        history.pushState({ page: page }, '', `#${page}`);
+    const cleanPage = String(page || 'report').replace(/^#/, '');
+    const currentHash = window.location.hash.replace(/^#/, '');
+    if (pushState && cleanPage !== currentHash) {
+        history.pushState({ page: cleanPage }, '', `#${cleanPage}`);
     }
-    window.dispatchEvent(new CustomEvent('navigate', { detail: { page } }));
+    window.dispatchEvent(new CustomEvent('navigate', { detail: { page: cleanPage } }));
 };

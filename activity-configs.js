@@ -10,6 +10,22 @@ export const LAGOS_LGAS = [
   "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"
 ];
 
+// Helper to safely extract month index (0-11) from strings, Timestamps, or Date objects
+export function getMonthIndex(raw) {
+  if (!raw) return -1;
+  if (raw.toDate && typeof raw.toDate === "function") return raw.toDate().getMonth();
+  if (raw instanceof Date && !isNaN(raw.getTime())) return raw.getMonth();
+  if (typeof raw === "object" && raw.seconds) return new Date(raw.seconds * 1000).getMonth();
+  const str = String(raw).trim();
+  const ymd = str.match(/^(\d{4})-(\d{1,2})/);
+  if (ymd) return parseInt(ymd[2], 10) - 1;
+  const dmy = str.match(/^\d{1,2}[/-](\d{1,2})/);
+  if (dmy) return parseInt(dmy[1], 10) - 1;
+  const monthNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const mIdx = monthNames.findIndex(m => str.toLowerCase().includes(m));
+  return mIdx;
+}
+
 // 1. ALERTS CONFIGURATION
 export const ALERTS_CONFIG = {
   key: "alerts",
@@ -33,7 +49,7 @@ export const ALERTS_CONFIG = {
   kpis: [
     { id: "totalAlerts", label: "Total Alerts", color: "accent-green", calc: (items) => items.length },
     { id: "openAlerts", label: "Open Alerts", color: "accent-amber", calc: (items) => items.filter(a => (a.status || "Open").toLowerCase() === "open").length },
-    { id: "investigatingAlerts", label: "Under Investigation", color: "accent-blue", calc: (items) => items.filter(a => (a.status || "").toLowerCase().includes("investig")).length },
+    { id: "investigatingAlerts", label: "Under Investigation", color: "accent-blue", calc: (items) => items.filter(a => (a.status || "").toLowerCase().includes("investig") || (a.status || "").toLowerCase().includes("mop")).length },
     { id: "closedAlerts", label: "Resolved / Closed", color: "accent-green", calc: (items) => items.filter(a => (a.status || "").toLowerCase() === "closed").length }
   ],
   charts: [
@@ -45,13 +61,8 @@ export const ALERTS_CONFIG = {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const counts = Array(12).fill(0);
         items.forEach(item => {
-          const d = item.dateReceived ? new Date(item.dateReceived) : null;
-          if (d && !isNaN(d.getMonth())) {
-            counts[d.getMonth()]++;
-          } else if (item.month) {
-            const mIdx = months.findIndex(m => m.toLowerCase() === String(item.month).substring(0, 3).toLowerCase());
-            if (mIdx >= 0) counts[mIdx]++;
-          }
+          const mIdx = getMonthIndex(item.dateReceived || item.month);
+          if (mIdx >= 0 && mIdx < 12) counts[mIdx]++;
         });
         return {
           labels: months,
@@ -70,7 +81,7 @@ export const ALERTS_CONFIG = {
       title: "Status Breakdown",
       generate: (items) => {
         const open = items.filter(a => (a.status || "Open").toLowerCase() === "open").length;
-        const investigating = items.filter(a => (a.status || "").toLowerCase().includes("investig")).length;
+        const investigating = items.filter(a => (a.status || "").toLowerCase().includes("investig") || (a.status || "").toLowerCase().includes("mop")).length;
         const closed = items.filter(a => (a.status || "").toLowerCase() === "closed").length;
         return {
           labels: ["Open", "Under Investigation", "Closed"],
@@ -100,16 +111,21 @@ export const ALERTS_CONFIG = {
       insights.push(`Primary alert origin: ${topSource[0]} (${topSource[1]} alerts registered).`);
     }
 
-    const currentYear = new Date().getFullYear();
-    const currentYearAlerts = items.filter(a => String(a.year) === String(currentYear) || (a.dateReceived && String(a.dateReceived).includes(String(currentYear))));
-    insights.push(`${currentYearAlerts.length} alerts logged in current year ${currentYear}.`);
+    const distinctYears = Array.from(new Set(items.map(a => a.year).filter(Boolean)));
+    if (distinctYears.length === 1) {
+      insights.push(`${items.length} alerts registered in fiscal period ${distinctYears[0]}.`);
+    } else {
+      const currentYear = new Date().getFullYear();
+      const currentYearAlerts = items.filter(a => String(a.year) === String(currentYear));
+      insights.push(`${currentYearAlerts.length} alerts registered in current year ${currentYear}.`);
+    }
 
     return insights;
   },
   logFields: [
-    { name: "alertNo", label: "Alert Number (e.g., ALT/2026/001)", type: "text", required: true },
+    { name: "alertNo", label: "Alert Number (e.g., ALT/2026/001/PMS)", type: "text", required: true },
     { name: "dateReceived", label: "Date Received", type: "date", required: true },
-    { name: "source", label: "Source of Alert (e.g., WHO, PMS HQ, Public)", type: "text", required: true },
+    { name: "source", label: "Source of Alert (e.g., WHO, PMS HQ, Public, FSAN)", type: "text", required: true },
     { name: "title", label: "Alert Title / Product Details", type: "textarea", required: true, rows: 2 },
     { name: "facilitiesVisited", label: "Target / Initial Outlets Identified", type: "textarea", rows: 2 },
     { name: "actionTaken", label: "Action Taken / Directives Issued", type: "textarea", rows: 2 },
@@ -124,7 +140,7 @@ export const COMPLAINTS_CONFIG = {
   title: "Consumer Complaints",
   subtitle: "Continuous docket: Intake → Field Investigation → Regulatory Action → Complainant Feedback & Closure",
   collection: "complaints",
-  isDocket: true, // triggers specialized case docket view
+  isDocket: true,
   teamsRootFolder: "/CONSUMER COMPLAINT",
   defaultStatus: "Open",
   statuses: ["Open", "Under Investigation", "Enforcement in Progress", "Closed"],
@@ -154,10 +170,8 @@ export const COMPLAINTS_CONFIG = {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const counts = Array(12).fill(0);
         items.forEach(item => {
-          const d = item.dateReceived ? new Date(item.dateReceived) : (item.dateLogged ? new Date(item.dateLogged) : null);
-          if (d && !isNaN(d.getMonth())) {
-            counts[d.getMonth()]++;
-          }
+          const mIdx = getMonthIndex(item.dateReceived || item.dateLogged);
+          if (mIdx >= 0 && mIdx < 12) counts[mIdx]++;
         });
         return {
           labels: months,
@@ -177,7 +191,7 @@ export const COMPLAINTS_CONFIG = {
       generate: (items) => {
         const types = {};
         items.forEach(c => {
-          const pt = (c.productType || "General Food/Drug").trim();
+          const pt = (c.productType || "Food").trim();
           types[pt] = (types[pt] || 0) + 1;
         });
         const labels = Object.keys(types);
@@ -204,10 +218,18 @@ export const COMPLAINTS_CONFIG = {
     insights.push(`Overall resolution rate: ${resolutionRate}% (${closedCount} of ${total} complaints resolved with feedback issued).`);
     insights.push(`${openCount} complaints currently awaiting field surveillance assignment.`);
 
+    const stopWords = new Set(["the", "alleged", "complaint", "suspected", "purchase", "consumer", "reported", "unregistered", "expired", "sale"]);
     const productCounts = {};
     items.forEach(c => {
-      const prod = (c.product || c.caseInfo || "").split(" ")[0].trim();
-      if (prod && prod.length > 2) productCounts[prod] = (productCounts[prod] || 0) + 1;
+      let prod = (c.product || "").trim();
+      if (!prod && c.caseInfo) {
+        const cleaned = c.caseInfo.replace(/^(the|alleged|suspected|reported|sale of|purchase of)\s+/i, "");
+        prod = cleaned.split(/[:;,.-]/)[0].trim();
+      }
+      const token = prod.split(" ")[0].toLowerCase();
+      if (token && token.length > 2 && !stopWords.has(token)) {
+        productCounts[prod] = (productCounts[prod] || 0) + 1;
+      }
     });
     const sortedProds = Object.entries(productCounts).sort((a, b) => b[1] - a[1]);
     if (sortedProds.length > 0 && sortedProds[0][1] > 1) {
@@ -217,7 +239,7 @@ export const COMPLAINTS_CONFIG = {
     return insights;
   },
   logFields: [
-    { name: "referenceCode", label: "Reference Code (e.g. 2026/CCF/022/LAG)", type: "text", required: true },
+    { name: "referenceCode", label: "Reference Code (e.g. 2026/CCD/022/LAG)", type: "text", required: true },
     { name: "dateReceived", label: "Date Received", type: "date", required: true },
     { name: "complainant", label: "Complainant Name & Contact Info", type: "text", required: true },
     { name: "product", label: "Product Name / Brand Involved", type: "text", required: true },
@@ -225,25 +247,27 @@ export const COMPLAINTS_CONFIG = {
     { name: "caseInfo", label: "Case Description & Allegation", type: "textarea", required: true, rows: 3 },
     { name: "outletVisited", label: "Suspected Outlet / Point of Purchase", type: "text" },
     { name: "actionTaken", label: "Initial Administrative Action Taken", type: "textarea", rows: 2 },
-    { name: "status", label: "Initial Status", type: "select", options: ["Open", "Under Investigation", "Closed"], default: "Open" }
+    { name: "status", label: "Initial Status", type: "select", options: ["Open", "Under Investigation", "Enforcement in Progress", "Closed"], default: "Open" }
   ]
 };
 
 // 3. GSDP (GOOD STORAGE & DISTRIBUTION PRACTICES) CONFIGURATION
-function isCatA(item) {
-  const r = ((item && item.riskCategory) || (item && item.findings) || "").toLowerCase();
-  return r.includes("category a") || r.includes("low") || /\bcat\s*a\b/.test(r) || /\(a\)/.test(r);
+export function getRiskCategory(item) {
+  const direct = String(item?.riskCategory || "").toLowerCase().trim();
+  if (direct.includes("cat a") || direct.includes("category a") || direct.includes("low")) return "A";
+  if (direct.includes("cat c") || direct.includes("category c") || direct.includes("high") || direct.includes("©")) return "C";
+  if (direct.includes("cat b") || direct.includes("category b") || direct.includes("medium") || direct.includes("med")) return "B";
+
+  const f = String(item?.findings || "").toLowerCase();
+  if (/\b(category\s*a|cat\s*a|low\s*risk)\b/.test(f) || /\(a\)/.test(f)) return "A";
+  if (/\b(category\s*c|cat\s*c|high\s*risk)\b/.test(f) || /\(c\)/.test(f) || f.includes("©")) return "C";
+  if (/\b(category\s*b|cat\s*b|medium\s*risk|med\s*risk)\b/.test(f) || /\(b\)/.test(f)) return "B";
+  return "PENDING";
 }
 
-function isCatB(item) {
-  const r = ((item && item.riskCategory) || (item && item.findings) || "").toLowerCase();
-  return !isCatA(item) && (r.includes("category b") || r.includes("medium") || /\bcat\s*b\b/.test(r) || /\(b\)/.test(r));
-}
-
-function isCatC(item) {
-  const r = ((item && item.riskCategory) || (item && item.findings) || "").toLowerCase();
-  return !isCatA(item) && !isCatB(item) && (r.includes("category c") || r.includes("high") || /\bcat\s*c\b/.test(r) || /\(c\)/.test(r) || r.includes("©"));
-}
+export const isCatA = (item) => getRiskCategory(item) === "A";
+export const isCatB = (item) => getRiskCategory(item) === "B";
+export const isCatC = (item) => getRiskCategory(item) === "C";
 
 export const GSDP_CONFIG = {
   key: "gsdp",
@@ -252,6 +276,7 @@ export const GSDP_CONFIG = {
   collection: "gsdp_inspections",
   teamsRootFolder: "/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES",
   defaultStatus: "Active",
+  statuses: ["Category A (Low)", "Category B (Medium)", "Category C (High)", "Pending Classification"],
   columns: [
     { key: "facilityName", label: "Name of Manufacturer / Facility", format: "bold" },
     { key: "address", label: "Location Address" },
@@ -347,6 +372,7 @@ export const SURVEILLANCE_CONFIG = {
   collection: "facilityReports",
   activityFilter: "Routine Surveillance",
   teamsRootFolder: "/ROUTINE SURVEILLANCE",
+  statuses: ["Satisfactory", "Infractions Found", "Sanctions Recommended", "Mopped Up"],
   columns: [
     { key: "facilityName", label: "Facility Name", format: "bold" },
     { key: "facilityAddress", label: "Location Address" },
@@ -424,7 +450,7 @@ export const SURVEILLANCE_CONFIG = {
 
     return insights;
   },
-  useWizardForLog: true // Redirects to Start New Log
+  useWizardForLog: true
 };
 
 // 5. GLSI (GLOBAL LISTING OF SUPERMARKET ITEMS) CONFIGURATION
@@ -435,6 +461,7 @@ export const GLSI_CONFIG = {
   collection: "glsi_records",
   teamsRootFolder: "/GLSI MONITORING",
   defaultStatus: "Active",
+  statuses: ["Compliant", "Monitored", "Non-Compliant / Action Taken", "Not Located"],
   columns: [
     { key: "facilityName", label: "Facility Name", format: "bold" },
     { key: "address", label: "Location Address" },
@@ -448,8 +475,14 @@ export const GLSI_CONFIG = {
   ],
   kpis: [
     { id: "totalGlsi", label: "Total Facilities Monitored", color: "accent-green", calc: (items) => items.length },
-    { id: "compliantGlsi", label: "Compliant / Monitored", color: "accent-blue", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("compliant") || (g.status || "").toLowerCase().includes("monitored") || (g.status || "").toLowerCase() === "active").length },
-    { id: "actionGlsi", label: "Action Taken / Lapses", color: "accent-amber", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("non-compliant") || (g.status || "").toLowerCase().includes("action") || (g.status || "").toLowerCase().includes("default")).length },
+    { id: "compliantGlsi", label: "Compliant / Monitored", color: "accent-blue", calc: (items) => items.filter(g => {
+      const s = (g.status || "").toLowerCase();
+      return (!s.includes("non") && s.includes("compliant")) || s.includes("monitored") || s === "active";
+    }).length },
+    { id: "actionGlsi", label: "Action Taken / Lapses", color: "accent-amber", calc: (items) => items.filter(g => {
+      const s = (g.status || "").toLowerCase();
+      return s.includes("non-compliant") || s.includes("action") || s.includes("default");
+    }).length },
     { id: "notLocatedGlsi", label: "Not Located Outlets", color: "accent-red", calc: (items) => items.filter(g => (g.status || "").toLowerCase().includes("not located")).length }
   ],
   charts: [
@@ -458,14 +491,18 @@ export const GLSI_CONFIG = {
       type: "doughnut",
       title: "Facility Operational & Compliance Status",
       generate: (items) => {
-        const action = items.filter(g => (g.status || "").toLowerCase().includes("non-compliant") || (g.status || "").toLowerCase().includes("action") || (g.status || "").toLowerCase().includes("default")).length;
-        const compliant = items.filter(g => (g.status || "").toLowerCase().includes("compliant") || (g.status || "").toLowerCase().includes("monitored") || (g.status || "").toLowerCase() === "active").length;
-        const notLocated = items.filter(g => (g.status || "").toLowerCase().includes("not located")).length;
-        const other = items.length - (action + compliant + notLocated);
+        let action = 0, compliant = 0, notLocated = 0, other = 0;
+        items.forEach(g => {
+          const s = (g.status || "").toLowerCase();
+          if (s.includes("not located")) notLocated++;
+          else if (s.includes("non-compliant") || s.includes("action") || s.includes("default")) action++;
+          else if ((!s.includes("non") && s.includes("compliant")) || s.includes("monitored") || s === "active") compliant++;
+          else other++;
+        });
         return {
           labels: ["Action Taken / Lapses", "Compliant / Monitored", "Not Located", "Other"],
           datasets: [{
-            data: [action, compliant, notLocated, Math.max(0, other)],
+            data: [action, compliant, notLocated, other],
             backgroundColor: ["#f59e0b", "#10b981", "#ef4444", "#6b7280"]
           }]
         };
@@ -499,7 +536,10 @@ export const GLSI_CONFIG = {
     const total = items.length;
     if (total === 0) return ["No GLSI records found."];
 
-    const actionCount = items.filter(g => (g.status || "").toLowerCase().includes("non-compliant") || (g.status || "").toLowerCase().includes("action") || (g.status || "").toLowerCase().includes("default")).length;
+    const actionCount = items.filter(g => {
+      const s = (g.status || "").toLowerCase();
+      return s.includes("non-compliant") || s.includes("action") || s.includes("default");
+    }).length;
     if (actionCount > 0) {
       insights.push(`${actionCount} facilities required regulatory interventions, inventory mop-up, or consultative sanctions.`);
     }
@@ -520,6 +560,6 @@ export const GLSI_CONFIG = {
     { name: "observation", label: "Observation & Findings", type: "textarea", rows: 2 },
     { name: "actionTaken", label: "Action Taken", type: "textarea", rows: 2 },
     { name: "recommendation", label: "Recommendation", type: "textarea", rows: 2 },
-    { name: "status", label: "Facility Status", type: "select", options: ["Active", "Defaulter", "Not Located", "Suspended"], default: "Active" }
+    { name: "status", label: "Facility Status", type: "select", options: ["Compliant", "Monitored", "Non-Compliant / Action Taken", "Not Located", "Active"], default: "Active" }
   ]
 };

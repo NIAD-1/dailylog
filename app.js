@@ -298,17 +298,23 @@ function updateAuthUI(user, role) {
     userInfo.textContent = 'Not signed in';
     btnSignIn.classList.remove('hidden');
     btnSignOut.classList.add('hidden');
+    if (['dashboard', 'kpi-settings', 'import', 'log-sanction'].includes(currentPage)) {
+      navigate('report');
+    }
   }
   renderSidebar(user, role, currentPage);
 }
 
 // ─── Page Router ─────────────────────────────────────────────────────────────
 window.addEventListener('popstate', (event) => {
-  if (event.state && event.state.page) {
-    renderPage(event.state.page);
-  } else {
-    renderPage('report');
-  }
+  const hashPage = window.location.hash.replace(/^#/, '').trim();
+  const target = (event.state && event.state.page) || hashPage || 'report';
+  renderPage(target);
+});
+
+window.addEventListener('hashchange', () => {
+  const hashPage = window.location.hash.replace(/^#/, '').trim();
+  if (hashPage) renderPage(hashPage);
 });
 
 window.addEventListener('navigate', (event) => {

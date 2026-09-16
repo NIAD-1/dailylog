@@ -118,9 +118,29 @@ async function main() {
     }));
   }
 
+  // 3. REGULATORY ALERTS
+  const alertsPath = path.join(__dirname, 'etl_output/alerts.json');
+  if (fs.existsSync(alertsPath)) {
+    await purgeCollection('alerts');
+    const alerts = JSON.parse(fs.readFileSync(alertsPath, 'utf8'));
+    await batchUpload('alerts', alerts, (a) => ({
+      alertNo: a.alertNo || '',
+      dateReceived: a.dateReceived || '',
+      source: a.source || 'Regulatory Alert',
+      title: a.title || '',
+      actionTaken: a.actionTaken || '',
+      facilitiesVisited: a.facilitiesVisited || '',
+      findings: a.findings || '',
+      status: a.status || 'Open',
+      year: parseInt(a.year) || 2024,
+      sourceFile: a.sourceFile || ''
+    }));
+  }
+
   // 4. CONSUMER COMPLAINTS (Dual Schema for Activity Hub & Facility Profiles)
   const complaintsPath = path.join(__dirname, 'etl_output/complaints.json');
   if (fs.existsSync(complaintsPath)) {
+    await purgeCollection('complaints');
     const complaints = JSON.parse(fs.readFileSync(complaintsPath, 'utf8'));
     await batchUpload('complaints', complaints, (c) => ({
       referenceCode: c.referenceCode || '',

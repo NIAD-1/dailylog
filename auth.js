@@ -8,12 +8,18 @@ let currentUserRole = 'inspector';
 const initAuth = (db, onAuthChangeCallback) => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            const userDocRef = doc(db, 'users', user.uid);
-            const snap = await getDoc(userDocRef);
             currentUser = user;
-            currentUserRole = snap.exists() ? snap.data().role || 'inspector' : 'inspector';
-            if (!snap.exists()) {
-                await setDoc(userDocRef, { name: user.displayName || user.email, email: user.email, role: 'inspector', createdAt: serverTimestamp() });
+            currentUserRole = 'inspector';
+            try {
+                const userDocRef = doc(db, 'users', user.uid);
+                const snap = await getDoc(userDocRef);
+                if (snap.exists()) {
+                    currentUserRole = snap.data().role || 'inspector';
+                } else {
+                    await setDoc(userDocRef, { name: user.displayName || user.email, email: user.email, role: 'inspector', createdAt: serverTimestamp() });
+                }
+            } catch (err) {
+                console.warn("Could not load user profile document, defaulting to inspector:", err);
             }
         } else {
             currentUser = null;

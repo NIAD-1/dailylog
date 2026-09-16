@@ -2470,6 +2470,8 @@ select[multiple] {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   margin-bottom: 24px;
   position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
 /* Styled scrollbar for easy horizontal dragging */
@@ -2496,14 +2498,11 @@ select[multiple] {
   font-size: 13px;
 }
 
-.hub-table thead tr {
+.hub-table thead th {
   background: #f8fafc;
   position: sticky;
   top: 0;
-  z-index: 5;
-}
-
-.hub-table th {
+  z-index: 10;
   padding: 12px 16px;
   text-align: left;
   font-weight: 700;
@@ -2514,14 +2513,14 @@ select[multiple] {
   border-bottom: 2px solid #cbd5e1;
   border-top: none;
   white-space: nowrap;
-  background: #f8fafc;
 }
 
-/* Freeze-pane on the first column (Facility Name) */
+/* Freeze-pane on the first column (Top-left corner stays above both header and column) */
 .hub-table th:first-child {
   position: sticky;
+  top: 0;
   left: 0;
-  z-index: 8;
+  z-index: 20;
   background: #f8fafc;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.04);
 }
@@ -2529,7 +2528,7 @@ select[multiple] {
 .hub-table td:first-child {
   position: sticky;
   left: 0;
-  z-index: 6;
+  z-index: 2;
   background: #ffffff;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.04);
 }
@@ -2560,21 +2559,34 @@ select[multiple] {
   border-bottom: none;
 }
 
+.hub-facility-link,
+.hub-facility-link:visited {
+  color: var(--accent);
+}
 .hub-facility-link {
   font-weight: 700;
-  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
   display: inline-block;
   min-width: 180px;
-  max-width: 300px;
+  max-width: 320px;
   line-height: 1.35;
   cursor: pointer;
   transition: color 0.15s ease;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .hub-facility-link:hover {
   color: #005a36;
   text-decoration-thickness: 2px;
+}
+
+.hub-editable-code {
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.hub-editable-code:hover {
+  background: #dbeafe !important;
+  border-color: #93c5fd !important;
 }
 
 .hub-status-badge {
@@ -2599,14 +2611,14 @@ select[multiple] {
 }
 
 .hub-status-medium,
-.hub-status-open {
+.hub-status-open,
+.hub-status-ongoing {
   background: #FEF3C7;
   color: #92400E;
   border: 1px solid #FDE68A;
 }
 
 .hub-status-high,
-.hub-status-ongoing,
 .hub-status-danger {
   background: #FEE2E2;
   color: #991B1B;
