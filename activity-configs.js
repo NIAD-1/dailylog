@@ -574,7 +574,7 @@ export const ADVERTS_CONFIG = {
   subtitle: "Surveillance of Scheduled & Unexpected product adverts across facilities and media outlets",
   collection: "facilityReports",
   activityFilter: "Advert",
-  teamsRootFolder: "/Advert Monitoring",
+  teamsRootFolder: "/ADVERTS",
   statuses: ["Satisfactory", "Infractions Found", "Sanctions Recommended", "Mopped Up", "Active"],
   columns: [
     { key: "advertName", label: "Advert / Product Name", format: "bold" },

@@ -1749,6 +1749,7 @@ function getFolderConfig(report) {
 
         case 'Advert': {
             const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+            const prodType = (report.mainProductType || 'DRUGS').toUpperCase();
             const cleanAdvert = (report.advertName || 'GENERAL_ADVERT')
                 .trim()
                 .replace(/[."*:<>?\/\\|]/g, '')
@@ -1768,12 +1769,12 @@ function getFolderConfig(report) {
             const isSubsequentRound = !!report.isSubsequentRound;
 
             if (isUnexpected) {
-                const rootFolder = `/Advert Monitoring/${year}/Unexpected Adverts/${cleanAdvert}`;
+                const rootFolder = `/ADVERTS/${prodType}/${year}/Unexpected Adverts/${cleanAdvert}`;
                 if (advertFolderExists) {
                     // Scenario B: Advert already exists in database -> reuse root folder, create only facility folder
                     return {
                         rootFolder: rootFolder,
-                        productType: report.mainProductType || null,
+                        productType: report.mainProductType || 'Drugs',
                         advertName: cleanAdvert,
                         advertCategory: 'Unexpected Advert',
                         advertFolderExists: true,
@@ -1786,7 +1787,7 @@ function getFolderConfig(report) {
                     // Scenario A: New unexpected advert -> create standard structure and facility folder
                     return {
                         rootFolder: rootFolder,
-                        productType: report.mainProductType || null,
+                        productType: report.mainProductType || 'Drugs',
                         advertName: cleanAdvert,
                         advertCategory: 'Unexpected Advert',
                         advertFolderExists: false,
@@ -1804,10 +1805,10 @@ function getFolderConfig(report) {
                 if (isSubsequentRound) {
                     // Scenario B: Subsequent monitoring activity -> dedicated activity folder
                     const roundName = report.advertActivityRound || `Activity_${dateStr}_${cleanFacility}`;
-                    const rootFolder = `/Advert Monitoring/${year}/${cleanAdvert}/${roundName}`;
+                    const rootFolder = `/ADVERTS/${prodType}/${year}/${cleanAdvert}/${roundName}`;
                     return {
                         rootFolder: rootFolder,
-                        productType: report.mainProductType || null,
+                        productType: report.mainProductType || 'Drugs',
                         advertName: cleanAdvert,
                         advertCategory: 'Scheduled Advert',
                         isSubsequentRound: true,
@@ -1822,10 +1823,10 @@ function getFolderConfig(report) {
                     };
                 } else {
                     // Scenario A: First monitoring activity for scheduled advert -> initial root structure
-                    const rootFolder = `/Advert Monitoring/${year}/${cleanAdvert}`;
+                    const rootFolder = `/ADVERTS/${prodType}/${year}/${cleanAdvert}`;
                     return {
                         rootFolder: rootFolder,
-                        productType: report.mainProductType || null,
+                        productType: report.mainProductType || 'Drugs',
                         advertName: cleanAdvert,
                         advertCategory: 'Scheduled Advert',
                         isSubsequentRound: false,

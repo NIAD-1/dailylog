@@ -67,28 +67,30 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
       const dateStr = advertDetails.dateStr || new Date().toISOString().split('T')[0];
       const facilitySubPath = `Facilities/${dateStr}_${cleanFacility}`;
 
+      const prodType = (mainProductType || 'DRUGS').toUpperCase();
+
       if (isUnexpected) {
-        const rootFolder = `/Advert Monitoring/${currentYear}/Unexpected Adverts/${cleanAdvert}`;
+        const rootFolder = `/ADVERTS/${prodType}/${currentYear}/Unexpected Adverts/${cleanAdvert}`;
         if (advertDetails.advertFolderExists) {
-          return { rootFolder, productType: mainProductType || null, subfolders: [`${facilitySubPath}/Inspection Reports`] };
+          return { rootFolder, productType: mainProductType || 'Drugs', subfolders: [`${facilitySubPath}/Inspection Reports`] };
         }
         return {
           rootFolder,
-          productType: mainProductType || null,
+          productType: mainProductType || 'Drugs',
           subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
         };
       } else {
         if (advertDetails.isSubsequentRound) {
           const roundName = advertDetails.activityRound || `Activity_${dateStr}_${cleanFacility}`;
           return {
-            rootFolder: `/Advert Monitoring/${currentYear}/${cleanAdvert}/${roundName}`,
-            productType: mainProductType || null,
+            rootFolder: `/ADVERTS/${prodType}/${currentYear}/${cleanAdvert}/${roundName}`,
+            productType: mainProductType || 'Drugs',
             subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
           };
         }
         return {
-          rootFolder: `/Advert Monitoring/${currentYear}/${cleanAdvert}`,
-          productType: mainProductType || null,
+          rootFolder: `/ADVERTS/${prodType}/${currentYear}/${cleanAdvert}`,
+          productType: mainProductType || 'Drugs',
           subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
         };
       }
