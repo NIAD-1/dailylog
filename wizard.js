@@ -729,13 +729,13 @@ function bindStep_FacilityForm(root) {
                     advertNameInput.value = '';
                     advertNameInput.readOnly = false;
                     container.dataset.advertFolderExists = "false";
-                    advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will create folder: Advert Monitoring/2026/Unexpected Adverts/[Name]/</span>';
+                    advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will scaffold: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/[Name]/</span>';
                 } else {
                     newUnexpectedRow.style.display = 'block';
                     advertNameInput.value = val;
                     advertNameInput.readOnly = true;
                     container.dataset.advertFolderExists = "true";
-                    advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will reuse existing folder: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(val) + '/</span>';
+                    advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will link facility under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(val) + '/Facilities/</span>';
                 }
             }
 
@@ -756,7 +756,7 @@ function bindStep_FacilityForm(root) {
                     const inKnown = knownList.some(k => k.toLowerCase() === trimmed);
                     if (inKnown) {
                         container.dataset.advertFolderExists = "true";
-                        advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will reuse existing folder: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
+                        advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will link facility under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(name.trim()) + '/Facilities/</span>';
                         return;
                     }
 
@@ -765,10 +765,10 @@ function bindStep_FacilityForm(root) {
                         const s = await getDocs(q);
                         if (!s.empty) {
                             container.dataset.advertFolderExists = "true";
-                            advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will reuse existing folder: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
+                            advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will link facility under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(name.trim()) + '/Facilities/</span>';
                         } else {
                             container.dataset.advertFolderExists = "false";
-                            advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will create folder structure: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
+                            advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will scaffold: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
                         }
                     } catch (err) {
                         container.dataset.advertFolderExists = "false";
@@ -816,21 +816,21 @@ function bindStep_FacilityForm(root) {
                     if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'block';
                     container.dataset.isSubsequentRound = "false";
                     container.dataset.activityRound = "";
-                    scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity for new campaign — will initialize folder: Advert Monitoring/2026/[Campaign Name]/</span>';
+                    scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity for new campaign — will scaffold: ADVERTS/[Product Line]/2026/[Month]/[Campaign Name]/</span>';
                 } else {
                     if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
                     const count = parseInt(selectedOpt?.dataset?.count || '0', 10);
                     if (count === 0) {
                         container.dataset.isSubsequentRound = "false";
                         container.dataset.activityRound = "";
-                        scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity — will initialize root folder: Advert Monitoring/2026/' + escapeHTML(val) + '/</span>';
+                        scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity — will initialize campaign folder: ADVERTS/[Product Line]/2026/[Month]/' + escapeHTML(val) + '/</span>';
                     } else {
                         const nextRound = count + 1;
                         const dateStr = container.querySelector('input[name="inspectionDate"]')?.value || new Date().toISOString().split('T')[0];
                         const roundName = `Round_${nextRound}_${dateStr}`;
                         container.dataset.isSubsequentRound = "true";
                         container.dataset.activityRound = roundName;
-                        scheduledAdvertStatus.innerHTML = '<span style="color:#2563eb;font-weight:600;">🔄 Subsequent Monitoring Activity Round #' + nextRound + ' — will create new activity folder: Advert Monitoring/2026/' + escapeHTML(val) + '/' + roundName + '/</span>';
+                        scheduledAdvertStatus.innerHTML = '<span style="color:#2563eb;font-weight:600;">🔄 Subsequent Monitoring Activity Round #' + nextRound + ' — will scaffold: ADVERTS/[Product Line]/2026/[Month]/' + escapeHTML(val) + '/' + roundName + '/</span>';
                     }
                 }
             }
