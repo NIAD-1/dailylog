@@ -281,14 +281,17 @@ function bindStep_FacilityForm(root) {
     const conditional = container.querySelector('[name="conditional"]');
 
     function updateConditionalFields() {
-        // Remove old productTypeSelect instance if it exists
+        // Remove old choices instances if they exist
         const oldChoices = getChoicesInstance('productTypeSelect');
         if (oldChoices) {
             oldChoices.instance.destroy();
         }
-        // Remove old consultativeFacilityName instance if exists
         removeChoicesInstance('consultativeFacilityName');
         removeChoicesInstance('gsdpFacilityName');
+        removeChoicesInstance('linkedComplaintId');
+        removeChoicesInstance('linkedAlertId');
+        removeChoicesInstance('existingUnexpectedAdvertSelect');
+        removeChoicesInstance('scheduledAdvertSelect');
 
         let conditionalHTML = '';
         const val = activitySelect.value;
@@ -365,7 +368,7 @@ function bindStep_FacilityForm(root) {
                     </select>
                     <p class="muted small" style="margin-top:4px;">Selecting an open complaint docket links this inspection visit and advances the case to "Under Investigation".</p>
                 </div>` : ''}
-                ${val === 'Routine Surveillance' ? `
+                ${['Routine Surveillance', 'Special Surveillance'].includes(val) ? `
                 <div style="margin-top:12px; padding:12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px;">
                     <label style="color:#065f46; font-weight:700;">Was any product on Regulatory Alert encountered?</label>
                     <select name="regulatoryAlertEncountered">
@@ -602,45 +605,101 @@ function bindStep_FacilityForm(root) {
         const complaintSelect = conditional.querySelector('select[name="linkedComplaintId"]');
         if (complaintSelect) {
             getDocs(query(collection(db, 'complaints'))).then(snap => {
+                const oldChoices = getChoicesInstance('linkedComplaintId');
+                if (oldChoices) oldChoices.instance.destroy();
+
                 const cases = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 cases.sort((a, b) => (a.status === 'Open' ? -1 : 1));
                 complaintSelect.innerHTML = '<option value="">-- Standalone / Unlinked Complaint --</option>' +
-                    cases.map(c => `<option value="${c.id}">${c.referenceCode || 'REF'} — ${(c.product || c.caseInfo || '').substring(0, 45)} [${c.status || 'Open'}]</option>`).join('');
+                    cases.map(c => {
+                        const ref = c.referenceCode || 'REF';
+                        const prod = (c.product || c.caseInfo || 'Unspecified').substring(0, 45);
+                        const comp = c.complainantName ? ` (${c.complainantName})` : '';
+                        const st = c.status || 'Open';
+                        return `<option value="${escapeHTML(c.id)}">[${escapeHTML(ref)}] ${escapeHTML(prod)}${escapeHTML(comp)} [${escapeHTML(st)}]</option>`;
+                    }).join('');
+
+                const choices = new Choices(complaintSelect, {
+                    removeItemButton: false,
+                    placeholder: true,
+                    placeholderValue: 'Search complaints by code, product, complainant...',
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+                addChoicesInstance('linkedComplaintId', choices);
+
                 if (currentData.linkedComplaintId) {
-                    complaintSelect.value = currentData.linkedComplaintId;
+                    choices.setChoiceByValue(currentData.linkedComplaintId);
                 }
             }).catch(e => {
+                console.warn("Could not load complaints:", e);
                 complaintSelect.innerHTML = '<option value="">-- Standalone Complaint --</option>';
             });
         }
 
-        // ─── Field Linking: Regulatory Alerts in Routine Surveillance ─────
+        // ─── Field Linking: Regulatory Alerts in Routine / Special Surveillance ─────
         const alertEncounteredSelect = conditional.querySelector('select[name="regulatoryAlertEncountered"]');
         const alertDropdownContainer = conditional.querySelector('#alertDropdownContainer');
         const alertSelect = conditional.querySelector('select[name="linkedAlertId"]');
         const alertActionInput = conditional.querySelector('input[name="alertAction"]');
 
         if (alertEncounteredSelect && alertDropdownContainer) {
+            async function initAlertChoices() {
+                if (!alertSelect) return;
+                const existing = getChoicesInstance('linkedAlertId');
+                if (existing) return;
+
+                try {
+                    const snap = await getDocs(query(collection(db, 'alerts')));
+                    const alerts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    alerts.sort((a, b) => (a.status === 'Active' ? -1 : 1));
+
+                    alertSelect.innerHTML = '<option value="">Select Regulatory Alert...</option>' +
+                        alerts.map(a => {
+                            const no = a.alertNo || 'ALT';
+                            const title = (a.title || 'Untitled Alert').substring(0, 50);
+                            const src = a.source ? ` (${a.source})` : '';
+                            const st = a.status ? ` [${a.status}]` : '';
+                            return `<option value="${escapeHTML(a.id)}">[${escapeHTML(no)}] ${escapeHTML(title)}${escapeHTML(src)}${escapeHTML(st)}</option>`;
+                        }).join('');
+
+                    const choices = new Choices(alertSelect, {
+                        removeItemButton: false,
+                        placeholder: true,
+                        placeholderValue: 'Search regulatory alert by title, number, source...',
+                        searchEnabled: true,
+                        itemSelectText: '',
+                        shouldSort: false
+                    });
+                    addChoicesInstance('linkedAlertId', choices);
+
+                    if (currentData.linkedAlertId) {
+                        choices.setChoiceByValue(currentData.linkedAlertId);
+                    }
+                } catch (e) {
+                    console.warn("Could not load alerts:", e);
+                    alertSelect.innerHTML = '<option value="">No alerts loaded</option>';
+                }
+            }
+
             alertEncounteredSelect.addEventListener('change', () => {
                 const isYes = alertEncounteredSelect.value === 'true';
                 alertDropdownContainer.style.display = isYes ? 'block' : 'none';
-                if (isYes && alertSelect && alertSelect.children.length <= 1) {
-                    getDocs(query(collection(db, 'alerts'))).then(snap => {
-                        const alerts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                        alertSelect.innerHTML = '<option value="">Select Regulatory Alert...</option>' +
-                            alerts.map(a => `<option value="${a.id}">${a.alertNo || 'ALT'} — ${(a.title || '').substring(0, 45)}</option>`).join('');
-                        if (currentData.linkedAlertId) {
-                            alertSelect.value = currentData.linkedAlertId;
-                        }
-                    }).catch(e => {
-                        alertSelect.innerHTML = '<option value="">No alerts loaded</option>';
-                    });
+                if (isYes) {
+                    initAlertChoices();
                 }
             });
 
             if (currentData.regulatoryAlertEncountered === 'true') {
                 alertEncounteredSelect.value = 'true';
-                alertEncounteredSelect.dispatchEvent(new Event('change'));
+                alertDropdownContainer.style.display = 'block';
+                initAlertChoices().then(() => {
+                    if (currentData.linkedAlertId) {
+                        const c = getChoicesInstance('linkedAlertId');
+                        if (c) c.instance.setChoiceByValue(currentData.linkedAlertId);
+                    }
+                });
                 if (alertActionInput && currentData.alertAction) {
                     alertActionInput.value = currentData.alertAction;
                 }
@@ -694,28 +753,42 @@ function bindStep_FacilityForm(root) {
                     });
 
                     const sortedNames = [...existingNames].sort((a, b) => a.localeCompare(b));
-                    existingUnexpectedSelect.innerHTML = '<option value="__NEW__">+ Enter New Unexpected Advert Name</option>' +
+
+                    removeChoicesInstance('existingUnexpectedAdvertSelect');
+                    existingUnexpectedSelect.innerHTML = '<option value="__NEW__">➕ Enter New Unexpected Advert Name</option>' +
                         sortedNames.map(n => `<option value="${escapeHTML(n)}">${escapeHTML(n)} (Existing in DB)</option>`).join('');
 
+                    const choices = new Choices(existingUnexpectedSelect, {
+                        removeItemButton: false,
+                        placeholder: true,
+                        placeholderValue: 'Search unexpected adverts...',
+                        searchEnabled: true,
+                        itemSelectText: '',
+                        shouldSort: false
+                    });
+                    addChoicesInstance('existingUnexpectedAdvertSelect', choices);
+
+                    let targetName = null;
                     if (wizardState.currentAdvert && wizardState.currentAdvert.advertCategory === 'Unexpected Advert') {
-                        const prevName = wizardState.currentAdvert.advertName;
-                        if (sortedNames.includes(prevName)) {
-                            existingUnexpectedSelect.value = prevName;
-                            triggerUnexpectedSelectChange();
-                        } else {
-                            existingUnexpectedSelect.value = '__NEW__';
-                            advertNameInput.value = prevName;
-                            checkAdvertNameExists(prevName, sortedNames);
-                        }
+                        targetName = wizardState.currentAdvert.advertName;
                     } else if (currentData.advertName) {
-                        if (sortedNames.includes(currentData.advertName)) {
-                            existingUnexpectedSelect.value = currentData.advertName;
+                        targetName = currentData.advertName;
+                    }
+
+                    if (targetName) {
+                        if (sortedNames.includes(targetName)) {
+                            choices.setChoiceByValue(targetName);
                             triggerUnexpectedSelectChange();
                         } else {
-                            existingUnexpectedSelect.value = '__NEW__';
-                            advertNameInput.value = currentData.advertName;
-                            checkAdvertNameExists(currentData.advertName, sortedNames);
+                            choices.setChoiceByValue('__NEW__');
+                            newUnexpectedRow.style.display = 'block';
+                            advertNameInput.value = targetName;
+                            advertNameInput.readOnly = false;
+                            checkAdvertNameExists(targetName, sortedNames);
                         }
+                    } else {
+                        choices.setChoiceByValue('__NEW__');
+                        triggerUnexpectedSelectChange();
                     }
                 } catch (e) {
                     console.warn("Could not load unexpected adverts:", e);
@@ -723,8 +796,9 @@ function bindStep_FacilityForm(root) {
             }
 
             function triggerUnexpectedSelectChange() {
-                const val = existingUnexpectedSelect.value;
-                if (val === '__NEW__') {
+                const choices = getChoicesInstance('existingUnexpectedAdvertSelect');
+                const val = choices ? choices.instance.getValue(true) : existingUnexpectedSelect.value;
+                if (val === '__NEW__' || !val) {
                     newUnexpectedRow.style.display = 'block';
                     advertNameInput.value = '';
                     advertNameInput.readOnly = false;
@@ -741,6 +815,7 @@ function bindStep_FacilityForm(root) {
 
             if (existingUnexpectedSelect) {
                 existingUnexpectedSelect.addEventListener('change', triggerUnexpectedSelectChange);
+                existingUnexpectedSelect.addEventListener('addItem', triggerUnexpectedSelectChange);
             }
 
             let advertCheckTimer = null;
@@ -782,22 +857,54 @@ function bindStep_FacilityForm(root) {
                 });
             }
 
+            let scheduledCountsMap = {};
+
             async function loadScheduledAdverts() {
                 try {
                     const snap = await getDocs(query(collection(db, 'adverts'), where('category', '==', 'Scheduled')));
                     const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     items.sort((a, b) => (a.advertName || '').localeCompare(b.advertName || ''));
 
-                    scheduledAdvertSelect.innerHTML = '<option value="">-- Select Scheduled Campaign --</option>' +
-                        items.map(it => `<option value="${escapeHTML(it.advertName)}" data-count="${it.monitoringCount || 0}" data-id="${it.id}">${escapeHTML(it.advertName)} (${it.monitoringCount || 0} rounds completed)</option>`).join('') +
-                        '<option value="__REGISTER__">+ Register New Scheduled Advert Campaign</option>';
+                    scheduledCountsMap = {};
+                    items.forEach(it => {
+                        if (it.advertName) {
+                            scheduledCountsMap[it.advertName] = it.monitoringCount || 0;
+                        }
+                    });
 
+                    removeChoicesInstance('scheduledAdvertSelect');
+                    scheduledAdvertSelect.innerHTML = '<option value="">-- Select Scheduled Campaign --</option>' +
+                        items.map(it => `<option value="${escapeHTML(it.advertName)}">${escapeHTML(it.advertName)} (${it.monitoringCount || 0} rounds completed)</option>`).join('') +
+                        '<option value="__REGISTER__">➕ Register New Scheduled Advert Campaign</option>';
+
+                    const choices = new Choices(scheduledAdvertSelect, {
+                        removeItemButton: false,
+                        placeholder: true,
+                        placeholderValue: 'Search scheduled campaigns...',
+                        searchEnabled: true,
+                        itemSelectText: '',
+                        shouldSort: false
+                    });
+                    addChoicesInstance('scheduledAdvertSelect', choices);
+
+                    let targetName = null;
                     if (wizardState.currentAdvert && wizardState.currentAdvert.advertCategory === 'Scheduled Advert') {
-                        scheduledAdvertSelect.value = wizardState.currentAdvert.advertName;
-                        triggerScheduledSelectChange();
+                        targetName = wizardState.currentAdvert.advertName;
                     } else if (currentData.advertName) {
-                        scheduledAdvertSelect.value = currentData.advertName;
-                        triggerScheduledSelectChange();
+                        targetName = currentData.advertName;
+                    }
+
+                    if (targetName) {
+                        if (items.some(it => it.advertName === targetName)) {
+                            choices.setChoiceByValue(targetName);
+                            triggerScheduledSelectChange();
+                        } else if (currentData.isNewScheduled) {
+                            choices.setChoiceByValue('__REGISTER__');
+                            triggerScheduledSelectChange();
+                            if (newScheduledNameInput) newScheduledNameInput.value = targetName;
+                            const sponsorEl = conditional.querySelector('input[name="newScheduledAdvertiser"]');
+                            if (sponsorEl && currentData.newScheduledAdvertiser) sponsorEl.value = currentData.newScheduledAdvertiser;
+                        }
                     }
                 } catch (e) {
                     console.warn("Could not load scheduled adverts:", e);
@@ -805,8 +912,8 @@ function bindStep_FacilityForm(root) {
             }
 
             function triggerScheduledSelectChange() {
-                const val = scheduledAdvertSelect.value;
-                const selectedOpt = scheduledAdvertSelect.selectedOptions[0];
+                const choices = getChoicesInstance('scheduledAdvertSelect');
+                const val = choices ? choices.instance.getValue(true) : scheduledAdvertSelect.value;
                 if (!val) {
                     if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
                     scheduledAdvertStatus.innerHTML = '';
@@ -819,7 +926,7 @@ function bindStep_FacilityForm(root) {
                     scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity for new campaign — will scaffold: ADVERTS/[Product Line]/2026/[Month]/[Campaign Name]/</span>';
                 } else {
                     if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
-                    const count = parseInt(selectedOpt?.dataset?.count || '0', 10);
+                    const count = parseInt(scheduledCountsMap[val] || 0, 10);
                     if (count === 0) {
                         container.dataset.isSubsequentRound = "false";
                         container.dataset.activityRound = "";
@@ -837,6 +944,7 @@ function bindStep_FacilityForm(root) {
 
             if (scheduledAdvertSelect) {
                 scheduledAdvertSelect.addEventListener('change', triggerScheduledSelectChange);
+                scheduledAdvertSelect.addEventListener('addItem', triggerScheduledSelectChange);
             }
 
             if (currentData.advertCategory === 'Scheduled Advert') {
@@ -1166,6 +1274,21 @@ function saveCurrentFacilityData() {
         }
     });
 
+    const complaintChoices = getChoicesInstance('linkedComplaintId');
+    if (complaintChoices && complaintChoices.instance) {
+        data.linkedComplaintId = complaintChoices.instance.getValue(true) || null;
+    }
+
+    if (data.regulatoryAlertEncountered === 'true') {
+        const alertChoices = getChoicesInstance('linkedAlertId');
+        if (alertChoices && alertChoices.instance) {
+            data.linkedAlertId = alertChoices.instance.getValue(true) || null;
+        }
+    } else {
+        data.linkedAlertId = null;
+        data.alertAction = '';
+    }
+
     // Override facilityName and facilityAddress from consultative meeting fields
     // (must be AFTER fields.forEach so it doesn't get overwritten by the hidden regular inputs)
     if (isConsultative) {
@@ -1201,7 +1324,9 @@ function saveCurrentFacilityData() {
 
         if (data.advertCategory === 'Scheduled Advert') {
             const schedSelect = container.querySelector('#scheduledAdvertSelect');
-            if (schedSelect && schedSelect.value === '__REGISTER__') {
+            const schedChoices = getChoicesInstance('scheduledAdvertSelect');
+            const schedVal = schedChoices ? schedChoices.instance.getValue(true) : (schedSelect ? schedSelect.value : '');
+            if (schedVal === '__REGISTER__') {
                 const newSchedInput = container.querySelector('input[name="newScheduledAdvertName"]');
                 data.advertName = newSchedInput ? newSchedInput.value.trim() : '';
                 const sponsorInput = container.querySelector('input[name="newScheduledAdvertiser"]');
@@ -1209,8 +1334,8 @@ function saveCurrentFacilityData() {
                 data.isNewScheduled = true;
                 data.isSubsequentRound = false;
                 data.advertActivityRound = '';
-            } else if (schedSelect) {
-                data.advertName = schedSelect.value;
+            } else if (schedVal) {
+                data.advertName = schedVal;
                 data.isSubsequentRound = container.dataset.isSubsequentRound === "true";
                 data.advertActivityRound = container.dataset.activityRound || '';
             }
