@@ -17,7 +17,8 @@ import {
   COMPLAINTS_CONFIG,
   GSDP_CONFIG,
   SURVEILLANCE_CONFIG,
-  GLSI_CONFIG
+  GLSI_CONFIG,
+  ADVERTS_CONFIG
 } from "./activity-configs.js";
 
 const root = document.getElementById('app');
@@ -43,7 +44,7 @@ const pageKpiSettings = `
     <div class="row">
         <div class="col">
             <label>SharePoint / Teams Base Documents URL</label>
-            <input type="text" id="sharepointBaseUrl" placeholder="https://nafdacgovng.sharepoint.com/sites/PMSLagos/Shared Documents">
+            <input type="text" id="sharepointBaseUrl" placeholder="https://nafdacng.sharepoint.com/sites/PMSLAGOS/Shared Documents">
             <p class="muted small">Base root URL used to generate direct links to facility folders in activity ledgers.</p>
         </div>
     </div>
@@ -74,6 +75,31 @@ const pageKpiSettings = `
             <input type="text" id="schedulerWebhookUrl" placeholder="https://prod-... (PA flow)">
             <p class="muted small">Routes proposed inspection schedules for Directorate review.</p>
         </div>
+    </div>
+
+    <h3 style="margin-top: 24px;">📡 SharePoint Telemetry (Bi-Directional Document Sync)</h3>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;margin-bottom:12px;">
+      <p style="margin:0 0 8px;font-size:13px;color:#166534;font-weight:600;">Webhook Endpoint for Power Automate</p>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="text" id="telemetryWebhookDisplay" readonly
+          style="flex:1;background:#dcfce7;border:1px solid #86efac;font-family:monospace;font-size:12px;color:#14532d;padding:8px 12px;border-radius:4px;"
+          value="https://<your-netlify-domain>/.netlify/functions/sharepoint-telemetry">
+        <button id="copyTelemetryUrl" type="button" class="secondary" style="padding:8px 12px;font-size:12px;white-space:nowrap;">📋 Copy</button>
+      </div>
+      <p class="muted small" style="margin-top:6px;">Configure Power Automate to POST to this URL when files are uploaded to facility folders in SharePoint.</p>
+    </div>
+    <div class="row">
+      <div class="col">
+          <label>Telemetry Secret Token (Optional)</label>
+          <input type="text" id="telemetrySecretToken" placeholder="shared-secret-for-webhook-auth">
+          <p class="muted small">Shared secret that Power Automate includes in the POST body for authentication. Leave blank to disable token verification.</p>
+      </div>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <div class="col">
+          <button id="testTelemetryBtn" type="button" class="secondary" style="font-size:12px;padding:6px 14px;">🧪 Test Telemetry Connection</button>
+          <span id="telemetryTestResult" style="font-size:12px;margin-left:8px;"></span>
+      </div>
     </div>
 
     <h3 style="margin-top: 24px;">KPI Annual Targets</h3>
@@ -118,7 +144,7 @@ const pageSuccess = `
 // ─── Sidebar Navigation Renderer ─────────────────────────────────────────────
 function renderSidebar(user, role, activePage) {
   const isAdmin = role === 'admin';
-  const isActivityPage = ['alerts', 'complaints', 'gsdp', 'surveillance', 'glsi'].includes(activePage);
+  const isActivityPage = ['alerts', 'complaints', 'gsdp', 'surveillance', 'glsi', 'adverts'].includes(activePage);
 
   sidebarNav.innerHTML = `
     <div class="sidebar-header">
@@ -159,6 +185,9 @@ function renderSidebar(user, role, activePage) {
         </a>
         <a class="sidebar-nav-item ${activePage === 'glsi' ? 'active' : ''}" data-nav="glsi">
           <span>GLSI</span>
+        </a>
+        <a class="sidebar-nav-item ${activePage === 'adverts' ? 'active' : ''}" data-nav="adverts">
+          <span>Advert Monitoring</span>
         </a>
       </div>
 
@@ -354,6 +383,10 @@ function renderPage(page) {
     renderActivityHub(root, GLSI_CONFIG);
     return;
   }
+  if (basePage === 'adverts') {
+    renderActivityHub(root, ADVERTS_CONFIG);
+    return;
+  }
 
   // 3. Facility Dossiers
   if (basePage === 'facilities') {
@@ -449,11 +482,74 @@ async function bindKpiSettings() {
     document.getElementById('targetGsdp').value = data.targetGsdp || '';
     document.getElementById('receivedGlsi').value = data.receivedGlsi || '';
     document.getElementById('receivedComplaints').value = data.receivedComplaints || '';
-    document.getElementById('sharepointBaseUrl').value = data.sharepointBaseUrl || '';
+    document.getElementById('sharepointBaseUrl').value = data.sharepointBaseUrl || 'https://nafdacng.sharepoint.com/sites/PMSLAGOS/Shared Documents';
     document.getElementById('webhookUrl').value = data.webhookUrl || '';
     document.getElementById('weeklyWebhookUrl').value = data.weeklyWebhookUrl || '';
     document.getElementById('consultativeMeetingWebhookUrl').value = data.consultativeMeetingWebhookUrl || '';
     document.getElementById('schedulerWebhookUrl').value = data.schedulerWebhookUrl || '';
+    document.getElementById('telemetrySecretToken').value = data.telemetrySecretToken || '';
+  }
+
+  // Set telemetry webhook URL based on current site domain
+  const telemetryUrlInput = document.getElementById('telemetryWebhookDisplay');
+  if (telemetryUrlInput) {
+    const domain = window.location.hostname === 'localhost' ? 'localhost:8888' : window.location.hostname;
+    const proto = window.location.hostname === 'localhost' ? 'http' : 'https';
+    telemetryUrlInput.value = `${proto}://${domain}/.netlify/functions/sharepoint-telemetry`;
+  }
+
+  // Bind Telemetry Copy Button
+  const copyBtn = document.getElementById('copyTelemetryUrl');
+  if (copyBtn && telemetryUrlInput) {
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(telemetryUrlInput.value);
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 2000);
+      } catch (e) {
+        telemetryUrlInput.select();
+        document.execCommand('copy');
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 2000);
+      }
+    };
+  }
+
+  // Bind Telemetry Test Button
+  const testBtn = document.getElementById('testTelemetryBtn');
+  const testResult = document.getElementById('telemetryTestResult');
+  if (testBtn && testResult) {
+    testBtn.onclick = async () => {
+      testResult.style.color = '#2563eb';
+      testResult.textContent = 'Testing connection...';
+      try {
+        const testPayload = {
+          facilityName: "SYSTEM_TELEMETRY_DIAGNOSTIC",
+          activityType: "GSDP",
+          folderType: "Inspection_Report",
+          fileUrl: "https://nafdacng.sharepoint.com/sites/PMSLAGOS/Shared Documents/Diagnostics/ping.pdf",
+          fileName: "ping.pdf",
+          secretToken: document.getElementById('telemetrySecretToken')?.value?.trim() || ""
+        };
+        const endpoint = telemetryUrlInput ? telemetryUrlInput.value : '/.netlify/functions/sharepoint-telemetry';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testPayload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          testResult.style.color = '#16a34a';
+          testResult.textContent = '✅ Connected successfully! Webhook is receiving events.';
+        } else {
+          testResult.style.color = '#dc2626';
+          testResult.textContent = `❌ Server returned ${res.status}: ${data.error || 'Error'}`;
+        }
+      } catch (err) {
+        testResult.style.color = '#dc2626';
+        testResult.textContent = `❌ Request failed: ${err.message}`;
+      }
+    };
   }
 
   document.getElementById('saveKpiSettings').onclick = async () => {
@@ -467,6 +563,7 @@ async function bindKpiSettings() {
       weeklyWebhookUrl: document.getElementById('weeklyWebhookUrl').value.trim(),
       consultativeMeetingWebhookUrl: document.getElementById('consultativeMeetingWebhookUrl').value.trim(),
       schedulerWebhookUrl: document.getElementById('schedulerWebhookUrl').value.trim(),
+      telemetrySecretToken: document.getElementById('telemetrySecretToken').value.trim(),
       updatedAt: serverTimestamp()
     };
 

@@ -338,7 +338,7 @@ function bindStep_FacilityForm(root) {
                 </div>
             </div>`;
 
-        if (['Routine Surveillance', 'Consumer Complaint', 'Special Surveillance', 'Advert'].includes(val)) {
+        if (['Routine Surveillance', 'Consumer Complaint', 'Special Surveillance'].includes(val)) {
             conditionalHTML = `
                 <div style="margin-top:8px">
                     <label>Main Product Type <span style="color:red">*</span></label>
@@ -383,6 +383,96 @@ function bindStep_FacilityForm(root) {
                         </div>
                     </div>
                 </div>` : ''}
+                ${mopUpHTML}
+                ${holdHTML}
+            `;
+        } else if (val === 'Advert') {
+            conditionalHTML = `
+                <div class="card" style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:16px; margin-top:12px;">
+                    <h4 style="margin:0 0 6px; color:#166534; font-size:15px; display:flex; align-items:center; gap:8px;">
+                        <span>📢</span> Advert Monitoring & Campaign Details
+                    </h4>
+                    <p class="muted small" style="margin-bottom:12px; color:#14532d;">
+                        Choose whether this advert is an <strong>Unexpected Advert</strong> identified during field surveillance or a <strong>Scheduled Advert</strong> from a pre-registered campaign.
+                    </p>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <label style="font-weight:700;">Advert Category <span style="color:red">*</span></label>
+                            <select name="advertCategory" id="advertCategorySelect" required>
+                                <option value="Unexpected Advert" selected>Unexpected Advert (Identified during field monitoring)</option>
+                                <option value="Scheduled Advert">Scheduled Advert (Pre-registered Campaign)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Unexpected Advert Section -->
+                    <div id="unexpectedAdvertSection" style="margin-top:12px;">
+                        <div class="row">
+                            <div class="col">
+                                <label style="font-weight:600;">Select or Enter Unexpected Advert Name <span style="color:red">*</span></label>
+                                <select name="existingUnexpectedAdvertSelect" id="existingUnexpectedAdvertSelect">
+                                    <option value="__NEW__">+ Enter New Unexpected Advert Name</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" id="newUnexpectedAdvertRow" style="margin-top:8px;">
+                            <div class="col">
+                                <label class="small" style="font-weight:600;">Advert / Product Name <span style="color:red">*</span></label>
+                                <input name="advertName" id="advertNameInput" placeholder="e.g. Dr Wonder Miracle Herbal Cure" required>
+                                <div id="advertNameStatus" style="font-size:12px; margin-top:6px; min-height:18px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheduled Advert Section -->
+                    <div id="scheduledAdvertSection" style="display:none; margin-top:12px;">
+                        <div class="row">
+                            <div class="col">
+                                <label style="font-weight:600;">Select Scheduled Advert Campaign <span style="color:red">*</span></label>
+                                <select name="scheduledAdvertSelect" id="scheduledAdvertSelect">
+                                    <option value="">Loading scheduled campaigns...</option>
+                                </select>
+                                <div id="scheduledAdvertStatus" style="font-size:12px; margin-top:6px; min-height:18px;"></div>
+                            </div>
+                        </div>
+                        <div id="registerNewScheduledRow" style="display:none; background:#ffffff; padding:12px; border-radius:6px; border:1px dashed #3b82f6; margin-top:8px;">
+                            <label class="small" style="font-weight:700; color:#1d4ed8;">Register New Scheduled Advert Campaign</label>
+                            <div class="row" style="margin-top:6px;">
+                                <div class="col"><input name="newScheduledAdvertName" placeholder="Campaign Advert / Product Name..."></div>
+                                <div class="col"><input name="newScheduledAdvertiser" placeholder="Advertiser / Sponsor Name (Optional)..."></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Line & Medium -->
+                    <div class="row" style="margin-top:12px;">
+                        <div class="col">
+                            <label style="font-weight:600;">Main Product Line <span style="color:red">*</span></label>
+                            <select name="mainProductType" required>
+                                <option value="Drugs">Drugs</option>
+                                <option value="Food">Food</option>
+                                <option value="Cosmetics">Cosmetics</option>
+                                <option value="Medical Devices">Medical Devices</option>
+                                <option value="Herbals" selected>Herbals / Traditional</option>
+                                <option value="Vaccines & Biologics">Vaccines & Biologics</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label style="font-weight:600;">Advert Medium / Channel</label>
+                            <select name="advertMedium">
+                                <option value="In-Store / Point of Sale Display" selected>In-Store / Point of Sale Display</option>
+                                <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor</option>
+                                <option value="Television / Broadcast">Television / Broadcast</option>
+                                <option value="Radio">Radio</option>
+                                <option value="Social Media / Online">Social Media / Online</option>
+                                <option value="Print / Flyer / Handbill">Print / Flyer / Handbill</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 ${mopUpHTML}
                 ${holdHTML}
             `;
@@ -433,7 +523,24 @@ function bindStep_FacilityForm(root) {
             `;
         } else if (val === 'GSDP') {
             conditionalHTML = `
-                <div style="margin-top:8px"><label>GSDP Sub-Activity</label><select name="gsdpSubActivity"><option value="GDP">GDP</option><option value="CEVI">CEVI</option></select></div>
+                <div class="row" style="margin-top:8px">
+                    <div class="col">
+                        <label>GSDP Sub-Activity</label>
+                        <select name="gsdpSubActivity">
+                            <option value="GDP">GDP (Initial Inspection)</option>
+                            <option value="CEVI">CEVI (Compliance Evaluation)</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>Risk Categorization</label>
+                        <select name="riskCategory" id="gsdpRiskCategory">
+                            <option value="Category A (Low)">Category A (Low Risk)</option>
+                            <option value="Category B (Medium)" selected>Category B (Medium Risk)</option>
+                            <option value="Category C (High)">Category C (High Risk)</option>
+                            <option value="Pending Classification">Pending / Under Evaluation</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="ceviFacilitySection" style="display:none;">
                     <div class="row" style="margin-top:12px">
                         <div class="col">
@@ -522,6 +629,206 @@ function bindStep_FacilityForm(root) {
                 if (alertActionInput && currentData.alertAction) {
                     alertActionInput.value = currentData.alertAction;
                 }
+            }
+        }
+
+        // ─── Advert Monitoring Event Bindings ─────────────────────────────
+        const advertCategorySelect = conditional.querySelector('#advertCategorySelect');
+        const unexpectedSection = conditional.querySelector('#unexpectedAdvertSection');
+        const scheduledSection = conditional.querySelector('#scheduledAdvertSection');
+        const existingUnexpectedSelect = conditional.querySelector('#existingUnexpectedAdvertSelect');
+        const newUnexpectedRow = conditional.querySelector('#newUnexpectedAdvertRow');
+        const advertNameInput = conditional.querySelector('#advertNameInput');
+        const advertNameStatus = conditional.querySelector('#advertNameStatus');
+        const scheduledAdvertSelect = conditional.querySelector('#scheduledAdvertSelect');
+        const scheduledAdvertStatus = conditional.querySelector('#scheduledAdvertStatus');
+        const registerNewScheduledRow = conditional.querySelector('#registerNewScheduledRow');
+        const newScheduledNameInput = conditional.querySelector('input[name="newScheduledAdvertName"]');
+
+        if (advertCategorySelect) {
+            container.dataset.advertFolderExists = "false";
+            container.dataset.isSubsequentRound = "false";
+            container.dataset.activityRound = "";
+
+            advertCategorySelect.addEventListener('change', () => {
+                const isScheduled = advertCategorySelect.value === 'Scheduled Advert';
+                if (unexpectedSection) unexpectedSection.style.display = isScheduled ? 'none' : 'block';
+                if (scheduledSection) scheduledSection.style.display = isScheduled ? 'block' : 'none';
+                if (isScheduled) {
+                    loadScheduledAdverts();
+                } else {
+                    loadUnexpectedAdverts();
+                }
+            });
+
+            async function loadUnexpectedAdverts() {
+                try {
+                    const existingNames = new Set();
+                    const snap = await getDocs(query(collection(db, 'adverts'), where('category', '==', 'Unexpected')));
+                    snap.forEach(d => {
+                        const name = (d.data().advertName || '').trim();
+                        if (name) existingNames.add(name);
+                    });
+
+                    const repSnap = await getDocs(query(collection(db, 'facilityReports'), where('activityType', '==', 'Advert')));
+                    repSnap.forEach(d => {
+                        const data = d.data();
+                        if ((data.advertCategory || '').includes('Unexpect') && data.advertName) {
+                            existingNames.add(data.advertName.trim());
+                        }
+                    });
+
+                    const sortedNames = [...existingNames].sort((a, b) => a.localeCompare(b));
+                    existingUnexpectedSelect.innerHTML = '<option value="__NEW__">+ Enter New Unexpected Advert Name</option>' +
+                        sortedNames.map(n => `<option value="${escapeHTML(n)}">${escapeHTML(n)} (Existing in DB)</option>`).join('');
+
+                    if (wizardState.currentAdvert && wizardState.currentAdvert.advertCategory === 'Unexpected Advert') {
+                        const prevName = wizardState.currentAdvert.advertName;
+                        if (sortedNames.includes(prevName)) {
+                            existingUnexpectedSelect.value = prevName;
+                            triggerUnexpectedSelectChange();
+                        } else {
+                            existingUnexpectedSelect.value = '__NEW__';
+                            advertNameInput.value = prevName;
+                            checkAdvertNameExists(prevName, sortedNames);
+                        }
+                    } else if (currentData.advertName) {
+                        if (sortedNames.includes(currentData.advertName)) {
+                            existingUnexpectedSelect.value = currentData.advertName;
+                            triggerUnexpectedSelectChange();
+                        } else {
+                            existingUnexpectedSelect.value = '__NEW__';
+                            advertNameInput.value = currentData.advertName;
+                            checkAdvertNameExists(currentData.advertName, sortedNames);
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Could not load unexpected adverts:", e);
+                }
+            }
+
+            function triggerUnexpectedSelectChange() {
+                const val = existingUnexpectedSelect.value;
+                if (val === '__NEW__') {
+                    newUnexpectedRow.style.display = 'block';
+                    advertNameInput.value = '';
+                    advertNameInput.readOnly = false;
+                    container.dataset.advertFolderExists = "false";
+                    advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will create folder: Advert Monitoring/2026/Unexpected Adverts/[Name]/</span>';
+                } else {
+                    newUnexpectedRow.style.display = 'block';
+                    advertNameInput.value = val;
+                    advertNameInput.readOnly = true;
+                    container.dataset.advertFolderExists = "true";
+                    advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will reuse existing folder: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(val) + '/</span>';
+                }
+            }
+
+            if (existingUnexpectedSelect) {
+                existingUnexpectedSelect.addEventListener('change', triggerUnexpectedSelectChange);
+            }
+
+            let advertCheckTimer = null;
+            function checkAdvertNameExists(name, knownList = []) {
+                clearTimeout(advertCheckTimer);
+                if (!name || name.trim().length < 2) {
+                    advertNameStatus.innerHTML = '';
+                    container.dataset.advertFolderExists = "false";
+                    return;
+                }
+                advertCheckTimer = setTimeout(async () => {
+                    const trimmed = name.trim().toLowerCase();
+                    const inKnown = knownList.some(k => k.toLowerCase() === trimmed);
+                    if (inKnown) {
+                        container.dataset.advertFolderExists = "true";
+                        advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will reuse existing folder: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
+                        return;
+                    }
+
+                    try {
+                        const q = query(collection(db, 'adverts'), where('advertName', '==', name.trim()));
+                        const s = await getDocs(q);
+                        if (!s.empty) {
+                            container.dataset.advertFolderExists = "true";
+                            advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will reuse existing folder: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
+                        } else {
+                            container.dataset.advertFolderExists = "false";
+                            advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will create folder structure: Advert Monitoring/2026/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
+                        }
+                    } catch (err) {
+                        container.dataset.advertFolderExists = "false";
+                    }
+                }, 300);
+            }
+
+            if (advertNameInput) {
+                advertNameInput.addEventListener('input', (e) => {
+                    checkAdvertNameExists(e.target.value);
+                });
+            }
+
+            async function loadScheduledAdverts() {
+                try {
+                    const snap = await getDocs(query(collection(db, 'adverts'), where('category', '==', 'Scheduled')));
+                    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    items.sort((a, b) => (a.advertName || '').localeCompare(b.advertName || ''));
+
+                    scheduledAdvertSelect.innerHTML = '<option value="">-- Select Scheduled Campaign --</option>' +
+                        items.map(it => `<option value="${escapeHTML(it.advertName)}" data-count="${it.monitoringCount || 0}" data-id="${it.id}">${escapeHTML(it.advertName)} (${it.monitoringCount || 0} rounds completed)</option>`).join('') +
+                        '<option value="__REGISTER__">+ Register New Scheduled Advert Campaign</option>';
+
+                    if (wizardState.currentAdvert && wizardState.currentAdvert.advertCategory === 'Scheduled Advert') {
+                        scheduledAdvertSelect.value = wizardState.currentAdvert.advertName;
+                        triggerScheduledSelectChange();
+                    } else if (currentData.advertName) {
+                        scheduledAdvertSelect.value = currentData.advertName;
+                        triggerScheduledSelectChange();
+                    }
+                } catch (e) {
+                    console.warn("Could not load scheduled adverts:", e);
+                }
+            }
+
+            function triggerScheduledSelectChange() {
+                const val = scheduledAdvertSelect.value;
+                const selectedOpt = scheduledAdvertSelect.selectedOptions[0];
+                if (!val) {
+                    if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
+                    scheduledAdvertStatus.innerHTML = '';
+                    return;
+                }
+                if (val === '__REGISTER__') {
+                    if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'block';
+                    container.dataset.isSubsequentRound = "false";
+                    container.dataset.activityRound = "";
+                    scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity for new campaign — will initialize folder: Advert Monitoring/2026/[Campaign Name]/</span>';
+                } else {
+                    if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
+                    const count = parseInt(selectedOpt?.dataset?.count || '0', 10);
+                    if (count === 0) {
+                        container.dataset.isSubsequentRound = "false";
+                        container.dataset.activityRound = "";
+                        scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity — will initialize root folder: Advert Monitoring/2026/' + escapeHTML(val) + '/</span>';
+                    } else {
+                        const nextRound = count + 1;
+                        const dateStr = container.querySelector('input[name="inspectionDate"]')?.value || new Date().toISOString().split('T')[0];
+                        const roundName = `Round_${nextRound}_${dateStr}`;
+                        container.dataset.isSubsequentRound = "true";
+                        container.dataset.activityRound = roundName;
+                        scheduledAdvertStatus.innerHTML = '<span style="color:#2563eb;font-weight:600;">🔄 Subsequent Monitoring Activity Round #' + nextRound + ' — will create new activity folder: Advert Monitoring/2026/' + escapeHTML(val) + '/' + roundName + '/</span>';
+                    }
+                }
+            }
+
+            if (scheduledAdvertSelect) {
+                scheduledAdvertSelect.addEventListener('change', triggerScheduledSelectChange);
+            }
+
+            if (currentData.advertCategory === 'Scheduled Advert') {
+                advertCategorySelect.value = 'Scheduled Advert';
+                advertCategorySelect.dispatchEvent(new Event('change'));
+            } else {
+                loadUnexpectedAdverts();
             }
         }
 
@@ -812,7 +1119,7 @@ function saveCurrentFacilityData() {
 
     const fields = [
         'inspectionDate', 'area', 'facilityName', 'facilityAddress', 'activityType', 'actionTaken',
-        'sanctionGiven', 'gsdpSubActivity', 'companyEmail', 'Samplescount', 'consultativeMeetingCategory', 'consultativeProductType',
+        'sanctionGiven', 'gsdpSubActivity', 'riskCategory', 'companyEmail', 'Samplescount', 'consultativeMeetingCategory', 'consultativeProductType',
         'mopUp', 'mopUpDrugs', 'mopUpCosmetics', 'mopUpMedicalDevices', 'mopUpFood',
         'hold', 'holdDrugs', 'holdCosmetics', 'holdMedicalDevices', 'holdFood',
         'linkedComplaintId', 'regulatoryAlertEncountered', 'linkedAlertId', 'alertAction'
@@ -851,6 +1158,53 @@ function saveCurrentFacilityData() {
             data.facilityAddress = addrInput ? addrInput.value.trim() : '';
         }
         data.gsdpFacilityName = gsdpFacilitySelect.value;
+    }
+
+    // Advert-specific data handling
+    if (data.activityType === 'Advert') {
+        const catSelect = container.querySelector('#advertCategorySelect');
+        data.advertCategory = catSelect ? catSelect.value : 'Unexpected Advert';
+
+        if (data.advertCategory === 'Scheduled Advert') {
+            const schedSelect = container.querySelector('#scheduledAdvertSelect');
+            if (schedSelect && schedSelect.value === '__REGISTER__') {
+                const newSchedInput = container.querySelector('input[name="newScheduledAdvertName"]');
+                data.advertName = newSchedInput ? newSchedInput.value.trim() : '';
+                const sponsorInput = container.querySelector('input[name="newScheduledAdvertiser"]');
+                data.newScheduledAdvertiser = sponsorInput ? sponsorInput.value.trim() : '';
+                data.isNewScheduled = true;
+                data.isSubsequentRound = false;
+                data.advertActivityRound = '';
+            } else if (schedSelect) {
+                data.advertName = schedSelect.value;
+                data.isSubsequentRound = container.dataset.isSubsequentRound === "true";
+                data.advertActivityRound = container.dataset.activityRound || '';
+            }
+        } else {
+            // Unexpected Advert
+            const nameInput = container.querySelector('#advertNameInput');
+            data.advertName = nameInput ? nameInput.value.trim() : '';
+            data.advertFolderExists = container.dataset.advertFolderExists === "true";
+            data.isSubsequentRound = false;
+        }
+
+        const medSelect = container.querySelector('select[name="advertMedium"]');
+        data.advertMedium = medSelect ? medSelect.value : 'In-Store / Point of Sale Display';
+
+        if (!data.advertName) {
+            alert('Please specify the Advert / Product Name.');
+            return false;
+        }
+
+        // Remember advert for subsequent facilities in this multi-facility wizard session
+        wizardState.currentAdvert = {
+            advertCategory: data.advertCategory,
+            advertName: data.advertName,
+            advertMedium: data.advertMedium,
+            advertFolderExists: true,
+            isSubsequentRound: data.isSubsequentRound,
+            advertActivityRound: data.advertActivityRound
+        };
     }
 
     data.mopUpCount = (parseInt(data.mopUpDrugs) || 0) + (parseInt(data.mopUpCosmetics) || 0) + (parseInt(data.mopUpMedicalDevices) || 0) + (parseInt(data.mopUpFood) || 0);
@@ -907,6 +1261,7 @@ async function handleSubmitWizard(root) {
                     food: parseInt(facilityData.holdCounts?.food || facilityData.holdFood || 0)
                 },
                 gsdpSubActivity: facilityData.gsdpSubActivity || '',
+                riskCategory: facilityData.riskCategory || '',
                 companyEmail: facilityData.companyEmail || '',
                 Samples: parseInt(facilityData.Samplescount || 0) > 0,
                 Samplescount: parseInt(facilityData.Samplescount || 0),
@@ -917,12 +1272,54 @@ async function handleSubmitWizard(root) {
                 regulatoryAlertEncountered: facilityData.regulatoryAlertEncountered === 'true',
                 linkedAlertId: facilityData.linkedAlertId || null,
                 alertAction: facilityData.alertAction || '',
+                advertCategory: facilityData.advertCategory || '',
+                advertName: facilityData.advertName || '',
+                advertMedium: facilityData.advertMedium || '',
+                advertFolderExists: facilityData.advertFolderExists ?? false,
+                isSubsequentRound: facilityData.isSubsequentRound ?? false,
+                advertActivityRound: facilityData.advertActivityRound || '',
                 createdBy: currentUser.uid,
                 createdAt: serverTimestamp()
             };
 
             // Add to Firestore
             await addDoc(collection(db, 'facilityReports'), reportData);
+
+            // Sync with Advert dockets collection
+            if (reportData.activityType === 'Advert' && reportData.advertName) {
+                try {
+                    const cleanAdvName = reportData.advertName.trim();
+                    const advQ = query(collection(db, 'adverts'), where('advertName', '==', cleanAdvName));
+                    const advSnap = await getDocs(advQ);
+                    const formattedDateStr = reportData.inspectionDate ? new Date(reportData.inspectionDate).toISOString() : new Date().toISOString();
+                    const advYear = (reportData.inspectionDate ? new Date(reportData.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+
+                    if (advSnap.empty) {
+                        await addDoc(collection(db, 'adverts'), {
+                            advertName: cleanAdvName,
+                            category: (reportData.advertCategory || '').includes('Schedul') ? 'Scheduled' : 'Unexpected',
+                            advertiser: facilityData.newScheduledAdvertiser || '',
+                            mainProductType: reportData.mainProductType || '',
+                            medium: reportData.advertMedium || '',
+                            year: advYear,
+                            firstMonitoredDate: formattedDateStr,
+                            lastMonitoredDate: formattedDateStr,
+                            monitoringCount: 1,
+                            status: 'Active',
+                            createdAt: serverTimestamp()
+                        });
+                    } else {
+                        const advDoc = advSnap.docs[0];
+                        const currentCount = parseInt(advDoc.data().monitoringCount || 1, 10);
+                        await setDoc(advDoc.ref, {
+                            lastMonitoredDate: formattedDateStr,
+                            monitoringCount: currentCount + 1
+                        }, { merge: true });
+                    }
+                } catch (advErr) {
+                    console.warn("Could not sync advert docket record:", advErr);
+                }
+            }
 
             // Advance linked complaint docket status to "Under Investigation"
             if (reportData.linkedComplaintId) {
@@ -1060,7 +1457,15 @@ async function triggerTeamsWebhook(report) {
             remarks: cleanRemarks,
             actionTaken: cleanRemarks,
             gsdpSubActivity: report.gsdpSubActivity || null,
-            companyEmail: report.companyEmail || null
+            riskCategory: report.riskCategory || null,
+            companyEmail: report.companyEmail || null,
+            advertName: report.advertName || folderConfig.advertName || null,
+            advertCategory: report.advertCategory || folderConfig.advertCategory || null,
+            advertMedium: report.advertMedium || null,
+            advertFolderExists: folderConfig.advertFolderExists ?? null,
+            isSubsequentRound: folderConfig.isSubsequentRound ?? null,
+            activityRound: folderConfig.activityRound || null,
+            facilityFolder: folderConfig.facilityFolder || null
         };
 
         // Fire and forget
@@ -1215,10 +1620,11 @@ function getFolderConfig(report) {
     const isSpecial = mainProductType && specialDrugs.includes(mainProductType);
 
     switch (activity) {
-        case 'Routine Surveillance':
+        case 'Routine Surveillance': {
+            const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
             if (isSpecial) {
                 return {
-                    rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS',
+                    rootFolder: `/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS/${year}`,
                     productType: mainProductType,
                     subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
                 };
@@ -1235,6 +1641,7 @@ function getFolderConfig(report) {
                 productType: mainProductType || 'Drugs',
                 subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data']
             };
+        }
 
         case 'Special Surveillance':
             return {
@@ -1250,16 +1657,42 @@ function getFolderConfig(report) {
                 subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Investigation_Data']
             };
 
-        case 'GSDP':
+        case 'GSDP': {
+            const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+            const root = `/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES/${year}`;
+            const risk = String(report.riskCategory || '').toLowerCase();
+            const isLowRisk = risk.includes('low') || risk.includes('category a') || risk === 'a';
+
+            if (isLowRisk) {
+                return {
+                    rootFolder: root,
+                    productType: null,
+                    riskCategory: 'Category A (Low)',
+                    subfolders: [
+                        'Company_Files',
+                        'GSDP/Inspection_Report',
+                        'GSDP/Risk_Categorization'
+                    ]
+                };
+            }
+
             return {
-                rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES',
+                rootFolder: root,
                 productType: null,
+                riskCategory: report.riskCategory || 'Category B (Medium)',
                 subfolders: [
-                    'GSDP/Inspection_Report', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'GSDP/Risk_Categorization',
-                    'CEVI/Inspection_Report', 'CEVI/Compliance_Directives', 'CEVI/CAPA_Template', 'CEVI/Risk_Categorization',
-                    'Company_Submissions'
+                    'Company_Files',
+                    'GSDP/Inspection_Report',
+                    'GSDP/Compliance_Directives',
+                    'GSDP/CAPA_Template',
+                    'GSDP/Risk_Categorization',
+                    'CEVI/Inspection_Report',
+                    'CEVI/Compliance_Directives',
+                    'CEVI/CAPA_Template',
+                    'CEVI/Risk_Categorization'
                 ]
             };
+        }
 
         case 'GLSI':
             return {
@@ -1275,12 +1708,99 @@ function getFolderConfig(report) {
                 subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Field_Data']
             };
 
-        case 'Advert':
-            return {
-                rootFolder: `/ADVERTS/${(mainProductType || 'GENERAL').toUpperCase()}`,
-                productType: mainProductType || null,
-                subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Extra_Data']
-            };
+        case 'Advert': {
+            const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+            const cleanAdvert = (report.advertName || 'GENERAL_ADVERT')
+                .trim()
+                .replace(/[."*:<>?\/\\|]/g, '')
+                .replace(/\.+$/, '')
+                .trim();
+            const cleanFacility = (report.facilityName || 'FACILITY')
+                .trim()
+                .replace(/[."*:<>?\/\\|]/g, '')
+                .replace(/\.+$/, '')
+                .trim();
+            const dateStr = (report.inspectionDate ? new Date(report.inspectionDate) : new Date())
+                .toISOString().split('T')[0];
+
+            const facilitySubPath = `Facilities/${dateStr}_${cleanFacility}`;
+            const isUnexpected = String(report.advertCategory || '').toLowerCase().includes('unexpect');
+            const advertFolderExists = !!report.advertFolderExists;
+            const isSubsequentRound = !!report.isSubsequentRound;
+
+            if (isUnexpected) {
+                const rootFolder = `/Advert Monitoring/${year}/Unexpected Adverts/${cleanAdvert}`;
+                if (advertFolderExists) {
+                    // Scenario B: Advert already exists in database -> reuse root folder, create only facility folder
+                    return {
+                        rootFolder: rootFolder,
+                        productType: report.mainProductType || null,
+                        advertName: cleanAdvert,
+                        advertCategory: 'Unexpected Advert',
+                        advertFolderExists: true,
+                        facilityFolder: facilitySubPath,
+                        subfolders: [
+                            `${facilitySubPath}/Inspection Reports`
+                        ]
+                    };
+                } else {
+                    // Scenario A: New unexpected advert -> create standard structure and facility folder
+                    return {
+                        rootFolder: rootFolder,
+                        productType: report.mainProductType || null,
+                        advertName: cleanAdvert,
+                        advertCategory: 'Unexpected Advert',
+                        advertFolderExists: false,
+                        facilityFolder: facilitySubPath,
+                        subfolders: [
+                            'Advert Data and Evidence',
+                            'Facilities',
+                            'Consultative Meetings',
+                            `${facilitySubPath}/Inspection Reports`
+                        ]
+                    };
+                }
+            } else {
+                // Scheduled Advert
+                if (isSubsequentRound) {
+                    // Scenario B: Subsequent monitoring activity -> dedicated activity folder
+                    const roundName = report.advertActivityRound || `Activity_${dateStr}_${cleanFacility}`;
+                    const rootFolder = `/Advert Monitoring/${year}/${cleanAdvert}/${roundName}`;
+                    return {
+                        rootFolder: rootFolder,
+                        productType: report.mainProductType || null,
+                        advertName: cleanAdvert,
+                        advertCategory: 'Scheduled Advert',
+                        isSubsequentRound: true,
+                        activityRound: roundName,
+                        facilityFolder: facilitySubPath,
+                        subfolders: [
+                            'Advert Data and Evidence',
+                            'Facilities',
+                            'Consultative Meetings',
+                            `${facilitySubPath}/Inspection Reports`
+                        ]
+                    };
+                } else {
+                    // Scenario A: First monitoring activity for scheduled advert -> initial root structure
+                    const rootFolder = `/Advert Monitoring/${year}/${cleanAdvert}`;
+                    return {
+                        rootFolder: rootFolder,
+                        productType: report.mainProductType || null,
+                        advertName: cleanAdvert,
+                        advertCategory: 'Scheduled Advert',
+                        isSubsequentRound: false,
+                        facilityFolder: facilitySubPath,
+                        subfolders: [
+                            'Advert Data and Evidence',
+                            'Facilities',
+                            'Consultative Meetings',
+                            `${facilitySubPath}/Inspection Reports`
+                        ]
+                    };
+                }
+            }
+        }
 
         case 'Consultative Meeting': {
             // Re-route based on the consultative category (e.g., Advert, Consumer Complaint)
@@ -1321,3 +1841,14 @@ async function uploadToCloudinary(file) {
     const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: 'POST', body: fd }); return await res.json();
 }
+
+function escapeHTML(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+

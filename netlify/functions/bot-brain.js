@@ -150,7 +150,7 @@ async function triggerWebhook(url, report) {
   const activityCode = getActivityCode(report.activityType);
   const reportId = `${activityCode}-${year}-${Date.now()}`;
   const deadline = new Date(); deadline.setDate(deadline.getDate() + 2); deadline.setHours(23,59,59,0);
-  const folderConfig = getFolderConfig(report.activityType, report.productTypes, report.mainProductType);
+  const folderConfig = getFolderConfig(report.activityType, report.productTypes, report.mainProductType, report.riskCategory, year);
   const sanitized = (report.facilityName||'').trim().replace(/["*:<>?/\\|]/g, '').replace(/\.+$/, '').trim();
 
   const cleanRemarks = (report.actionTaken||'').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
@@ -161,7 +161,7 @@ async function triggerWebhook(url, report) {
     activityType: report.activityType, remarks: cleanRemarks, actionTaken: cleanRemarks,
     year, month, productType: folderConfig.productType, rootFolder: folderConfig.rootFolder,
     subfolders: folderConfig.subfolders, deadline: deadline.toISOString(),
-    gsdpSubActivity: report.gsdpSubActivity || null, companyEmail: report.companyEmail || null
+    gsdpSubActivity: report.gsdpSubActivity || null, riskCategory: report.riskCategory || null, companyEmail: report.companyEmail || null
   };
 
   const https = require('https');

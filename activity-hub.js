@@ -49,6 +49,9 @@ export async function renderActivityHub(root, config) {
   } catch (e) {
     console.warn("Could not load settings:", e);
   }
+  if (!sharepointBaseUrl) {
+    sharepointBaseUrl = "https://nafdacng.sharepoint.com/sites/PMSLAGOS/Shared Documents";
+  }
 
   // 2. Render Page Frame
   const primaryColName = config.columns[0]?.label || "First column";
@@ -427,6 +430,18 @@ export async function renderActivityHub(root, config) {
         if (item) showRecordEditModal(item, cfg);
       });
     });
+
+    // Bind Document Preview badges (SharePoint Telemetry)
+    tbody.querySelectorAll(".hub-doc-uploaded[data-preview-url]").forEach(badge => {
+      badge.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const url = badge.dataset.previewUrl;
+        const name = badge.dataset.previewName || "Document";
+        if (url) {
+          showDocumentPreviewModal(url, name);
+        }
+      });
+    });
   }
 
   function formatCell(item, col, baseUrl, cfg) {
@@ -528,6 +543,38 @@ export async function renderActivityHub(root, config) {
       return `<td><span class="hub-status-badge hub-status-ongoing">Pending Feedback</span></td>`;
     }
 
+    // 8. Document Status Badges (SharePoint Telemetry)
+    if (col.format === "docStatus") {
+      const badges = [];
+      // Inspection Report status
+      if (item.hasInspectionReport || item.hasSurveillanceReport) {
+        const reportUrl = item.inspectionReportUrl || item.surveillanceReportUrl || '';
+        const fileName = item.inspectionReportFileName || item.surveillanceReportFileName || 'Report';
+        badges.push(`<span class="hub-doc-badge hub-doc-uploaded" title="Report uploaded: ${escapeHTML(fileName)}" data-preview-url="${escapeHTML(reportUrl)}" data-preview-name="${escapeHTML(fileName)}" style="cursor:pointer;">📄 View Report</span>`);
+      } else {
+        badges.push(`<span class="hub-doc-badge hub-doc-awaiting">⏳ Awaiting Report</span>`);
+      }
+      // CAPA status
+      if (item.capaSubmitted === 'Submitted' || item.capaStatus === 'CAPA Under Review') {
+        const capaUrl = item.capaUrl || '';
+        badges.push(`<span class="hub-doc-badge hub-doc-uploaded" title="CAPA submitted" data-preview-url="${escapeHTML(capaUrl)}" data-preview-name="CAPA Submission" style="cursor:pointer;">📋 CAPA Ready</span>`);
+      } else if (item.capaIssuedDate) {
+        badges.push(`<span class="hub-doc-badge hub-doc-pending">📋 CAPA Pending</span>`);
+      }
+      // Risk Categorization doc
+      if (item.hasRiskCategorization) {
+        badges.push(`<span class="hub-doc-badge hub-doc-uploaded" title="Risk categorization document" data-preview-url="${escapeHTML(item.riskCategorizationUrl || '')}" style="cursor:pointer;">✅ Risk Doc</span>`);
+      }
+      // Company submission
+      if (item.hasCompanySubmission) {
+        badges.push(`<span class="hub-doc-badge hub-doc-uploaded" title="Company submission uploaded" data-preview-url="${escapeHTML(item.companySubmissionUrl || '')}" style="cursor:pointer;">📨 Submission</span>`);
+      }
+      if (badges.length === 0) {
+        badges.push(`<span class="hub-doc-badge hub-doc-awaiting">⏳ No Documents</span>`);
+      }
+      return `<td><div style="display:flex;flex-direction:column;gap:4px;">${badges.join('')}</div></td>`;
+    }
+
     if (col.format === "teams") {
       let folderUrl = item.teamsFolderUrl;
       if (!folderUrl && baseUrl) {
@@ -535,8 +582,10 @@ export async function renderActivityHub(root, config) {
         if (facName) {
           const sanitized = facName.replace(/[."*:<>?\/\\|]/g, "").trim();
           const cleanBase = baseUrl.replace(/\/+$/, "");
-          const cleanFolder = cfg.teamsRootFolder.replace(/^\/+/, "");
-          folderUrl = `${cleanBase}/${cleanFolder}/${encodeURIComponent(sanitized)}`;
+          const cleanFolder = (cfg.teamsRootFolder || "").replace(/^\/+/, "");
+          const itemYear = getItemYear(item);
+          const yearPath = (itemYear && parseInt(itemYear) >= 2026 && (cfg.key === "gsdp" || cfg.key === "surveillance")) ? `/${itemYear}` : "";
+          folderUrl = `${cleanBase}/${cleanFolder}${yearPath}/${encodeURIComponent(sanitized)}`;
         }
       }
 
@@ -1051,6 +1100,64 @@ function exportActivityCSV(items, cfg) {
   a.download = `nafdac_${cfg.key}_records_${new Date().toISOString().split("T")[0]}.csv`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// ─── Document Preview Modal (SharePoint Telemetry) ───────────────────────────
+function showDocumentPreviewModal(fileUrl, fileName) {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;";
+
+  // Build embed URL — SharePoint Online supports ?action=interactivepreview
+  let embedUrl = fileUrl;
+  if (fileUrl.includes("sharepoint.com")) {
+    // Use Office Online embedded viewer
+    embedUrl = fileUrl.replace(/\?.*$/, "") + "?action=interactivepreview";
+  }
+
+  const isEmbeddable = fileUrl.includes("sharepoint.com") || fileUrl.endsWith(".pdf") || fileUrl.includes("docs.google");
+
+  overlay.innerHTML = `
+    <div style="background:white;border-radius:12px;width:90vw;max-width:900px;height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+        <div>
+          <h3 style="margin:0;font-size:16px;color:#1e293b;">📄 ${escapeHTML(fileName)}</h3>
+          <p class="muted" style="margin:2px 0 0;font-size:12px;">SharePoint Document Preview</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a href="${escapeHTML(fileUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#2563eb;color:white;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;">
+            ↗ Open in SharePoint
+          </a>
+          <button id="docPreviewClose" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;padding:4px 8px;">✕</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow:hidden;">
+        ${isEmbeddable
+          ? `<iframe src="${escapeHTML(embedUrl)}" style="width:100%;height:100%;border:none;" allow="clipboard-write" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`
+          : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px;text-align:center;">
+               <div style="font-size:48px;">📎</div>
+               <h3 style="color:#1e293b;margin:0;">Document Available</h3>
+               <p class="muted" style="max-width:400px;">This document type cannot be previewed inline. Click the button above to open it directly in SharePoint.</p>
+               <a href="${escapeHTML(fileUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#008751;color:white;border-radius:8px;font-weight:600;text-decoration:none;">
+                 Open Document ↗
+               </a>
+             </div>`
+        }
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Close handlers
+  overlay.querySelector("#docPreviewClose").addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+  document.addEventListener("keydown", function escHandler(e) {
+    if (e.key === "Escape") {
+      overlay.remove();
+      document.removeEventListener("keydown", escHandler);
+    }
+  });
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

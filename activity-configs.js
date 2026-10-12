@@ -153,6 +153,7 @@ export const COMPLAINTS_CONFIG = {
     { key: "actionTaken", label: "Enforcement Action" },
     { key: "status", label: "Status", format: "badge" },
     { key: "feedbackIssued", label: "Feedback Status", format: "feedback" },
+    { key: "documentStatus", label: "Documents", format: "docStatus" },
     { key: "teamsFolderUrl", label: "Teams Folder", format: "teams" }
   ],
   kpis: [
@@ -286,6 +287,7 @@ export const GSDP_CONFIG = {
     { key: "riskCategory", label: "Risk Category (A/B/C)", format: "badge" },
     { key: "capaIssuedDate", label: "CAPA Issued Date", format: "date" },
     { key: "capaSubmitted", label: "CAPA Status", format: "badge" },
+    { key: "documentStatus", label: "Documents", format: "docStatus" },
     { key: "conclusion", label: "Conclusion / Remarks" },
     { key: "companyFile", label: "Company File", format: "code" },
     { key: "teamsFolderUrl", label: "Teams Folder", format: "teams" }
@@ -384,6 +386,7 @@ export const SURVEILLANCE_CONFIG = {
     { key: "holdCount", label: "Hold Qty", format: "number" },
     { key: "sanctionGiven", label: "Sanction", format: "boolean" },
     { key: "linkedAlertId", label: "Linked Alert", format: "alert" },
+    { key: "documentStatus", label: "Documents", format: "docStatus" },
     { key: "teamsFolderUrl", label: "Teams Folder", format: "teams" }
   ],
   kpis: [
@@ -563,3 +566,95 @@ export const GLSI_CONFIG = {
     { name: "status", label: "Facility Status", type: "select", options: ["Compliant", "Monitored", "Non-Compliant / Action Taken", "Not Located", "Active"], default: "Active" }
   ]
 };
+
+// 6. ADVERT MONITORING CONFIGURATION
+export const ADVERTS_CONFIG = {
+  key: "adverts",
+  title: "Advert Monitoring",
+  subtitle: "Surveillance of Scheduled & Unexpected product adverts across facilities and media outlets",
+  collection: "facilityReports",
+  activityFilter: "Advert",
+  teamsRootFolder: "/Advert Monitoring",
+  statuses: ["Satisfactory", "Infractions Found", "Sanctions Recommended", "Mopped Up", "Active"],
+  columns: [
+    { key: "advertName", label: "Advert / Product Name", format: "bold" },
+    { key: "advertCategory", label: "Campaign Category", format: "badge" },
+    { key: "facilityName", label: "Facility Displaying Advert", format: "facility" },
+    { key: "area", label: "LGA Area" },
+    { key: "inspectionDate", label: "Date Sighted", format: "date" },
+    { key: "mainProductType", label: "Product Category" },
+    { key: "actionTaken", label: "Observation & Action" },
+    { key: "mopUpCount", label: "Mopped Qty", format: "number" },
+    { key: "documentStatus", label: "Documents", format: "docStatus" },
+    { key: "teamsFolderUrl", label: "Teams Folder", format: "teams" }
+  ],
+  kpis: [
+    { id: "totalAdverts", label: "Total Advert Inspections", color: "accent-green", calc: (items) => items.length },
+    { id: "scheduledAdverts", label: "Scheduled Campaigns", color: "accent-blue", calc: (items) => items.filter(i => (i.advertCategory || "").toLowerCase().includes("schedul")).length },
+    { id: "unexpectedAdverts", label: "Unexpected Intercepts", color: "accent-amber", calc: (items) => items.filter(i => (i.advertCategory || "").toLowerCase().includes("unexpect")).length },
+    { id: "moppedUnits", label: "Total Mopped Units", color: "accent-red", calc: (items) => items.reduce((acc, i) => acc + (Number(i.mopUpCount) || 0), 0) }
+  ],
+  charts: [
+    {
+      id: "chartAdvertsCategory",
+      type: "doughnut",
+      title: "Adverts by Campaign Category",
+      generate: (items) => {
+        let scheduled = 0, unexpected = 0, other = 0;
+        items.forEach(i => {
+          const cat = (i.advertCategory || "").toLowerCase();
+          if (cat.includes("schedul")) scheduled++;
+          else if (cat.includes("unexpect")) unexpected++;
+          else other++;
+        });
+        return {
+          labels: ["Scheduled Adverts", "Unexpected Adverts", "General / Other"],
+          datasets: [{
+            data: [scheduled, unexpected, other],
+            backgroundColor: ["#2563eb", "#f59e0b", "#10b981"]
+          }]
+        };
+      }
+    },
+    {
+      id: "chartAdvertsLga",
+      type: "bar",
+      title: "Advert Inspections by LGA",
+      generate: (items) => {
+        const lgas = {};
+        items.forEach(i => {
+          const a = i.area || "Unspecified";
+          lgas[a] = (lgas[a] || 0) + 1;
+        });
+        const top = Object.entries(lgas).sort((a, b) => b[1] - a[1]).slice(0, 8);
+        return {
+          labels: top.map(t => t[0]),
+          datasets: [{
+            label: "Inspections",
+            data: top.map(t => t[1]),
+            backgroundColor: "#008751",
+            borderRadius: 4
+          }]
+        };
+      }
+    }
+  ],
+  generateInsights: (items) => {
+    const insights = [];
+    const total = items.length;
+    if (total === 0) return ["No advert monitoring reports found."];
+
+    const unexpected = items.filter(i => (i.advertCategory || "").toLowerCase().includes("unexpect")).length;
+    const scheduled = items.filter(i => (i.advertCategory || "").toLowerCase().includes("schedul")).length;
+    insights.push(`Logged ${total} advert monitoring visits (${scheduled} scheduled campaign reviews, ${unexpected} unexpected adverts intercepted).`);
+
+    const mopped = items.reduce((acc, i) => acc + (Number(i.mopUpCount) || 0), 0);
+    if (mopped > 0) {
+      insights.push(`A total of ${mopped} non-compliant advert-promoted units mopped up across monitored outlets.`);
+    }
+
+    return insights;
+  },
+  useWizardForLog: true
+};
+

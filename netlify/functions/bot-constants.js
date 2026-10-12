@@ -43,12 +43,13 @@ function getActivityCode(activity) {
   return codes[activity] || 'OTH';
 }
 
-function getFolderConfig(activityType, productTypes, mainProductType) {
+function getFolderConfig(activityType, productTypes, mainProductType, riskCategory, year, advertDetails = {}) {
+  const currentYear = year || new Date().getFullYear().toString();
   const specialDrugs = ['Service Drugs', 'Donated Items/Drugs', 'Orphan Drugs'];
   const isSpecial = mainProductType && specialDrugs.includes(mainProductType);
   switch (activityType) {
     case 'Routine Surveillance':
-      if (isSpecial) return { rootFolder: '/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS', productType: mainProductType, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
+      if (isSpecial) return { rootFolder: `/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS/${currentYear}`, productType: mainProductType, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
 
       let root = '/ROUTINE SURVEILLANCE/DRUGS';
       if (mainProductType === 'Medical Devices') {
@@ -59,12 +60,68 @@ function getFolderConfig(activityType, productTypes, mainProductType) {
       return { rootFolder: root, productType: mainProductType || 'Drugs', subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Special Surveillance':
       return { rootFolder: mainProductType ? `/Special Surveillance/${mainProductType.toUpperCase()}` : '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
-    case 'Advert':
-      return { rootFolder: mainProductType ? `/ADVERTS/${mainProductType.toUpperCase()}` : '/ADVERTS', productType: mainProductType || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Extra_Data'] };
+    case 'Advert': {
+      const isUnexpected = String(advertDetails.advertCategory || '').toLowerCase().includes('unexpect');
+      const cleanAdvert = (advertDetails.advertName || 'GENERAL_ADVERT').trim().replace(/[."*:<>?\/\\|]/g, '').trim();
+      const cleanFacility = (advertDetails.facilityName || 'FACILITY').trim().replace(/[."*:<>?\/\\|]/g, '').trim();
+      const dateStr = advertDetails.dateStr || new Date().toISOString().split('T')[0];
+      const facilitySubPath = `Facilities/${dateStr}_${cleanFacility}`;
+
+      if (isUnexpected) {
+        const rootFolder = `/Advert Monitoring/${currentYear}/Unexpected Adverts/${cleanAdvert}`;
+        if (advertDetails.advertFolderExists) {
+          return { rootFolder, productType: mainProductType || null, subfolders: [`${facilitySubPath}/Inspection Reports`] };
+        }
+        return {
+          rootFolder,
+          productType: mainProductType || null,
+          subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
+        };
+      } else {
+        if (advertDetails.isSubsequentRound) {
+          const roundName = advertDetails.activityRound || `Activity_${dateStr}_${cleanFacility}`;
+          return {
+            rootFolder: `/Advert Monitoring/${currentYear}/${cleanAdvert}/${roundName}`,
+            productType: mainProductType || null,
+            subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
+          };
+        }
+        return {
+          rootFolder: `/Advert Monitoring/${currentYear}/${cleanAdvert}`,
+          productType: mainProductType || null,
+          subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
+        };
+      }
+    }
     case 'Consumer Complaint':
       return { rootFolder: '/CONSUMER COMPLAINT', productType: (productTypes || []).join(', ') || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Investigation_Data'] };
-    case 'GSDP':
-      return { rootFolder: '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES', productType: null, subfolders: ['GSDP/Inspection_Report', 'GSDP/Compliance_Directives', 'GSDP/CAPA_Template', 'GSDP/Risk_Categorization', 'CEVI/Inspection_Report', 'CEVI/Compliance_Directives', 'CEVI/CAPA_Template', 'CEVI/Risk_Categorization', 'Company_Submissions'] };
+    case 'GSDP': {
+      const gsdpRoot = `/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES/${currentYear}`;
+      const risk = String(riskCategory || '').toLowerCase();
+      const isLowRisk = risk.includes('low') || risk.includes('category a') || risk === 'a';
+      if (isLowRisk) {
+        return {
+          rootFolder: gsdpRoot,
+          productType: null,
+          subfolders: ['Company_Files', 'GSDP/Inspection_Report', 'GSDP/Risk_Categorization']
+        };
+      }
+      return {
+        rootFolder: gsdpRoot,
+        productType: null,
+        subfolders: [
+          'Company_Files',
+          'GSDP/Inspection_Report',
+          'GSDP/Compliance_Directives',
+          'GSDP/CAPA_Template',
+          'GSDP/Risk_Categorization',
+          'CEVI/Inspection_Report',
+          'CEVI/Compliance_Directives',
+          'CEVI/CAPA_Template',
+          'CEVI/Risk_Categorization'
+        ]
+      };
+    }
     case 'GLSI':
       return { rootFolder: '/GLSI MONITORING', productType: null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Inspection_Data'] };
     case 'COLD CHAIN Monitoring':

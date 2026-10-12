@@ -661,7 +661,15 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
                 riskFinding: data.riskCategory || "",
                 remark: data.capaSubmitted || "",
                 status: data.riskCategory || "GSDP AUDITED",
-                source: "gsdp"
+                source: "gsdp",
+                // Document telemetry fields
+                hasInspectionReport: data.hasInspectionReport || false,
+                inspectionReportUrl: data.inspectionReportUrl || "",
+                inspectionReportFileName: data.inspectionReportFileName || "",
+                capaSubmitted_doc: data.capaSubmitted || "",
+                capaUrl: data.capaUrl || "",
+                hasRiskCategorization: data.hasRiskCategorization || false,
+                riskCategorizationUrl: data.riskCategorizationUrl || ""
             });
         });
     } catch (e) { /* ignore permission errors */ }
@@ -715,17 +723,35 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
                         <th>Observation / Findings</th>
                         <th>Action Taken</th>
                         <th>Status</th>
+                        <th>Documents</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${records.map(r => `
+                    ${records.map(r => {
+                        // Build document badges
+                        let docBadges = '';
+                        if (r.hasInspectionReport && r.inspectionReportUrl) {
+                            docBadges += `<span class="hub-doc-badge hub-doc-uploaded fp-doc-preview" data-url="${r.inspectionReportUrl}" data-name="${r.inspectionReportFileName || 'Inspection Report'}" style="cursor:pointer;" title="View Report">📄 Report</span>`;
+                        }
+                        if (r.capaSubmitted_doc === 'Submitted' && r.capaUrl) {
+                            docBadges += `<span class="hub-doc-badge hub-doc-uploaded fp-doc-preview" data-url="${r.capaUrl}" data-name="CAPA Submission" style="cursor:pointer;" title="View CAPA">📋 CAPA</span>`;
+                        }
+                        if (r.hasRiskCategorization && r.riskCategorizationUrl) {
+                            docBadges += `<span class="hub-doc-badge hub-doc-uploaded fp-doc-preview" data-url="${r.riskCategorizationUrl}" data-name="Risk Document" style="cursor:pointer;" title="View Risk Doc">✅ Risk</span>`;
+                        }
+                        if (!docBadges) {
+                            docBadges = `<span class="hub-doc-badge hub-doc-awaiting">⏳ Pending</span>`;
+                        }
+                        return `
                     <tr>
                         <td class="fp-td-date">${r.inspectionDate || "—"}</td>
                         <td><span class="fp-activity-badge fp-activity-${(r.activityType || '').toLowerCase().replace(/\s/g, '-')}">${r.activityType || "—"}</span></td>
                         <td class="fp-td-text">${r.observation || r.riskFinding || "—"}</td>
                         <td class="fp-td-text">${r.actionTaken || r.recommendation || "—"}</td>
                         <td>${statusBadge(r.status || r.remark)}</td>
-                    </tr>`).join("")}
+                        <td><div style="display:flex;flex-direction:column;gap:3px;">${docBadges}</div></td>
+                    </tr>`;
+                    }).join("")}
                 </tbody>
             </table>
         </div>
@@ -736,6 +762,18 @@ async function renderInspectionsTab(container, facilityId, facilityName) {
         const addBtn = container.querySelector("#fpAddRecordBtn");
         if (addBtn) addBtn.addEventListener("click", () => showAddInspectionModalFn(facilityId, facilityName));
     }
+
+    // Document preview click handlers (SharePoint Telemetry)
+    container.querySelectorAll(".fp-doc-preview").forEach(badge => {
+        badge.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const url = badge.dataset.url;
+            const name = badge.dataset.name || "Document";
+            if (url) {
+                showDocumentPreviewModalFP(url, name);
+            }
+        });
+    });
 }
 
 async function renderSanctionsTab(container, facilityId, facilityName) {
@@ -1403,10 +1441,26 @@ async function executeFacilityMerge(masterFacId, otherFacilities) {
         if (!masterAddr) masterAddr = other.address;
     }
 
-    const batch = writeBatch(db);
+    let currentBatch = writeBatch(db);
+    let opCount = 0;
+    const safeSet = async (docRef, data, options) => {
+        currentBatch.set(docRef, data, options);
+        opCount++;
+        if (opCount >= 400) {
+            await currentBatch.commit();
+            currentBatch = writeBatch(db);
+            opCount = 0;
+        }
+    };
+    const flushBatch = async () => {
+        if (opCount > 0) {
+            await currentBatch.commit();
+            opCount = 0;
+        }
+    };
 
     // 2. Update master record in Firestore
-    batch.set(doc(db, "facilities", masterData._docId), {
+    await safeSet(doc(db, "facilities", masterData._docId), {
         activityTypes: [...allActivities],
         aliases: [...allAliases],
         address: masterAddr || "",
@@ -1426,7 +1480,7 @@ async function executeFacilityMerge(masterFacId, otherFacilities) {
             const snap = await getDocs(q);
             
             for (const d of snap.docs) {
-                batch.set(doc(db, collName, d.id), {
+                await safeSet(doc(db, collName, d.id), {
                     facilityId: masterFacId,
                     facilityName: masterData.name,
                     _mergedFrom: oId
@@ -1437,7 +1491,7 @@ async function executeFacilityMerge(masterFacId, otherFacilities) {
 
     // 4. Mark duplicates as merged/deleted
     for (const other of otherFacilities) {
-        batch.set(doc(db, "facilities", other._docId), {
+        await safeSet(doc(db, "facilities", other._docId), {
             status: "MERGED",
             mergedTo: masterFacId,
             deleted: true,
@@ -1445,8 +1499,8 @@ async function executeFacilityMerge(masterFacId, otherFacilities) {
         }, { merge: true });
     }
 
-    // Commit the entire group as a single atomic operation
-    await batch.commit();
+    // Commit any remaining writes
+    await flushBatch();
 }
 
 async function autoMergeFacilities(facilities) {
@@ -1951,4 +2005,58 @@ async function renderBranchesTab(container, facId, facName) {
     
     html += `</div>`;
     container.innerHTML = html;
+}
+
+// ─── Document Preview Modal (Facility Profile) ──────────────────────────────
+function showDocumentPreviewModalFP(fileUrl, fileName) {
+    const modalContainer = document.getElementById("modalContainer");
+    if (!modalContainer) return;
+
+    // Build embed URL for SharePoint
+    let embedUrl = fileUrl;
+    if (fileUrl.includes("sharepoint.com")) {
+        embedUrl = fileUrl.replace(/\?.*$/, "") + "?action=interactivepreview";
+    }
+    const isEmbeddable = fileUrl.includes("sharepoint.com") || fileUrl.endsWith(".pdf") || fileUrl.includes("docs.google");
+
+    modalContainer.innerHTML = `
+    <div class="modal-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:12px;width:90vw;max-width:900px;height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+                <div>
+                    <h3 style="margin:0;font-size:16px;color:#1e293b;">📄 ${fileName}</h3>
+                    <p style="margin:2px 0 0;font-size:12px;color:#64748b;">SharePoint Document Preview — Facility Dossier</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <a href="${fileUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#2563eb;color:white;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;">
+                        ↗ Open in SharePoint
+                    </a>
+                    <button id="fpDocPreviewClose" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;padding:4px 8px;">✕</button>
+                </div>
+            </div>
+            <div style="flex:1;overflow:hidden;">
+                ${isEmbeddable
+                    ? `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allow="clipboard-write" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`
+                    : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px;text-align:center;">
+                        <div style="font-size:48px;">📎</div>
+                        <h3 style="color:#1e293b;margin:0;">Document Available</h3>
+                        <p style="color:#64748b;max-width:400px;">This document type cannot be previewed inline. Click above to open directly in SharePoint.</p>
+                        <a href="${fileUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#008751;color:white;border-radius:8px;font-weight:600;text-decoration:none;">Open Document ↗</a>
+                       </div>`
+                }
+            </div>
+        </div>
+    </div>`;
+
+    modalContainer.style.display = "block";
+    modalContainer.querySelector("#fpDocPreviewClose").addEventListener("click", () => {
+        modalContainer.innerHTML = "";
+        modalContainer.style.display = "none";
+    });
+    modalContainer.querySelector(".modal-overlay").addEventListener("click", (e) => {
+        if (e.target.classList.contains("modal-overlay")) {
+            modalContainer.innerHTML = "";
+            modalContainer.style.display = "none";
+        }
+    });
 }
