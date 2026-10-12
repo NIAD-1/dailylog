@@ -1814,7 +1814,7 @@ function getFolderConfig(report) {
                 // If advert folder already exists, only create the new facility folder structure
                 subfolders = [
                     'Facilities',
-                    `${facilitySubPath}/Inspection Reports`
+                    `${facilitySubPath}/Inspection_Report`
                 ];
             } else {
                 // First inspection for this advert -> scaffold root advert structure + this facility folder
@@ -1822,7 +1822,7 @@ function getFolderConfig(report) {
                     'Advert Data and Evidence',
                     'Consultative Meetings',
                     'Facilities',
-                    `${facilitySubPath}/Inspection Reports`
+                    `${facilitySubPath}/Inspection_Report`
                 ];
             }
 

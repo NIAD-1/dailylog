@@ -91,8 +91,8 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
       }
 
       const subfolders = advertDetails.advertFolderExists
-        ? ['Facilities', `${facilitySubPath}/Inspection Reports`]
-        : ['Advert Data and Evidence', 'Consultative Meetings', 'Facilities', `${facilitySubPath}/Inspection Reports`];
+        ? ['Facilities', `${facilitySubPath}/Inspection_Report`]
+        : ['Advert Data and Evidence', 'Consultative Meetings', 'Facilities', `${facilitySubPath}/Inspection_Report`];
 
       return {
         rootFolder,
