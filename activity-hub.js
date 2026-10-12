@@ -578,14 +578,25 @@ export async function renderActivityHub(root, config) {
     if (col.format === "teams") {
       let folderUrl = item.teamsFolderUrl;
       if (!folderUrl && baseUrl) {
-        const facName = item.facilityName || item.outletVisited || item.complainant || item.name || "";
-        if (facName) {
-          const sanitized = facName.replace(/[."*:<>?\/\\|]/g, "").trim();
-          const cleanBase = baseUrl.replace(/\/+$/, "");
-          const cleanFolder = (cfg.teamsRootFolder || "").replace(/^\/+/, "");
-          const itemYear = getItemYear(item);
-          const yearPath = (itemYear && parseInt(itemYear) >= 2026 && (cfg.key === "gsdp" || cfg.key === "surveillance")) ? `/${itemYear}` : "";
-          folderUrl = `${cleanBase}/${cleanFolder}${yearPath}/${encodeURIComponent(sanitized)}`;
+        const cleanBase = baseUrl.replace(/\/+$/, "");
+        if (cfg.key === "adverts") {
+          const prodType = (item.mainProductType || 'DRUGS').toLowerCase().includes('food') ? 'FOOD' : 'DRUGS';
+          const itemYear = getItemYear(item) || new Date().getFullYear();
+          const itemMonth = item.inspectionDate ? new Date(item.inspectionDate).toLocaleString('default', { month: 'long' }).toUpperCase() : '';
+          const advName = (item.advertName || 'GENERAL_ADVERT').replace(/[."*:<>?\/\\|]/g, '').trim();
+          const isUnexp = String(item.advertCategory || '').toLowerCase().includes('unexpect');
+          const monthPath = itemMonth ? `/${itemMonth}` : '';
+          const entityPath = isUnexp ? `/Unexpected Adverts/${encodeURIComponent(advName)}` : `/${encodeURIComponent(advName)}`;
+          folderUrl = `${cleanBase}/ADVERTS/${prodType}/${itemYear}${monthPath}${entityPath}`;
+        } else {
+          const facName = item.facilityName || item.outletVisited || item.complainant || item.name || "";
+          if (facName) {
+            const sanitized = facName.replace(/[."*:<>?\/\\|]/g, "").trim();
+            const cleanFolder = (cfg.teamsRootFolder || "").replace(/^\/+/, "");
+            const itemYear = getItemYear(item);
+            const yearPath = (itemYear && parseInt(itemYear) >= 2026 && (cfg.key === "gsdp" || cfg.key === "surveillance")) ? `/${itemYear}` : "";
+            folderUrl = `${cleanBase}/${cleanFolder}${yearPath}/${encodeURIComponent(sanitized)}`;
+          }
         }
       }
 

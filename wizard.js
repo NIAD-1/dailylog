@@ -1270,8 +1270,10 @@ async function handleSubmitWizard(root) {
                 sanctionDocUrl = uploaded.secure_url || '';
             }
 
+            const cleanFacName = (facilityData.facilityName || '').trim().replace(/[."*:<>?\/\\|]/g, '').replace(/\.+$/, '').trim();
             const reportData = {
                 submissionId,
+                lookupKey: `${cleanFacName}_${facilityData.activityType}`,
                 inspectorNames: finalInspectorNames,
                 mainProductType: facilityData.mainProductType || null,
                 productTypes: facilityData.productTypes || [],
@@ -1477,11 +1479,20 @@ async function triggerTeamsWebhook(report) {
             : new Date().toISOString().split('T')[0];
         const cleanRemarks = (report.actionTaken || '').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
 
+        const isAdvert = report.activityType === 'Advert';
+        // For Advert, Power Automate Step 6 creates the entity folder inside the month folder using facilityName
+        // In Option A, this is 'Unexpected Adverts/[Advert Name]' or '[Advert Name]'
+        const flowFacilityName = (isAdvert && folderConfig.entityFolderName)
+            ? folderConfig.entityFolderName
+            : sanitizedFacilityName;
+
         // Prepare enhanced payload
         const payload = {
             reportId: reportId,
             lookupKey: `${sanitizedFacilityName}_${report.activityType}`, // UNIQUE KEY FOR FLOW LOOKUP
-            facilityName: sanitizedFacilityName,
+            facilityName: flowFacilityName,
+            actualFacilityName: sanitizedFacilityName,
+            advertFacilityName: sanitizedFacilityName,
             area: report.area || '',
             inspectionDate: formattedDate,
             inspectors: Array.isArray(report.inspectorNames) ? report.inspectorNames.join(', ') : (report.inspectorName || ''),
@@ -1493,7 +1504,9 @@ async function triggerTeamsWebhook(report) {
             rootFolder: folderConfig.rootFolder,
             subfolders: folderConfig.subfolders,
             deadline: deadline.toISOString(),
-            remarks: cleanRemarks,
+            remarks: isAdvert
+                ? `[Advert: ${folderConfig.advertName || report.advertName}] [Outlet: ${sanitizedFacilityName}] ${cleanRemarks}`.trim()
+                : cleanRemarks,
             actionTaken: cleanRemarks,
             gsdpSubActivity: report.gsdpSubActivity || null,
             riskCategory: report.riskCategory || null,
@@ -1648,6 +1661,17 @@ function getActivityCode(activity) {
     return codes[activity] || 'OTH';
 }
 
+// Helper: Get product type folder name for Advert
+function getAdvertProductTypeFolder(mainProductType) {
+    if (!mainProductType) return 'DRUGS';
+    const lower = mainProductType.toLowerCase();
+    if (lower.includes('food') || lower.includes('drink') || lower.includes('water')) return 'FOOD';
+    if (lower.includes('cosmetic')) return 'COSMETICS';
+    if (lower.includes('device')) return 'MEDICAL DEVICES';
+    if (lower.includes('chemical')) return 'CHEMICALS';
+    return 'DRUGS';
+}
+
 // Helper: Get folder configuration based on activity type
 function getFolderConfig(report) {
     const activity = report.activityType;
@@ -1749,7 +1773,7 @@ function getFolderConfig(report) {
 
         case 'Advert': {
             const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
-            const prodType = (report.mainProductType || 'DRUGS').toUpperCase();
+            const prodType = getAdvertProductTypeFolder(report.mainProductType);
             const cleanAdvert = (report.advertName || 'GENERAL_ADVERT')
                 .trim()
                 .replace(/[."*:<>?\/\\|]/g, '')
@@ -1768,78 +1792,51 @@ function getFolderConfig(report) {
             const advertFolderExists = !!report.advertFolderExists;
             const isSubsequentRound = !!report.isSubsequentRound;
 
+            // rootFolder MUST be /ADVERTS/${prodType} so that Power Automate Step 4 and 5
+            // automatically scaffold /ADVERTS/${prodType}/${year}/${month}
+            const rootFolder = `/ADVERTS/${prodType}`;
+
+            // Entity folder name for Power Automate Step 6 (facilityName parameter in payload)
+            // Option A:
+            //   - Unexpected: 'Unexpected Adverts/[Advert Name]'
+            //   - Scheduled: '[Advert Name]' (or '[Advert Name]/[RoundName]' for subsequent rounds)
+            let entityFolderName = cleanAdvert;
             if (isUnexpected) {
-                const rootFolder = `/ADVERTS/${prodType}/${year}/Unexpected Adverts/${cleanAdvert}`;
-                if (advertFolderExists) {
-                    // Scenario B: Advert already exists in database -> reuse root folder, create only facility folder
-                    return {
-                        rootFolder: rootFolder,
-                        productType: report.mainProductType || 'Drugs',
-                        advertName: cleanAdvert,
-                        advertCategory: 'Unexpected Advert',
-                        advertFolderExists: true,
-                        facilityFolder: facilitySubPath,
-                        subfolders: [
-                            `${facilitySubPath}/Inspection Reports`
-                        ]
-                    };
-                } else {
-                    // Scenario A: New unexpected advert -> create standard structure and facility folder
-                    return {
-                        rootFolder: rootFolder,
-                        productType: report.mainProductType || 'Drugs',
-                        advertName: cleanAdvert,
-                        advertCategory: 'Unexpected Advert',
-                        advertFolderExists: false,
-                        facilityFolder: facilitySubPath,
-                        subfolders: [
-                            'Advert Data and Evidence',
-                            'Facilities',
-                            'Consultative Meetings',
-                            `${facilitySubPath}/Inspection Reports`
-                        ]
-                    };
-                }
-            } else {
-                // Scheduled Advert
-                if (isSubsequentRound) {
-                    // Scenario B: Subsequent monitoring activity -> dedicated activity folder
-                    const roundName = report.advertActivityRound || `Activity_${dateStr}_${cleanFacility}`;
-                    const rootFolder = `/ADVERTS/${prodType}/${year}/${cleanAdvert}/${roundName}`;
-                    return {
-                        rootFolder: rootFolder,
-                        productType: report.mainProductType || 'Drugs',
-                        advertName: cleanAdvert,
-                        advertCategory: 'Scheduled Advert',
-                        isSubsequentRound: true,
-                        activityRound: roundName,
-                        facilityFolder: facilitySubPath,
-                        subfolders: [
-                            'Advert Data and Evidence',
-                            'Facilities',
-                            'Consultative Meetings',
-                            `${facilitySubPath}/Inspection Reports`
-                        ]
-                    };
-                } else {
-                    // Scenario A: First monitoring activity for scheduled advert -> initial root structure
-                    const rootFolder = `/ADVERTS/${prodType}/${year}/${cleanAdvert}`;
-                    return {
-                        rootFolder: rootFolder,
-                        productType: report.mainProductType || 'Drugs',
-                        advertName: cleanAdvert,
-                        advertCategory: 'Scheduled Advert',
-                        isSubsequentRound: false,
-                        facilityFolder: facilitySubPath,
-                        subfolders: [
-                            'Advert Data and Evidence',
-                            'Facilities',
-                            'Consultative Meetings',
-                            `${facilitySubPath}/Inspection Reports`
-                        ]
-                    };
-                }
+                entityFolderName = `Unexpected Adverts/${cleanAdvert}`;
+            } else if (isSubsequentRound) {
+                const roundName = report.advertActivityRound || `Activity_${dateStr}_${cleanFacility}`;
+                entityFolderName = `${cleanAdvert}/${roundName}`;
             }
+
+            // Subfolders created inside the entity folder by Power Automate Step 7 (Apply to each)
+            let subfolders = [];
+            if (advertFolderExists) {
+                // If advert folder already exists, only create the new facility folder structure
+                subfolders = [
+                    'Facilities',
+                    `${facilitySubPath}/Inspection Reports`
+                ];
+            } else {
+                // First inspection for this advert -> scaffold root advert structure + this facility folder
+                subfolders = [
+                    'Advert Data and Evidence',
+                    'Consultative Meetings',
+                    'Facilities',
+                    `${facilitySubPath}/Inspection Reports`
+                ];
+            }
+
+            return {
+                rootFolder: rootFolder,
+                entityFolderName: entityFolderName,
+                productType: report.mainProductType || 'Drugs',
+                advertName: cleanAdvert,
+                advertCategory: isUnexpected ? 'Unexpected Advert' : 'Scheduled Advert',
+                advertFolderExists: advertFolderExists,
+                isSubsequentRound: isSubsequentRound,
+                facilityFolder: facilitySubPath,
+                subfolders: subfolders
+            };
         }
 
         case 'Consultative Meeting': {

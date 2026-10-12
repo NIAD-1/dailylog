@@ -43,6 +43,16 @@ function getActivityCode(activity) {
   return codes[activity] || 'OTH';
 }
 
+function getAdvertProductTypeFolder(mainProductType) {
+  if (!mainProductType) return 'DRUGS';
+  const lower = mainProductType.toLowerCase();
+  if (lower.includes('food') || lower.includes('drink') || lower.includes('water')) return 'FOOD';
+  if (lower.includes('cosmetic')) return 'COSMETICS';
+  if (lower.includes('device')) return 'MEDICAL DEVICES';
+  if (lower.includes('chemical')) return 'CHEMICALS';
+  return 'DRUGS';
+}
+
 function getFolderConfig(activityType, productTypes, mainProductType, riskCategory, year, advertDetails = {}) {
   const currentYear = year || new Date().getFullYear().toString();
   const specialDrugs = ['Service Drugs', 'Donated Items/Drugs', 'Orphan Drugs'];
@@ -66,34 +76,33 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
       const cleanFacility = (advertDetails.facilityName || 'FACILITY').trim().replace(/[."*:<>?\/\\|]/g, '').trim();
       const dateStr = advertDetails.dateStr || new Date().toISOString().split('T')[0];
       const facilitySubPath = `Facilities/${dateStr}_${cleanFacility}`;
+      const prodType = getAdvertProductTypeFolder(mainProductType);
 
-      const prodType = (mainProductType || 'DRUGS').toUpperCase();
+      // rootFolder MUST be /ADVERTS/${prodType} so Power Automate appends /${year}/${month}
+      const rootFolder = `/ADVERTS/${prodType}`;
 
+      // Entity folder name for Power Automate Step 6 (facilityName parameter)
+      let entityFolderName = cleanAdvert;
       if (isUnexpected) {
-        const rootFolder = `/ADVERTS/${prodType}/${currentYear}/Unexpected Adverts/${cleanAdvert}`;
-        if (advertDetails.advertFolderExists) {
-          return { rootFolder, productType: mainProductType || 'Drugs', subfolders: [`${facilitySubPath}/Inspection Reports`] };
-        }
-        return {
-          rootFolder,
-          productType: mainProductType || 'Drugs',
-          subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
-        };
-      } else {
-        if (advertDetails.isSubsequentRound) {
-          const roundName = advertDetails.activityRound || `Activity_${dateStr}_${cleanFacility}`;
-          return {
-            rootFolder: `/ADVERTS/${prodType}/${currentYear}/${cleanAdvert}/${roundName}`,
-            productType: mainProductType || 'Drugs',
-            subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
-          };
-        }
-        return {
-          rootFolder: `/ADVERTS/${prodType}/${currentYear}/${cleanAdvert}`,
-          productType: mainProductType || 'Drugs',
-          subfolders: ['Advert Data and Evidence', 'Facilities', 'Consultative Meetings', `${facilitySubPath}/Inspection Reports`]
-        };
+        entityFolderName = `Unexpected Adverts/${cleanAdvert}`;
+      } else if (advertDetails.isSubsequentRound) {
+        const roundName = advertDetails.activityRound || `Activity_${dateStr}_${cleanFacility}`;
+        entityFolderName = `${cleanAdvert}/${roundName}`;
       }
+
+      const subfolders = advertDetails.advertFolderExists
+        ? ['Facilities', `${facilitySubPath}/Inspection Reports`]
+        : ['Advert Data and Evidence', 'Consultative Meetings', 'Facilities', `${facilitySubPath}/Inspection Reports`];
+
+      return {
+        rootFolder,
+        entityFolderName,
+        productType: mainProductType || 'Drugs',
+        advertName: cleanAdvert,
+        advertCategory: isUnexpected ? 'Unexpected Advert' : 'Scheduled Advert',
+        facilityFolder: facilitySubPath,
+        subfolders
+      };
     }
     case 'Consumer Complaint':
       return { rootFolder: '/CONSUMER COMPLAINT', productType: (productTypes || []).join(', ') || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Investigation_Data'] };

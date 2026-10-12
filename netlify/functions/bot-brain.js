@@ -154,11 +154,19 @@ async function triggerWebhook(url, report) {
   const sanitized = (report.facilityName||'').trim().replace(/["*:<>?/\\|]/g, '').replace(/\.+$/, '').trim();
 
   const cleanRemarks = (report.actionTaken||'').replace(/[\r\n]+/g, ' ').replace(/"/g, "'");
+  const isAdvert = report.activityType === 'Advert';
+  const flowFacilityName = (isAdvert && folderConfig.entityFolderName) ? folderConfig.entityFolderName : sanitized;
+
   const payload = {
-    reportId, lookupKey: `${sanitized}_${report.activityType}`, facilityName: sanitized,
+    reportId, lookupKey: `${sanitized}_${report.activityType}`,
+    facilityName: flowFacilityName,
+    actualFacilityName: sanitized,
+    advertFacilityName: sanitized,
     area: report.area || '', inspectionDate: dateObj.toISOString().split('T')[0],
     inspectors: (report.inspectorNames||[]).join(', '), activity: report.activityType,
-    activityType: report.activityType, remarks: cleanRemarks, actionTaken: cleanRemarks,
+    activityType: report.activityType,
+    remarks: isAdvert ? `[Advert: ${folderConfig.advertName || report.advertName}] [Outlet: ${sanitized}] ${cleanRemarks}`.trim() : cleanRemarks,
+    actionTaken: cleanRemarks,
     year, month, productType: folderConfig.productType, rootFolder: folderConfig.rootFolder,
     subfolders: folderConfig.subfolders, deadline: deadline.toISOString(),
     gsdpSubActivity: report.gsdpSubActivity || null, riskCategory: report.riskCategory || null, companyEmail: report.companyEmail || null
