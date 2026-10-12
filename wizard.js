@@ -293,11 +293,11 @@ function bindStep_FacilityForm(root) {
         let conditionalHTML = '';
         const val = activitySelect.value;
 
-        // Hide the regular Facility Name & Address row when Consultative Meeting is chosen
-        // (the CM section has its own searchable facility dropdown)
+        // Hide the regular Facility Name & Address row when Consultative Meeting or Advert is chosen
+        // (both have their own specialized facility inputs)
         const facilityRow = container.querySelector('#regularFacilityRow');
         if (facilityRow) {
-            facilityRow.style.display = (val === 'Consultative Meeting') ? 'none' : '';
+            facilityRow.style.display = (val === 'Consultative Meeting' || val === 'Advert') ? 'none' : '';
         }
 
         const mopUpHTML = `
@@ -472,9 +472,24 @@ function bindStep_FacilityForm(root) {
                             </select>
                         </div>
                     </div>
+
+                    <!-- Facility / Location Displaying the Advert -->
+                    <div style="margin-top:16px; padding-top:14px; border-top:1px solid #bbf7d0;">
+                        <h5 style="margin:0 0 8px; color:#166534; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+                            🏢 Facility / Location Where Advert Was Sighted
+                        </h5>
+                        <div class="row">
+                            <div class="col">
+                                <label style="font-weight:600;">Facility / Outlet Name <span style="color:red">*</span></label>
+                                <input name="advertFacilityName" placeholder="Enter facility name (e.g. ABC Pharmacy, or Online / Broadcaster)" required>
+                            </div>
+                            <div class="col">
+                                <label style="font-weight:600;">Facility Address / Location</label>
+                                <input name="advertFacilityAddress" placeholder="Physical address, market stall, or online handle/URL">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                ${mopUpHTML}
-                ${holdHTML}
             `;
         } else if (['GLSI', 'RASFF', 'COLD CHAIN Monitoring'].includes(val)) {
             conditionalHTML = `${mopUpHTML}${holdHTML}`;
@@ -830,6 +845,16 @@ function bindStep_FacilityForm(root) {
             } else {
                 loadUnexpectedAdverts();
             }
+
+            // Rehydrate advert facility inputs if previously entered
+            const advFacNameEl = conditional.querySelector('input[name="advertFacilityName"]');
+            if (advFacNameEl && currentData.facilityName) {
+                advFacNameEl.value = currentData.facilityName;
+            }
+            const advFacAddrEl = conditional.querySelector('input[name="advertFacilityAddress"]');
+            if (advFacAddrEl && currentData.facilityAddress) {
+                advFacAddrEl.value = currentData.facilityAddress;
+            }
         }
 
         const categorySelect = conditional.querySelector('[name="consultativeMeetingCategory"]');
@@ -1068,6 +1093,9 @@ function saveCurrentFacilityData() {
     const isConsultative = consultativeFacilitySelect != null;
     const isCevi = gsdpFacilitySelect != null && container.querySelector('#ceviFacilitySection') && container.querySelector('#ceviFacilitySection').style.display !== 'none';
 
+    const isAdvert = container.querySelector('#advertCategorySelect') != null;
+    const advertFacNameInput = container.querySelector('input[name="advertFacilityName"]');
+
     if (isConsultative) {
         // Consultative Meeting mode
         const isAddNew = consultativeFacilitySelect.value === '__ADD_NEW__';
@@ -1093,6 +1121,12 @@ function saveCurrentFacilityData() {
             }
         } else if (!gsdpFacilitySelect.value) {
             alert('Please select a facility from the dropdown.');
+            return false;
+        }
+    } else if (isAdvert) {
+        if (!advertFacNameInput || !advertFacNameInput.value.trim()) {
+            alert('Please enter the Facility / Outlet where the advert was sighted.');
+            if (advertFacNameInput) advertFacNameInput.focus();
             return false;
         }
     } else if (facilityNameInput && !facilityNameInput.value.trim()) {
@@ -1195,6 +1229,11 @@ function saveCurrentFacilityData() {
             alert('Please specify the Advert / Product Name.');
             return false;
         }
+
+        const advertFacName = container.querySelector('input[name="advertFacilityName"]');
+        if (advertFacName) data.facilityName = advertFacName.value.trim();
+        const advertFacAddr = container.querySelector('input[name="advertFacilityAddress"]');
+        if (advertFacAddr) data.facilityAddress = advertFacAddr.value.trim();
 
         // Remember advert for subsequent facilities in this multi-facility wizard session
         wizardState.currentAdvert = {
