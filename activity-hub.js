@@ -584,9 +584,19 @@ export async function renderActivityHub(root, config) {
           const itemYear = getItemYear(item) || new Date().getFullYear();
           const itemMonth = item.inspectionDate ? new Date(item.inspectionDate).toLocaleString('default', { month: 'long' }).toUpperCase() : '';
           const advName = (item.advertName || 'GENERAL_ADVERT').replace(/[."*:<>?\/\\|]/g, '').trim();
+          const compName = (item.advertCompany || '').replace(/[."*:<>?\/\\|]/g, '').trim();
           const isUnexp = String(item.advertCategory || '').toLowerCase().includes('unexpect');
           const monthPath = itemMonth ? `/${itemMonth}` : '';
-          const entityPath = isUnexp ? `/Unexpected Adverts/${encodeURIComponent(advName)}` : `/${encodeURIComponent(advName)}`;
+          let entityPath = '';
+          if (compName) {
+            entityPath = isUnexp
+              ? `/Unexpected Adverts/${encodeURIComponent(compName)}/${encodeURIComponent(advName)}`
+              : `/${encodeURIComponent(compName)}/${encodeURIComponent(advName)}`;
+          } else {
+            entityPath = isUnexp
+              ? `/Unexpected Adverts/${encodeURIComponent(advName)}`
+              : `/${encodeURIComponent(advName)}`;
+          }
           folderUrl = `${cleanBase}/ADVERTS/${prodType}/${itemYear}${monthPath}${entityPath}`;
         } else {
           const facName = item.facilityName || item.outletVisited || item.complainant || item.name || "";

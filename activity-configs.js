@@ -577,9 +577,11 @@ export const ADVERTS_CONFIG = {
   teamsRootFolder: "/ADVERTS",
   statuses: ["Satisfactory", "Infractions Found", "Sanctions Recommended", "Mopped Up", "Active"],
   columns: [
-    { key: "advertName", label: "Advert / Product Name", format: "bold" },
+    { key: "advertCompany", label: "Company / Advertiser", format: "bold" },
+    { key: "advertName", label: "Advert / Product Name" },
+    { key: "advertMedium", label: "Medium", format: "badge" },
     { key: "advertCategory", label: "Campaign Category", format: "badge" },
-    { key: "facilityName", label: "Facility Displaying Advert", format: "facility" },
+    { key: "facilityName", label: "Sighting Outlet / Channel / Handle", format: "facility" },
     { key: "area", label: "LGA Area" },
     { key: "inspectionDate", label: "Date Sighted", format: "date" },
     { key: "mainProductType", label: "Product Category" },

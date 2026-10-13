@@ -290,6 +290,8 @@ function bindStep_FacilityForm(root) {
         removeChoicesInstance('gsdpFacilityName');
         removeChoicesInstance('linkedComplaintId');
         removeChoicesInstance('linkedAlertId');
+        removeChoicesInstance('advertCompanySelect');
+        removeChoicesInstance('companyProductSelect');
         removeChoicesInstance('existingUnexpectedAdvertSelect');
         removeChoicesInstance('scheduledAdvertSelect');
 
@@ -396,9 +398,10 @@ function bindStep_FacilityForm(root) {
                         <span>📢</span> Advert Monitoring & Campaign Details
                     </h4>
                     <p class="muted small" style="margin-bottom:12px; color:#14532d;">
-                        Choose whether this advert is an <strong>Unexpected Advert</strong> identified during field surveillance or a <strong>Scheduled Advert</strong> from a pre-registered campaign.
+                        Track product adverts structured by <strong>Company / Advertiser</strong> (parent) and <strong>Product Name</strong> (child), with tailored sighting details per medium.
                     </p>
-                    
+
+                    <!-- Category & Product Line -->
                     <div class="row">
                         <div class="col">
                             <label style="font-weight:700;">Advert Category <span style="color:red">*</span></label>
@@ -407,51 +410,8 @@ function bindStep_FacilityForm(root) {
                                 <option value="Scheduled Advert">Scheduled Advert (Pre-registered Campaign)</option>
                             </select>
                         </div>
-                    </div>
-
-                    <!-- Unexpected Advert Section -->
-                    <div id="unexpectedAdvertSection" style="margin-top:12px;">
-                        <div class="row">
-                            <div class="col">
-                                <label style="font-weight:600;">Select or Enter Unexpected Advert Name <span style="color:red">*</span></label>
-                                <select name="existingUnexpectedAdvertSelect" id="existingUnexpectedAdvertSelect">
-                                    <option value="__NEW__">+ Enter New Unexpected Advert Name</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row" id="newUnexpectedAdvertRow" style="margin-top:8px;">
-                            <div class="col">
-                                <label class="small" style="font-weight:600;">Advert / Product Name <span style="color:red">*</span></label>
-                                <input name="advertName" id="advertNameInput" placeholder="e.g. Dr Wonder Miracle Herbal Cure" required>
-                                <div id="advertNameStatus" style="font-size:12px; margin-top:6px; min-height:18px;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Scheduled Advert Section -->
-                    <div id="scheduledAdvertSection" style="display:none; margin-top:12px;">
-                        <div class="row">
-                            <div class="col">
-                                <label style="font-weight:600;">Select Scheduled Advert Campaign <span style="color:red">*</span></label>
-                                <select name="scheduledAdvertSelect" id="scheduledAdvertSelect">
-                                    <option value="">Loading scheduled campaigns...</option>
-                                </select>
-                                <div id="scheduledAdvertStatus" style="font-size:12px; margin-top:6px; min-height:18px;"></div>
-                            </div>
-                        </div>
-                        <div id="registerNewScheduledRow" style="display:none; background:#ffffff; padding:12px; border-radius:6px; border:1px dashed #3b82f6; margin-top:8px;">
-                            <label class="small" style="font-weight:700; color:#1d4ed8;">Register New Scheduled Advert Campaign</label>
-                            <div class="row" style="margin-top:6px;">
-                                <div class="col"><input name="newScheduledAdvertName" placeholder="Campaign Advert / Product Name..."></div>
-                                <div class="col"><input name="newScheduledAdvertiser" placeholder="Advertiser / Sponsor Name (Optional)..."></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product Line & Medium -->
-                    <div class="row" style="margin-top:12px;">
                         <div class="col">
-                            <label style="font-weight:600;">Main Product Line <span style="color:red">*</span></label>
+                            <label style="font-weight:700;">Main Product Line <span style="color:red">*</span></label>
                             <select name="mainProductType" required>
                                 <option value="Drugs">Drugs</option>
                                 <option value="Food">Food</option>
@@ -459,37 +419,203 @@ function bindStep_FacilityForm(root) {
                                 <option value="Medical Devices">Medical Devices</option>
                                 <option value="Herbals" selected>Herbals / Traditional</option>
                                 <option value="Vaccines & Biologics">Vaccines & Biologics</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label style="font-weight:600;">Advert Medium / Channel</label>
-                            <select name="advertMedium">
-                                <option value="In-Store / Point of Sale Display" selected>In-Store / Point of Sale Display</option>
-                                <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor</option>
-                                <option value="Television / Broadcast">Television / Broadcast</option>
-                                <option value="Radio">Radio</option>
-                                <option value="Social Media / Online">Social Media / Online</option>
-                                <option value="Print / Flyer / Handbill">Print / Flyer / Handbill</option>
+                                <option value="Chemicals">Chemicals</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Facility / Location Displaying the Advert -->
-                    <div style="margin-top:16px; padding-top:14px; border-top:1px solid #bbf7d0;">
-                        <h5 style="margin:0 0 8px; color:#166534; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
-                            🏢 Facility / Location Where Advert Was Sighted
+                    <!-- Company (Parent) & Product (Child) Section -->
+                    <div style="margin-top:14px; padding:14px; background:#ffffff; border:1px solid #bbf7d0; border-radius:6px;">
+                        <h5 style="margin:0 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+                            🏢 1. Company / Advertiser (Parent Folder)
                         </h5>
                         <div class="row">
                             <div class="col">
-                                <label style="font-weight:600;">Facility / Outlet Name <span style="color:red">*</span></label>
-                                <input name="advertFacilityName" placeholder="Enter facility name (e.g. ABC Pharmacy, or Online / Broadcaster)" required>
+                                <label style="font-weight:600;">Select or Enter Company / Advertiser <span style="color:red">*</span></label>
+                                <select name="advertCompanySelect" id="advertCompanySelect">
+                                    <option value="__NEW_COMPANY__">➕ Enter New Company / Advertiser</option>
+                                </select>
                             </div>
+                        </div>
+                        <div class="row" id="newCompanyRow" style="margin-top:8px;">
                             <div class="col">
-                                <label style="font-weight:600;">Facility Address / Location</label>
-                                <input name="advertFacilityAddress" placeholder="Physical address, market stall, or online handle/URL">
+                                <label class="small" style="font-weight:600; color:#166534;">New Company Name <span style="color:red">*</span></label>
+                                <input name="newAdvertCompanyName" id="newAdvertCompanyNameInput" placeholder="e.g. Unilever Nigeria Plc, Emzor Pharma, Dr Wonder Enterprises">
                             </div>
+                        </div>
+
+                        <h5 style="margin:16px 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; border-top:1px dashed #dcfce7; padding-top:12px;">
+                            📦 2. Product Name (Child Folder)
+                        </h5>
+                        <div class="row" id="existingCompanyProductRow" style="display:none;">
+                            <div class="col">
+                                <label style="font-weight:600;">Select Existing Product for this Company <span style="color:red">*</span></label>
+                                <select name="companyProductSelect" id="companyProductSelect">
+                                    <option value="__NEW_PRODUCT__">➕ Enter New Product for this Company</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" id="newProductRow" style="margin-top:8px;">
+                            <div class="col">
+                                <label class="small" style="font-weight:600; color:#166534;">Product / Advert Name <span style="color:red">*</span></label>
+                                <input name="advertName" id="advertNameInput" placeholder="e.g. Joy Beauty Bar with Honey, Dr Wonder Miracle Herbal Cure" required>
+                            </div>
+                        </div>
+                        <div id="advertFolderHierarchyStatus" style="font-size:12px; margin-top:10px; min-height:18px;"></div>
+                    </div>
+
+                    <!-- Medium & Sighting Section -->
+                    <div style="margin-top:14px; padding:14px; background:#ffffff; border:1px solid #bbf7d0; border-radius:6px;">
+                        <h5 style="margin:0 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+                            📡 3. Sighting Medium & Sighting Folder
+                        </h5>
+                        <div class="row">
+                            <div class="col">
+                                <label style="font-weight:600;">Advert Medium / Channel <span style="color:red">*</span></label>
+                                <select name="advertMedium" id="advertMediumSelect" required>
+                                    <option value="Social Media / Online" selected>Social Media / Online (Instagram, TikTok, FB, Web)</option>
+                                    <option value="Television / Broadcast">Television / Broadcast (TV Channel)</option>
+                                    <option value="Radio">Radio (Radio Station)</option>
+                                    <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor (Location / Landmark)</option>
+                                    <option value="Print / Flyer / Handbill">Print / Flyer / Handbill (Publication / Handbill)</option>
+                                    <option value="In-Store / Point of Sale Display">In-Store / Point of Sale Display (Physical Store / Pharmacy)</option>
+                                    <option value="Other">Other Media / Mobile PA</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Sighting Fields based on Medium -->
+                        <div id="mediumSightingContainer" style="margin-top:12px;">
+                            <!-- Social Media Fields -->
+                            <div id="socialMediaFields" style="display:block;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Platform <span style="color:red">*</span></label>
+                                        <select name="advertSocialPlatform" id="advertSocialPlatform">
+                                            <option value="Instagram" selected>Instagram</option>
+                                            <option value="TikTok">TikTok</option>
+                                            <option value="Facebook">Facebook</option>
+                                            <option value="X (Twitter)">X (Twitter)</option>
+                                            <option value="YouTube">YouTube</option>
+                                            <option value="Website / Blog">Website / Online Store</option>
+                                            <option value="LinkedIn">LinkedIn</option>
+                                            <option value="Other Online">Other Online Platform</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Handle / Account / Profile URL <span style="color:red">*</span></label>
+                                        <input name="advertSocialHandle" id="advertSocialHandle" placeholder="e.g. @drwonder_cure or instagram.com/joybeauty">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TV Fields -->
+                            <div id="tvFields" style="display:none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">TV Channel / Station <span style="color:red">*</span></label>
+                                        <select name="advertTvChannelSelect" id="advertTvChannelSelect">
+                                            <option value="Channels TV" selected>Channels TV</option>
+                                            <option value="TVC News">TVC News / TVC Entertainment</option>
+                                            <option value="NTA">NTA (National / Lagos)</option>
+                                            <option value="Arise News">Arise News</option>
+                                            <option value="Silverbird TV">Silverbird TV (STV)</option>
+                                            <option value="AIT">AIT (Africa Independent Television)</option>
+                                            <option value="Soundcity TV">Soundcity TV</option>
+                                            <option value="Galaxy TV">Galaxy TV</option>
+                                            <option value="LTV">LTV (Lagos Television)</option>
+                                            <option value="__CUSTOM_TV__">➕ Other TV Channel...</option>
+                                        </select>
+                                        <input name="advertCustomTvChannel" id="advertCustomTvChannel" placeholder="Specify TV Channel Name" style="display:none; margin-top:6px;">
+                                    </div>
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Program / Air Time Window (Optional)</label>
+                                        <input name="advertTvProgram" id="advertTvProgram" placeholder="e.g. 8:00 PM Prime News, Morning Show">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Radio Fields -->
+                            <div id="radioFields" style="display:none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Radio Station <span style="color:red">*</span></label>
+                                        <select name="advertRadioStationSelect" id="advertRadioStationSelect">
+                                            <option value="Wazobia 95.1 FM" selected>Wazobia 95.1 FM</option>
+                                            <option value="Cool 96.9 FM">Cool 96.9 FM</option>
+                                            <option value="Nigeria Info 99.3 FM">Nigeria Info 99.3 FM</option>
+                                            <option value="Raypower 100.5 FM">Raypower 100.5 FM</option>
+                                            <option value="The Beat 99.9 FM">The Beat 99.9 FM</option>
+                                            <option value="Brila 88.9 FM">Brila 88.9 FM</option>
+                                            <option value="Bond 92.9 FM">Bond 92.9 FM</option>
+                                            <option value="Radio Lagos 107.5 FM">Radio Lagos 107.5 FM</option>
+                                            <option value="Classic 97.3 FM">Classic 97.3 FM</option>
+                                            <option value="Smooth 98.1 FM">Smooth 98.1 FM</option>
+                                            <option value="Soundcity 98.5 FM">Soundcity 98.5 FM</option>
+                                            <option value="__CUSTOM_RADIO__">➕ Other Radio Station...</option>
+                                        </select>
+                                        <input name="advertCustomRadioStation" id="advertCustomRadioStation" placeholder="Specify Radio Station Name / Frequency" style="display:none; margin-top:6px;">
+                                    </div>
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Program / Time Slot (Optional)</label>
+                                        <input name="advertRadioProgram" id="advertRadioProgram" placeholder="e.g. Morning Rush, Evening Drive">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Billboard / Outdoor Fields -->
+                            <div id="billboardFields" style="display:none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Billboard / Outdoor Location & Landmark <span style="color:red">*</span></label>
+                                        <input name="advertBillboardLocation" id="advertBillboardLocation" placeholder="e.g. Third Mainland Bridge Inbound Gantry, Oshodi Terminal Billboard">
+                                    </div>
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Signage Agency / Board ID (Optional)</label>
+                                        <input name="advertBillboardAgency" id="advertBillboardAgency" placeholder="e.g. Nimbus Media, Board #LAG-042">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Print / Flyer Fields -->
+                            <div id="printFields" style="display:none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Publication Name or Flyer Distribution Point <span style="color:red">*</span></label>
+                                        <input name="advertPrintPublication" id="advertPrintPublication" placeholder="e.g. The Punch Newspaper, Handbills distributed at Oshodi Market">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- In-Store Fields -->
+                            <div id="inStoreFields" style="display:none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Physical Store / Outlet Name <span style="color:red">*</span></label>
+                                        <input name="advertFacilityName" id="advertFacilityName" placeholder="e.g. Medplus Pharmacy, Ebeano Supermarket">
+                                    </div>
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Outlet Address / Location</label>
+                                        <input name="advertFacilityAddress" id="advertFacilityAddress" placeholder="e.g. 43 Shasha Rd, Akowonjo, Lagos">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Other Media Fields -->
+                            <div id="otherMediaFields" style="display:none;">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="small" style="font-weight:600;">Medium Description / Sighting Details <span style="color:red">*</span></label>
+                                        <input name="advertOtherMediumDetails" id="advertOtherMediumDetails" placeholder="e.g. Mobile Public Address Van at Agege Market, WhatsApp Broadcast">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sighting Folder Indicator -->
+                        <div id="sightingFolderIndicator" style="margin-top:12px; font-size:12px; color:#0369a1; font-weight:600; padding:8px 12px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px; display:flex; align-items:center; gap:6px;">
+                            <span>📁</span> Sighting folder created in SharePoint: <span id="sightingFolderDisplay" style="color:#0c4a6e; font-family:monospace; font-weight:700;">Instagram_@handle</span>
                         </div>
                     </div>
                 </div>
@@ -706,263 +832,378 @@ function bindStep_FacilityForm(root) {
             }
         }
 
-        // ─── Advert Monitoring Event Bindings ─────────────────────────────
+        // ─── Advert Monitoring Event Bindings (Company -> Product -> Medium & Sighting) ───
         const advertCategorySelect = conditional.querySelector('#advertCategorySelect');
-        const unexpectedSection = conditional.querySelector('#unexpectedAdvertSection');
-        const scheduledSection = conditional.querySelector('#scheduledAdvertSection');
-        const existingUnexpectedSelect = conditional.querySelector('#existingUnexpectedAdvertSelect');
-        const newUnexpectedRow = conditional.querySelector('#newUnexpectedAdvertRow');
+        const advertCompanySelect = conditional.querySelector('#advertCompanySelect');
+        const newCompanyRow = conditional.querySelector('#newCompanyRow');
+        const newAdvertCompanyNameInput = conditional.querySelector('#newAdvertCompanyNameInput');
+        const existingCompanyProductRow = conditional.querySelector('#existingCompanyProductRow');
+        const companyProductSelect = conditional.querySelector('#companyProductSelect');
+        const newProductRow = conditional.querySelector('#newProductRow');
         const advertNameInput = conditional.querySelector('#advertNameInput');
-        const advertNameStatus = conditional.querySelector('#advertNameStatus');
-        const scheduledAdvertSelect = conditional.querySelector('#scheduledAdvertSelect');
-        const scheduledAdvertStatus = conditional.querySelector('#scheduledAdvertStatus');
-        const registerNewScheduledRow = conditional.querySelector('#registerNewScheduledRow');
-        const newScheduledNameInput = conditional.querySelector('input[name="newScheduledAdvertName"]');
+        const advertFolderHierarchyStatus = conditional.querySelector('#advertFolderHierarchyStatus');
 
-        if (advertCategorySelect) {
+        const advertMediumSelect = conditional.querySelector('#advertMediumSelect');
+        const socialMediaFields = conditional.querySelector('#socialMediaFields');
+        const tvFields = conditional.querySelector('#tvFields');
+        const radioFields = conditional.querySelector('#radioFields');
+        const billboardFields = conditional.querySelector('#billboardFields');
+        const printFields = conditional.querySelector('#printFields');
+        const inStoreFields = conditional.querySelector('#inStoreFields');
+        const otherMediaFields = conditional.querySelector('#otherMediaFields');
+
+        const advertSocialPlatform = conditional.querySelector('#advertSocialPlatform');
+        const advertSocialHandle = conditional.querySelector('#advertSocialHandle');
+        const advertTvChannelSelect = conditional.querySelector('#advertTvChannelSelect');
+        const advertCustomTvChannel = conditional.querySelector('#advertCustomTvChannel');
+        const advertTvProgram = conditional.querySelector('#advertTvProgram');
+        const advertRadioStationSelect = conditional.querySelector('#advertRadioStationSelect');
+        const advertCustomRadioStation = conditional.querySelector('#advertCustomRadioStation');
+        const advertRadioProgram = conditional.querySelector('#advertRadioProgram');
+        const advertBillboardLocation = conditional.querySelector('#advertBillboardLocation');
+        const advertBillboardAgency = conditional.querySelector('#advertBillboardAgency');
+        const advertPrintPublication = conditional.querySelector('#advertPrintPublication');
+        const advertFacilityName = conditional.querySelector('#advertFacilityName');
+        const advertFacilityAddress = conditional.querySelector('#advertFacilityAddress');
+        const advertOtherMediumDetails = conditional.querySelector('#advertOtherMediumDetails');
+        const sightingFolderDisplay = conditional.querySelector('#sightingFolderDisplay');
+
+        if (advertCategorySelect && advertCompanySelect) {
             container.dataset.advertFolderExists = "false";
             container.dataset.isSubsequentRound = "false";
             container.dataset.activityRound = "";
 
-            advertCategorySelect.addEventListener('change', () => {
-                const isScheduled = advertCategorySelect.value === 'Scheduled Advert';
-                if (unexpectedSection) unexpectedSection.style.display = isScheduled ? 'none' : 'block';
-                if (scheduledSection) scheduledSection.style.display = isScheduled ? 'block' : 'none';
-                if (isScheduled) {
-                    loadScheduledAdverts();
-                } else {
-                    loadUnexpectedAdverts();
-                }
-            });
+            let advertCompaniesMap = new Map(); // companyName -> Set of productNames
+            let advertProductRoundsMap = new Map(); // `${companyName}|||${productName}` -> roundCount
 
-            async function loadUnexpectedAdverts() {
+            async function loadAdvertDatabase() {
+                advertCompaniesMap = new Map();
+                advertProductRoundsMap = new Map();
+
                 try {
-                    const existingNames = new Set();
-                    const snap = await getDocs(query(collection(db, 'adverts'), where('category', '==', 'Unexpected')));
-                    snap.forEach(d => {
-                        const name = (d.data().advertName || '').trim();
-                        if (name) existingNames.add(name);
-                    });
-
+                    // 1. Fetch from facilityReports where activityType == 'Advert'
                     const repSnap = await getDocs(query(collection(db, 'facilityReports'), where('activityType', '==', 'Advert')));
                     repSnap.forEach(d => {
                         const data = d.data();
-                        if ((data.advertCategory || '').includes('Unexpect') && data.advertName) {
-                            existingNames.add(data.advertName.trim());
+                        const comp = (data.advertCompany || data.companyName || data.advertiser || '').trim();
+                        const prod = (data.advertName || '').trim();
+                        if (comp) {
+                            if (!advertCompaniesMap.has(comp)) advertCompaniesMap.set(comp, new Set());
+                            if (prod) advertCompaniesMap.get(comp).add(prod);
+                        }
+                        if (comp && prod) {
+                            const key = `${comp.toLowerCase()}|||${prod.toLowerCase()}`;
+                            advertProductRoundsMap.set(key, (advertProductRoundsMap.get(key) || 0) + 1);
                         }
                     });
+                } catch (err) {
+                    console.warn("Could not load advert reports from facilityReports:", err);
+                }
 
-                    const sortedNames = [...existingNames].sort((a, b) => a.localeCompare(b));
+                // 2. Also check adverts collection if accessible
+                try {
+                    const advSnap = await getDocs(collection(db, 'adverts'));
+                    advSnap.forEach(d => {
+                        const data = d.data();
+                        const comp = (data.advertCompany || data.advertiser || '').trim();
+                        const prod = (data.advertName || '').trim();
+                        if (comp) {
+                            if (!advertCompaniesMap.has(comp)) advertCompaniesMap.set(comp, new Set());
+                            if (prod) advertCompaniesMap.get(comp).add(prod);
+                        }
+                    });
+                } catch (err) {
+                    // Suppressed if adverts collection is not permitted
+                }
 
-                    removeChoicesInstance('existingUnexpectedAdvertSelect');
-                    existingUnexpectedSelect.innerHTML = '<option value="__NEW__">➕ Enter New Unexpected Advert Name</option>' +
-                        sortedNames.map(n => `<option value="${escapeHTML(n)}">${escapeHTML(n)} (Existing in DB)</option>`).join('');
+                // Populate Company Dropdown
+                removeChoicesInstance('advertCompanySelect');
+                const sortedCompanies = Array.from(advertCompaniesMap.keys()).sort((a, b) => a.localeCompare(b));
+                advertCompanySelect.innerHTML = '<option value="__NEW_COMPANY__">➕ Enter New Company / Advertiser</option>' +
+                    sortedCompanies.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)} (${advertCompaniesMap.get(c).size} products in DB)</option>`).join('');
 
-                    const choices = new Choices(existingUnexpectedSelect, {
+                const compChoices = new Choices(advertCompanySelect, {
+                    removeItemButton: false,
+                    placeholder: true,
+                    placeholderValue: 'Search or select company / advertiser...',
+                    searchEnabled: true,
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+                addChoicesInstance('advertCompanySelect', compChoices);
+
+                // Rehydrate if previously selected
+                let initialCompany = null;
+                let initialProduct = null;
+                if (wizardState.currentAdvert && wizardState.currentAdvert.advertCompany) {
+                    initialCompany = wizardState.currentAdvert.advertCompany;
+                    initialProduct = wizardState.currentAdvert.advertName;
+                } else if (currentData.advertCompany) {
+                    initialCompany = currentData.advertCompany;
+                    initialProduct = currentData.advertName;
+                }
+
+                if (initialCompany && sortedCompanies.includes(initialCompany)) {
+                    compChoices.setChoiceByValue(initialCompany);
+                    handleCompanyChange(initialCompany, initialProduct);
+                } else if (initialCompany) {
+                    compChoices.setChoiceByValue('__NEW_COMPANY__');
+                    if (newAdvertCompanyNameInput) newAdvertCompanyNameInput.value = initialCompany;
+                    if (advertNameInput && initialProduct) advertNameInput.value = initialProduct;
+                    handleCompanyChange('__NEW_COMPANY__', initialProduct);
+                } else {
+                    compChoices.setChoiceByValue('__NEW_COMPANY__');
+                    handleCompanyChange('__NEW_COMPANY__', null);
+                }
+            }
+
+            function handleCompanyChange(selectedComp, targetProduct = null) {
+                if (!selectedComp || selectedComp === '__NEW_COMPANY__') {
+                    if (newCompanyRow) newCompanyRow.style.display = 'block';
+                    if (existingCompanyProductRow) existingCompanyProductRow.style.display = 'none';
+                    if (newProductRow) newProductRow.style.display = 'block';
+                    if (advertNameInput) {
+                        advertNameInput.readOnly = false;
+                        if (!targetProduct) advertNameInput.value = '';
+                    }
+                    updateFolderHierarchyStatus('__NEW_COMPANY__', targetProduct || '', false);
+                } else {
+                    if (newCompanyRow) newCompanyRow.style.display = 'none';
+                    if (existingCompanyProductRow) existingCompanyProductRow.style.display = 'block';
+
+                    const products = Array.from(advertCompaniesMap.get(selectedComp) || []).sort();
+                    removeChoicesInstance('companyProductSelect');
+                    companyProductSelect.innerHTML = `<option value="__NEW_PRODUCT__">➕ Enter New Product for ${escapeHTML(selectedComp)}</option>` +
+                        products.map(p => `<option value="${escapeHTML(p)}">${escapeHTML(p)}</option>`).join('');
+
+                    const prodChoices = new Choices(companyProductSelect, {
                         removeItemButton: false,
                         placeholder: true,
-                        placeholderValue: 'Search unexpected adverts...',
+                        placeholderValue: `Search products for ${selectedComp}...`,
                         searchEnabled: true,
                         itemSelectText: '',
                         shouldSort: false
                     });
-                    addChoicesInstance('existingUnexpectedAdvertSelect', choices);
+                    addChoicesInstance('companyProductSelect', prodChoices);
 
-                    let targetName = null;
-                    if (wizardState.currentAdvert && wizardState.currentAdvert.advertCategory === 'Unexpected Advert') {
-                        targetName = wizardState.currentAdvert.advertName;
-                    } else if (currentData.advertName) {
-                        targetName = currentData.advertName;
-                    }
-
-                    if (targetName) {
-                        if (sortedNames.includes(targetName)) {
-                            choices.setChoiceByValue(targetName);
-                            triggerUnexpectedSelectChange();
-                        } else {
-                            choices.setChoiceByValue('__NEW__');
-                            newUnexpectedRow.style.display = 'block';
-                            advertNameInput.value = targetName;
-                            advertNameInput.readOnly = false;
-                            checkAdvertNameExists(targetName, sortedNames);
-                        }
+                    if (targetProduct && products.includes(targetProduct)) {
+                        prodChoices.setChoiceByValue(targetProduct);
+                        handleProductChange(selectedComp, targetProduct);
+                    } else if (targetProduct) {
+                        prodChoices.setChoiceByValue('__NEW_PRODUCT__');
+                        handleProductChange(selectedComp, '__NEW_PRODUCT__', targetProduct);
+                    } else if (products.length > 0) {
+                        prodChoices.setChoiceByValue(products[0]);
+                        handleProductChange(selectedComp, products[0]);
                     } else {
-                        choices.setChoiceByValue('__NEW__');
-                        triggerUnexpectedSelectChange();
+                        prodChoices.setChoiceByValue('__NEW_PRODUCT__');
+                        handleProductChange(selectedComp, '__NEW_PRODUCT__');
                     }
-                } catch (e) {
-                    console.warn("Could not load unexpected adverts:", e);
                 }
             }
 
-            function triggerUnexpectedSelectChange() {
-                const choices = getChoicesInstance('existingUnexpectedAdvertSelect');
-                const val = choices ? choices.instance.getValue(true) : existingUnexpectedSelect.value;
-                if (val === '__NEW__' || !val) {
-                    newUnexpectedRow.style.display = 'block';
-                    advertNameInput.value = '';
-                    advertNameInput.readOnly = false;
-                    container.dataset.advertFolderExists = "false";
-                    advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will scaffold: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/[Name]/</span>';
+            function handleProductChange(selectedComp, selectedProd, customProdName = null) {
+                if (selectedProd === '__NEW_PRODUCT__' || !selectedProd) {
+                    if (newProductRow) newProductRow.style.display = 'block';
+                    if (advertNameInput) {
+                        advertNameInput.readOnly = false;
+                        advertNameInput.value = customProdName || '';
+                        advertNameInput.placeholder = `New Product Name for ${selectedComp}`;
+                    }
+                    updateFolderHierarchyStatus(selectedComp, customProdName || '', false);
                 } else {
-                    newUnexpectedRow.style.display = 'block';
-                    advertNameInput.value = val;
-                    advertNameInput.readOnly = true;
-                    container.dataset.advertFolderExists = "true";
-                    advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will link facility under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(val) + '/Facilities/</span>';
-                }
-            }
-
-            if (existingUnexpectedSelect) {
-                existingUnexpectedSelect.addEventListener('change', triggerUnexpectedSelectChange);
-                existingUnexpectedSelect.addEventListener('addItem', triggerUnexpectedSelectChange);
-            }
-
-            let advertCheckTimer = null;
-            function checkAdvertNameExists(name, knownList = []) {
-                clearTimeout(advertCheckTimer);
-                if (!name || name.trim().length < 2) {
-                    advertNameStatus.innerHTML = '';
-                    container.dataset.advertFolderExists = "false";
-                    return;
-                }
-                advertCheckTimer = setTimeout(async () => {
-                    const trimmed = name.trim().toLowerCase();
-                    const inKnown = knownList.some(k => k.toLowerCase() === trimmed);
-                    if (inKnown) {
-                        container.dataset.advertFolderExists = "true";
-                        advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will link facility under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(name.trim()) + '/Facilities/</span>';
-                        return;
+                    if (newProductRow) newProductRow.style.display = 'block';
+                    if (advertNameInput) {
+                        advertNameInput.value = selectedProd;
+                        advertNameInput.readOnly = true;
                     }
+                    updateFolderHierarchyStatus(selectedComp, selectedProd, true);
+                }
+            }
 
-                    try {
-                        const q = query(collection(db, 'adverts'), where('advertName', '==', name.trim()));
-                        const s = await getDocs(q);
-                        if (!s.empty) {
-                            container.dataset.advertFolderExists = "true";
-                            advertNameStatus.innerHTML = '<span style="color:#0284c7;font-weight:600;">ℹ️ Advert exists in database — will link facility under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(name.trim()) + '/Facilities/</span>';
-                        } else {
-                            container.dataset.advertFolderExists = "false";
-                            advertNameStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">✨ New Advert — will scaffold: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/' + escapeHTML(name.trim()) + '/</span>';
-                        }
-                    } catch (err) {
+            function updateFolderHierarchyStatus(comp, prod, existsInDb) {
+                const isScheduled = advertCategorySelect.value === 'Scheduled Advert';
+                const effectiveComp = (comp && comp !== '__NEW_COMPANY__')
+                    ? comp
+                    : (newAdvertCompanyNameInput?.value.trim() || '[Company Name]');
+                const effectiveProd = (prod && prod !== '__NEW_PRODUCT__')
+                    ? prod
+                    : (advertNameInput?.value.trim() || '[Product Name]');
+
+                if (isScheduled) {
+                    const key = `${effectiveComp.toLowerCase()}|||${effectiveProd.toLowerCase()}`;
+                    const roundCount = advertProductRoundsMap.get(key) || 0;
+                    if (roundCount === 0 || !existsInDb) {
                         container.dataset.advertFolderExists = "false";
+                        container.dataset.isSubsequentRound = "false";
+                        container.dataset.activityRound = "";
+                        advertFolderHierarchyStatus.innerHTML = `<span style="color:#16a34a;font-weight:600;">★ First Scheduled Monitoring Activity — will scaffold: ADVERTS/[Product Line]/2026/[Month]/${escapeHTML(effectiveComp)}/${escapeHTML(effectiveProd)}/</span>`;
+                    } else {
+                        const nextRound = roundCount + 1;
+                        const dateStr = container.querySelector('input[name="inspectionDate"]')?.value || new Date().toISOString().split('T')[0];
+                        const roundName = `Round_${nextRound}_${dateStr}`;
+                        container.dataset.advertFolderExists = "true";
+                        container.dataset.isSubsequentRound = "true";
+                        container.dataset.activityRound = roundName;
+                        advertFolderHierarchyStatus.innerHTML = `<span style="color:#2563eb;font-weight:600;">🔄 Subsequent Monitoring Activity Round #${nextRound} — will scaffold: ADVERTS/[Product Line]/2026/[Month]/${escapeHTML(effectiveComp)}/${escapeHTML(effectiveProd)}/${roundName}/</span>`;
                     }
-                }, 300);
+                } else {
+                    // Unexpected Advert
+                    if (existsInDb) {
+                        container.dataset.advertFolderExists = "true";
+                        container.dataset.isSubsequentRound = "false";
+                        container.dataset.activityRound = "";
+                        advertFolderHierarchyStatus.innerHTML = `<span style="color:#0284c7;font-weight:600;">ℹ️ Product exists in database — will link sighting under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/${escapeHTML(effectiveComp)}/${escapeHTML(effectiveProd)}/Facilities/</span>`;
+                    } else {
+                        container.dataset.advertFolderExists = "false";
+                        container.dataset.isSubsequentRound = "false";
+                        container.dataset.activityRound = "";
+                        advertFolderHierarchyStatus.innerHTML = `<span style="color:#16a34a;font-weight:600;">✨ New Advert — will scaffold: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/${escapeHTML(effectiveComp)}/${escapeHTML(effectiveProd)}/</span>`;
+                    }
+                }
             }
 
-            if (advertNameInput) {
-                advertNameInput.addEventListener('input', (e) => {
-                    checkAdvertNameExists(e.target.value);
+            function onCompanySelectionEvent() {
+                const compChoices = getChoicesInstance('advertCompanySelect');
+                const val = compChoices ? compChoices.instance.getValue(true) : advertCompanySelect.value;
+                handleCompanyChange(val);
+            }
+
+            advertCompanySelect.addEventListener('change', onCompanySelectionEvent);
+            advertCompanySelect.addEventListener('addItem', onCompanySelectionEvent);
+
+            function onProductSelectionEvent() {
+                const compChoices = getChoicesInstance('advertCompanySelect');
+                const compVal = compChoices ? compChoices.instance.getValue(true) : '';
+                const prodChoices = getChoicesInstance('companyProductSelect');
+                const prodVal = prodChoices ? prodChoices.instance.getValue(true) : companyProductSelect.value;
+                handleProductChange(compVal, prodVal);
+            }
+
+            if (companyProductSelect) {
+                companyProductSelect.addEventListener('change', onProductSelectionEvent);
+                companyProductSelect.addEventListener('addItem', onProductSelectionEvent);
+            }
+
+            if (newAdvertCompanyNameInput) {
+                newAdvertCompanyNameInput.addEventListener('input', () => {
+                    updateFolderHierarchyStatus('__NEW_COMPANY__', advertNameInput?.value.trim() || '', false);
                 });
             }
 
-            let scheduledCountsMap = {};
-
-            async function loadScheduledAdverts() {
-                try {
-                    const snap = await getDocs(query(collection(db, 'adverts'), where('category', '==', 'Scheduled')));
-                    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    items.sort((a, b) => (a.advertName || '').localeCompare(b.advertName || ''));
-
-                    scheduledCountsMap = {};
-                    items.forEach(it => {
-                        if (it.advertName) {
-                            scheduledCountsMap[it.advertName] = it.monitoringCount || 0;
-                        }
-                    });
-
-                    removeChoicesInstance('scheduledAdvertSelect');
-                    scheduledAdvertSelect.innerHTML = '<option value="">-- Select Scheduled Campaign --</option>' +
-                        items.map(it => `<option value="${escapeHTML(it.advertName)}">${escapeHTML(it.advertName)} (${it.monitoringCount || 0} rounds completed)</option>`).join('') +
-                        '<option value="__REGISTER__">➕ Register New Scheduled Advert Campaign</option>';
-
-                    const choices = new Choices(scheduledAdvertSelect, {
-                        removeItemButton: false,
-                        placeholder: true,
-                        placeholderValue: 'Search scheduled campaigns...',
-                        searchEnabled: true,
-                        itemSelectText: '',
-                        shouldSort: false
-                    });
-                    addChoicesInstance('scheduledAdvertSelect', choices);
-
-                    let targetName = null;
-                    if (wizardState.currentAdvert && wizardState.currentAdvert.advertCategory === 'Scheduled Advert') {
-                        targetName = wizardState.currentAdvert.advertName;
-                    } else if (currentData.advertName) {
-                        targetName = currentData.advertName;
-                    }
-
-                    if (targetName) {
-                        if (items.some(it => it.advertName === targetName)) {
-                            choices.setChoiceByValue(targetName);
-                            triggerScheduledSelectChange();
-                        } else if (currentData.isNewScheduled) {
-                            choices.setChoiceByValue('__REGISTER__');
-                            triggerScheduledSelectChange();
-                            if (newScheduledNameInput) newScheduledNameInput.value = targetName;
-                            const sponsorEl = conditional.querySelector('input[name="newScheduledAdvertiser"]');
-                            if (sponsorEl && currentData.newScheduledAdvertiser) sponsorEl.value = currentData.newScheduledAdvertiser;
-                        }
-                    }
-                } catch (e) {
-                    console.warn("Could not load scheduled adverts:", e);
-                }
+            if (advertNameInput) {
+                advertNameInput.addEventListener('input', () => {
+                    const compChoices = getChoicesInstance('advertCompanySelect');
+                    const compVal = compChoices ? compChoices.instance.getValue(true) : '';
+                    updateFolderHierarchyStatus(compVal, advertNameInput.value.trim(), false);
+                });
             }
 
-            function triggerScheduledSelectChange() {
-                const choices = getChoicesInstance('scheduledAdvertSelect');
-                const val = choices ? choices.instance.getValue(true) : scheduledAdvertSelect.value;
-                if (!val) {
-                    if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
-                    scheduledAdvertStatus.innerHTML = '';
-                    return;
-                }
-                if (val === '__REGISTER__') {
-                    if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'block';
-                    container.dataset.isSubsequentRound = "false";
-                    container.dataset.activityRound = "";
-                    scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity for new campaign — will scaffold: ADVERTS/[Product Line]/2026/[Month]/[Campaign Name]/</span>';
+            advertCategorySelect.addEventListener('change', () => {
+                const compChoices = getChoicesInstance('advertCompanySelect');
+                const compVal = compChoices ? compChoices.instance.getValue(true) : '';
+                const prodChoices = getChoicesInstance('companyProductSelect');
+                const prodVal = prodChoices ? prodChoices.instance.getValue(true) : '';
+                const isExistingProd = prodVal && prodVal !== '__NEW_PRODUCT__';
+                updateFolderHierarchyStatus(compVal, isExistingProd ? prodVal : (advertNameInput?.value.trim() || ''), isExistingProd);
+            });
+
+            // ─── Medium & Sighting Field Toggles ─────────────────────────────
+            function updateMediumFields() {
+                const med = advertMediumSelect.value;
+                if (socialMediaFields) socialMediaFields.style.display = (med === 'Social Media / Online') ? 'block' : 'none';
+                if (tvFields) tvFields.style.display = (med === 'Television / Broadcast') ? 'block' : 'none';
+                if (radioFields) radioFields.style.display = (med === 'Radio') ? 'block' : 'none';
+                if (billboardFields) billboardFields.style.display = (med === 'Billboard / Poster / Outdoor') ? 'block' : 'none';
+                if (printFields) printFields.style.display = (med === 'Print / Flyer / Handbill') ? 'block' : 'none';
+                if (inStoreFields) inStoreFields.style.display = (med === 'In-Store / Point of Sale Display') ? 'block' : 'none';
+                if (otherMediaFields) otherMediaFields.style.display = (med === 'Other') ? 'block' : 'none';
+                updateSightingPreview();
+            }
+
+            function updateSightingPreview() {
+                if (!sightingFolderDisplay) return;
+                const med = advertMediumSelect.value;
+                let folderName = '';
+                if (med === 'Social Media / Online') {
+                    const p = advertSocialPlatform ? advertSocialPlatform.value : 'Social';
+                    const h = (advertSocialHandle?.value || '').trim() || '@handle';
+                    folderName = `${p}_${h.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_')}`;
+                } else if (med === 'Television / Broadcast') {
+                    const ch = (advertTvChannelSelect?.value === '__CUSTOM_TV__')
+                        ? (advertCustomTvChannel?.value.trim() || 'Custom_TV')
+                        : (advertTvChannelSelect?.value || 'Channels_TV');
+                    folderName = ch.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_');
+                } else if (med === 'Radio') {
+                    const st = (advertRadioStationSelect?.value === '__CUSTOM_RADIO__')
+                        ? (advertCustomRadioStation?.value.trim() || 'Custom_Radio')
+                        : (advertRadioStationSelect?.value || 'Radio_Station');
+                    folderName = st.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_');
+                } else if (med === 'Billboard / Poster / Outdoor') {
+                    const loc = (advertBillboardLocation?.value || '').trim() || 'Billboard_Location';
+                    folderName = loc.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 45);
+                } else if (med === 'Print / Flyer / Handbill') {
+                    const pub = (advertPrintPublication?.value || '').trim() || 'Publication_Name';
+                    folderName = pub.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 45);
+                } else if (med === 'In-Store / Point of Sale Display') {
+                    const store = (advertFacilityName?.value || '').trim() || 'Store_Outlet';
+                    folderName = store.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 45);
                 } else {
-                    if (registerNewScheduledRow) registerNewScheduledRow.style.display = 'none';
-                    const count = parseInt(scheduledCountsMap[val] || 0, 10);
-                    if (count === 0) {
-                        container.dataset.isSubsequentRound = "false";
-                        container.dataset.activityRound = "";
-                        scheduledAdvertStatus.innerHTML = '<span style="color:#16a34a;font-weight:600;">★ First Monitoring Activity — will initialize campaign folder: ADVERTS/[Product Line]/2026/[Month]/' + escapeHTML(val) + '/</span>';
-                    } else {
-                        const nextRound = count + 1;
-                        const dateStr = container.querySelector('input[name="inspectionDate"]')?.value || new Date().toISOString().split('T')[0];
-                        const roundName = `Round_${nextRound}_${dateStr}`;
-                        container.dataset.isSubsequentRound = "true";
-                        container.dataset.activityRound = roundName;
-                        scheduledAdvertStatus.innerHTML = '<span style="color:#2563eb;font-weight:600;">🔄 Subsequent Monitoring Activity Round #' + nextRound + ' — will scaffold: ADVERTS/[Product Line]/2026/[Month]/' + escapeHTML(val) + '/' + roundName + '/</span>';
-                    }
+                    const det = (advertOtherMediumDetails?.value || '').trim() || 'Other_Channel';
+                    folderName = det.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').substring(0, 45);
                 }
+                sightingFolderDisplay.textContent = folderName;
             }
 
-            if (scheduledAdvertSelect) {
-                scheduledAdvertSelect.addEventListener('change', triggerScheduledSelectChange);
-                scheduledAdvertSelect.addEventListener('addItem', triggerScheduledSelectChange);
+            advertMediumSelect.addEventListener('change', updateMediumFields);
+
+            if (advertTvChannelSelect) {
+                advertTvChannelSelect.addEventListener('change', () => {
+                    if (advertCustomTvChannel) {
+                        advertCustomTvChannel.style.display = (advertTvChannelSelect.value === '__CUSTOM_TV__') ? 'block' : 'none';
+                    }
+                    updateSightingPreview();
+                });
             }
 
-            if (currentData.advertCategory === 'Scheduled Advert') {
-                advertCategorySelect.value = 'Scheduled Advert';
-                advertCategorySelect.dispatchEvent(new Event('change'));
-            } else {
-                loadUnexpectedAdverts();
+            if (advertRadioStationSelect) {
+                advertRadioStationSelect.addEventListener('change', () => {
+                    if (advertCustomRadioStation) {
+                        advertCustomRadioStation.style.display = (advertRadioStationSelect.value === '__CUSTOM_RADIO__') ? 'block' : 'none';
+                    }
+                    updateSightingPreview();
+                });
             }
 
-            // Rehydrate advert facility inputs if previously entered
-            const advFacNameEl = conditional.querySelector('input[name="advertFacilityName"]');
-            if (advFacNameEl && currentData.facilityName) {
-                advFacNameEl.value = currentData.facilityName;
+            // Bind input listeners for live sighting folder indicator
+            [
+                advertSocialPlatform, advertSocialHandle, advertCustomTvChannel,
+                advertCustomRadioStation, advertBillboardLocation, advertPrintPublication,
+                advertFacilityName, advertOtherMediumDetails
+            ].forEach(inputEl => {
+                if (inputEl) {
+                    inputEl.addEventListener('input', updateSightingPreview);
+                    inputEl.addEventListener('change', updateSightingPreview);
+                }
+            });
+
+            // Initialize medium fields & advert database
+            if (currentData.advertMedium) {
+                advertMediumSelect.value = currentData.advertMedium;
             }
-            const advFacAddrEl = conditional.querySelector('input[name="advertFacilityAddress"]');
-            if (advFacAddrEl && currentData.facilityAddress) {
-                advFacAddrEl.value = currentData.facilityAddress;
-            }
+            updateMediumFields();
+            loadAdvertDatabase();
+
+            // Rehydrate saved sighting fields if available
+            if (currentData.advertPlatform && advertSocialPlatform) advertSocialPlatform.value = currentData.advertPlatform;
+            if (currentData.advertHandle && advertSocialHandle) advertSocialHandle.value = currentData.advertHandle;
+            if (currentData.advertChannel && advertTvChannelSelect) advertTvChannelSelect.value = currentData.advertChannel;
+            if (currentData.advertRadioStation && advertRadioStationSelect) advertRadioStationSelect.value = currentData.advertRadioStation;
+            if (currentData.advertBillboardLocation && advertBillboardLocation) advertBillboardLocation.value = currentData.advertBillboardLocation;
+            if (currentData.advertPrintPublication && advertPrintPublication) advertPrintPublication.value = currentData.advertPrintPublication;
+            if (currentData.facilityName && advertFacilityName) advertFacilityName.value = currentData.facilityName;
+            if (currentData.facilityAddress && advertFacilityAddress) advertFacilityAddress.value = currentData.facilityAddress;
+            updateSightingPreview();
         }
 
         const categorySelect = conditional.querySelector('[name="consultativeMeetingCategory"]');
@@ -1232,11 +1473,7 @@ function saveCurrentFacilityData() {
             return false;
         }
     } else if (isAdvert) {
-        if (!advertFacNameInput || !advertFacNameInput.value.trim()) {
-            alert('Please enter the Facility / Outlet where the advert was sighted.');
-            if (advertFacNameInput) advertFacNameInput.focus();
-            return false;
-        }
+        // Validation handled in advert-specific section below
     } else if (facilityNameInput && !facilityNameInput.value.trim()) {
         alert('Facility Name is required.');
         facilityNameInput.focus();
@@ -1322,47 +1559,151 @@ function saveCurrentFacilityData() {
         const catSelect = container.querySelector('#advertCategorySelect');
         data.advertCategory = catSelect ? catSelect.value : 'Unexpected Advert';
 
-        if (data.advertCategory === 'Scheduled Advert') {
-            const schedSelect = container.querySelector('#scheduledAdvertSelect');
-            const schedChoices = getChoicesInstance('scheduledAdvertSelect');
-            const schedVal = schedChoices ? schedChoices.instance.getValue(true) : (schedSelect ? schedSelect.value : '');
-            if (schedVal === '__REGISTER__') {
-                const newSchedInput = container.querySelector('input[name="newScheduledAdvertName"]');
-                data.advertName = newSchedInput ? newSchedInput.value.trim() : '';
-                const sponsorInput = container.querySelector('input[name="newScheduledAdvertiser"]');
-                data.newScheduledAdvertiser = sponsorInput ? sponsorInput.value.trim() : '';
-                data.isNewScheduled = true;
-                data.isSubsequentRound = false;
-                data.advertActivityRound = '';
-            } else if (schedVal) {
-                data.advertName = schedVal;
-                data.isSubsequentRound = container.dataset.isSubsequentRound === "true";
-                data.advertActivityRound = container.dataset.activityRound || '';
-            }
+        // 1. Company / Advertiser
+        const compSelect = container.querySelector('#advertCompanySelect');
+        const compChoices = getChoicesInstance('advertCompanySelect');
+        const compVal = compChoices ? compChoices.instance.getValue(true) : (compSelect ? compSelect.value : '');
+        if (compVal === '__NEW_COMPANY__' || !compVal) {
+            const newCompInput = container.querySelector('#newAdvertCompanyNameInput');
+            data.advertCompany = newCompInput ? newCompInput.value.trim() : '';
         } else {
-            // Unexpected Advert
-            const nameInput = container.querySelector('#advertNameInput');
-            data.advertName = nameInput ? nameInput.value.trim() : '';
-            data.advertFolderExists = container.dataset.advertFolderExists === "true";
-            data.isSubsequentRound = false;
+            data.advertCompany = compVal.trim();
         }
 
-        const medSelect = container.querySelector('select[name="advertMedium"]');
-        data.advertMedium = medSelect ? medSelect.value : 'In-Store / Point of Sale Display';
+        // 2. Product Name
+        const prodSelect = container.querySelector('#companyProductSelect');
+        const prodChoices = getChoicesInstance('companyProductSelect');
+        const prodVal = prodChoices ? prodChoices.instance.getValue(true) : (prodSelect ? prodSelect.value : '');
+        if (compVal === '__NEW_COMPANY__' || prodVal === '__NEW_PRODUCT__' || !prodVal) {
+            const nameInput = container.querySelector('#advertNameInput');
+            data.advertName = nameInput ? nameInput.value.trim() : '';
+        } else {
+            data.advertName = prodVal.trim();
+        }
 
-        if (!data.advertName) {
-            alert('Please specify the Advert / Product Name.');
+        if (!data.advertCompany) {
+            alert('Please specify the Company / Advertiser Name.');
+            const newCompInput = container.querySelector('#newAdvertCompanyNameInput');
+            if (newCompInput) newCompInput.focus();
             return false;
         }
 
-        const advertFacName = container.querySelector('input[name="advertFacilityName"]');
-        if (advertFacName) data.facilityName = advertFacName.value.trim();
-        const advertFacAddr = container.querySelector('input[name="advertFacilityAddress"]');
-        if (advertFacAddr) data.facilityAddress = advertFacAddr.value.trim();
+        if (!data.advertName) {
+            alert('Please specify the Advert / Product Name.');
+            const nameInput = container.querySelector('#advertNameInput');
+            if (nameInput) nameInput.focus();
+            return false;
+        }
+
+        // 3. Medium & Sighting
+        const medSelect = container.querySelector('#advertMediumSelect');
+        data.advertMedium = medSelect ? medSelect.value : 'Social Media / Online';
+
+        let sightingFolder = '';
+        let sightingLabel = '';
+        let sightingAddress = '';
+
+        if (data.advertMedium === 'Social Media / Online') {
+            const platform = container.querySelector('#advertSocialPlatform')?.value || 'Social Media';
+            const handle = container.querySelector('#advertSocialHandle')?.value.trim() || '';
+            if (!handle) {
+                alert('Please enter the Social Media Handle or Profile URL.');
+                const hEl = container.querySelector('#advertSocialHandle');
+                if (hEl) hEl.focus();
+                return false;
+            }
+            data.advertPlatform = platform;
+            data.advertHandle = handle;
+            sightingFolder = `${platform}_${handle.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim()}`;
+            sightingLabel = `${platform}: ${handle}`;
+            sightingAddress = handle;
+        } else if (data.advertMedium === 'Television / Broadcast') {
+            let channel = container.querySelector('#advertTvChannelSelect')?.value || 'TV';
+            if (channel === '__CUSTOM_TV__') {
+                channel = container.querySelector('#advertCustomTvChannel')?.value.trim() || '';
+                if (!channel) {
+                    alert('Please specify the TV Channel Name.');
+                    container.querySelector('#advertCustomTvChannel')?.focus();
+                    return false;
+                }
+            }
+            const program = container.querySelector('#advertTvProgram')?.value.trim() || '';
+            data.advertChannel = channel;
+            data.advertTvProgram = program;
+            sightingFolder = channel.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim();
+            sightingLabel = channel;
+            sightingAddress = program ? `Program: ${program}` : channel;
+        } else if (data.advertMedium === 'Radio') {
+            let station = container.querySelector('#advertRadioStationSelect')?.value || 'Radio';
+            if (station === '__CUSTOM_RADIO__') {
+                station = container.querySelector('#advertCustomRadioStation')?.value.trim() || '';
+                if (!station) {
+                    alert('Please specify the Radio Station Name / Frequency.');
+                    container.querySelector('#advertCustomRadioStation')?.focus();
+                    return false;
+                }
+            }
+            const program = container.querySelector('#advertRadioProgram')?.value.trim() || '';
+            data.advertRadioStation = station;
+            data.advertRadioProgram = program;
+            sightingFolder = station.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim();
+            sightingLabel = station;
+            sightingAddress = program ? `Program: ${program}` : station;
+        } else if (data.advertMedium === 'Billboard / Poster / Outdoor') {
+            const loc = container.querySelector('#advertBillboardLocation')?.value.trim() || '';
+            if (!loc) {
+                alert('Please enter the Billboard / Outdoor Location & Landmark.');
+                container.querySelector('#advertBillboardLocation')?.focus();
+                return false;
+            }
+            const agency = container.querySelector('#advertBillboardAgency')?.value.trim() || '';
+            data.advertBillboardLocation = loc;
+            data.advertBillboardAgency = agency;
+            sightingFolder = loc.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim().substring(0, 45);
+            sightingLabel = `Billboard: ${loc}`;
+            sightingAddress = agency ? `${loc} (${agency})` : loc;
+        } else if (data.advertMedium === 'Print / Flyer / Handbill') {
+            const pub = container.querySelector('#advertPrintPublication')?.value.trim() || '';
+            if (!pub) {
+                alert('Please enter the Publication Name or Flyer Distribution Point.');
+                container.querySelector('#advertPrintPublication')?.focus();
+                return false;
+            }
+            data.advertPrintPublication = pub;
+            sightingFolder = pub.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim().substring(0, 45);
+            sightingLabel = `Print: ${pub}`;
+            sightingAddress = pub;
+        } else if (data.advertMedium === 'In-Store / Point of Sale Display') {
+            const storeName = container.querySelector('#advertFacilityName')?.value.trim() || '';
+            if (!storeName) {
+                alert('Please enter the Physical Store / Outlet Name where the advert was displayed.');
+                container.querySelector('#advertFacilityName')?.focus();
+                return false;
+            }
+            const storeAddr = container.querySelector('#advertFacilityAddress')?.value.trim() || '';
+            data.facilityName = storeName;
+            data.facilityAddress = storeAddr;
+            sightingFolder = storeName.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim().substring(0, 45);
+            sightingLabel = storeName;
+            sightingAddress = storeAddr;
+        } else {
+            const details = container.querySelector('#advertOtherMediumDetails')?.value.trim() || 'Other Medium';
+            sightingFolder = details.replace(/[@\/\\:*?"<>|]/g, '').replace(/\s+/g, '_').trim().substring(0, 45);
+            sightingLabel = details;
+            sightingAddress = details;
+        }
+
+        data.sightingFolder = sightingFolder;
+        data.facilityName = sightingLabel;
+        data.facilityAddress = sightingAddress;
+        data.advertFolderExists = container.dataset.advertFolderExists === "true";
+        data.isSubsequentRound = container.dataset.isSubsequentRound === "true";
+        data.advertActivityRound = container.dataset.activityRound || '';
 
         // Remember advert for subsequent facilities in this multi-facility wizard session
         wizardState.currentAdvert = {
             advertCategory: data.advertCategory,
+            advertCompany: data.advertCompany,
             advertName: data.advertName,
             advertMedium: data.advertMedium,
             advertFolderExists: true,
@@ -1439,8 +1780,19 @@ async function handleSubmitWizard(root) {
                 linkedAlertId: facilityData.linkedAlertId || null,
                 alertAction: facilityData.alertAction || '',
                 advertCategory: facilityData.advertCategory || '',
+                advertCompany: facilityData.advertCompany || '',
                 advertName: facilityData.advertName || '',
                 advertMedium: facilityData.advertMedium || '',
+                advertPlatform: facilityData.advertPlatform || '',
+                advertHandle: facilityData.advertHandle || '',
+                advertChannel: facilityData.advertChannel || '',
+                advertTvProgram: facilityData.advertTvProgram || '',
+                advertRadioStation: facilityData.advertRadioStation || '',
+                advertRadioProgram: facilityData.advertRadioProgram || '',
+                advertBillboardLocation: facilityData.advertBillboardLocation || '',
+                advertBillboardAgency: facilityData.advertBillboardAgency || '',
+                advertPrintPublication: facilityData.advertPrintPublication || '',
+                sightingFolder: facilityData.sightingFolder || '',
                 advertFolderExists: facilityData.advertFolderExists ?? false,
                 isSubsequentRound: facilityData.isSubsequentRound ?? false,
                 advertActivityRound: facilityData.advertActivityRound || '',
@@ -1464,7 +1816,8 @@ async function handleSubmitWizard(root) {
                         await addDoc(collection(db, 'adverts'), {
                             advertName: cleanAdvName,
                             category: (reportData.advertCategory || '').includes('Schedul') ? 'Scheduled' : 'Unexpected',
-                            advertiser: facilityData.newScheduledAdvertiser || '',
+                            advertiser: reportData.advertCompany || facilityData.newScheduledAdvertiser || '',
+                            advertCompany: reportData.advertCompany || '',
                             mainProductType: reportData.mainProductType || '',
                             medium: reportData.advertMedium || '',
                             year: advYear,
@@ -1479,7 +1832,8 @@ async function handleSubmitWizard(root) {
                         const currentCount = parseInt(advDoc.data().monitoringCount || 1, 10);
                         await setDoc(advDoc.ref, {
                             lastMonitoredDate: formattedDateStr,
-                            monitoringCount: currentCount + 1
+                            monitoringCount: currentCount + 1,
+                            advertCompany: reportData.advertCompany || advDoc.data().advertCompany || ''
                         }, { merge: true });
                     }
                 } catch (advErr) {
@@ -1630,15 +1984,26 @@ async function triggerTeamsWebhook(report) {
             subfolders: folderConfig.subfolders,
             deadline: deadline.toISOString(),
             remarks: isAdvert
-                ? `[Advert: ${folderConfig.advertName || report.advertName}] [Outlet: ${sanitizedFacilityName}] ${cleanRemarks}`.trim()
+                ? `[Company: ${report.advertCompany || folderConfig.advertCompany || ''}] [Product: ${folderConfig.advertName || report.advertName}] [Medium: ${report.advertMedium || ''}] ${cleanRemarks}`.trim()
                 : cleanRemarks,
             actionTaken: cleanRemarks,
             gsdpSubActivity: report.gsdpSubActivity || null,
             riskCategory: report.riskCategory || null,
             companyEmail: report.companyEmail || null,
+            advertCompany: report.advertCompany || folderConfig.advertCompany || null,
             advertName: report.advertName || folderConfig.advertName || null,
             advertCategory: report.advertCategory || folderConfig.advertCategory || null,
             advertMedium: report.advertMedium || null,
+            advertPlatform: report.advertPlatform || null,
+            advertHandle: report.advertHandle || null,
+            advertChannel: report.advertChannel || null,
+            advertTvProgram: report.advertTvProgram || null,
+            advertRadioStation: report.advertRadioStation || null,
+            advertRadioProgram: report.advertRadioProgram || null,
+            advertBillboardLocation: report.advertBillboardLocation || null,
+            advertBillboardAgency: report.advertBillboardAgency || null,
+            advertPrintPublication: report.advertPrintPublication || null,
+            sightingFolder: report.sightingFolder || null,
             advertFolderExists: folderConfig.advertFolderExists ?? null,
             isSubsequentRound: folderConfig.isSubsequentRound ?? null,
             activityRound: folderConfig.activityRound || null,
@@ -1899,12 +2264,17 @@ function getFolderConfig(report) {
         case 'Advert': {
             const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
             const prodType = getAdvertProductTypeFolder(report.mainProductType);
+            const cleanCompany = (report.advertCompany || 'GENERAL_COMPANY')
+                .trim()
+                .replace(/[."*:<>?\/\\|]/g, '')
+                .replace(/\.+$/, '')
+                .trim();
             const cleanAdvert = (report.advertName || 'GENERAL_ADVERT')
                 .trim()
                 .replace(/[."*:<>?\/\\|]/g, '')
                 .replace(/\.+$/, '')
                 .trim();
-            const cleanFacility = (report.facilityName || 'FACILITY')
+            const cleanSighting = (report.sightingFolder || report.facilityName || 'OUTLET')
                 .trim()
                 .replace(/[."*:<>?\/\\|]/g, '')
                 .replace(/\.+$/, '')
@@ -1912,7 +2282,7 @@ function getFolderConfig(report) {
             const dateStr = (report.inspectionDate ? new Date(report.inspectionDate) : new Date())
                 .toISOString().split('T')[0];
 
-            const facilitySubPath = `Facilities/${dateStr}_${cleanFacility}`;
+            const facilitySubPath = `Facilities/${dateStr}_${cleanSighting}`;
             const isUnexpected = String(report.advertCategory || '').toLowerCase().includes('unexpect');
             const advertFolderExists = !!report.advertFolderExists;
             const isSubsequentRound = !!report.isSubsequentRound;
@@ -1922,15 +2292,15 @@ function getFolderConfig(report) {
             const rootFolder = `/ADVERTS/${prodType}`;
 
             // Entity folder name for Power Automate Step 6 (facilityName parameter in payload)
-            // Option A:
-            //   - Unexpected: 'Unexpected Adverts/[Advert Name]'
-            //   - Scheduled: '[Advert Name]' (or '[Advert Name]/[RoundName]' for subsequent rounds)
-            let entityFolderName = cleanAdvert;
+            // Hierarchy: Company parent folder, followed by Product child folder
+            //   - Unexpected: 'Unexpected Adverts/[Company]/[Product]'
+            //   - Scheduled: '[Company]/[Product]' (or '[Company]/[Product]/[RoundName]' for subsequent rounds)
+            let entityFolderName = `${cleanCompany}/${cleanAdvert}`;
             if (isUnexpected) {
-                entityFolderName = `Unexpected Adverts/${cleanAdvert}`;
+                entityFolderName = `Unexpected Adverts/${cleanCompany}/${cleanAdvert}`;
             } else if (isSubsequentRound) {
-                const roundName = report.advertActivityRound || `Activity_${dateStr}_${cleanFacility}`;
-                entityFolderName = `${cleanAdvert}/${roundName}`;
+                const roundName = report.advertActivityRound || `Activity_${dateStr}_${cleanSighting}`;
+                entityFolderName = `${cleanCompany}/${cleanAdvert}/${roundName}`;
             }
 
             // Subfolders created inside the entity folder by Power Automate Step 7 (Apply to each)
@@ -1955,6 +2325,7 @@ function getFolderConfig(report) {
                 rootFolder: rootFolder,
                 entityFolderName: entityFolderName,
                 productType: report.mainProductType || 'Drugs',
+                advertCompany: cleanCompany,
                 advertName: cleanAdvert,
                 advertCategory: isUnexpected ? 'Unexpected Advert' : 'Scheduled Advert',
                 advertFolderExists: advertFolderExists,
