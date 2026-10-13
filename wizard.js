@@ -479,7 +479,7 @@ function bindStep_FacilityForm(root) {
                                     <option value="Radio">Radio (Radio Station)</option>
                                     <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor (Location / Landmark)</option>
                                     <option value="Print / Flyer / Handbill">Print / Flyer / Handbill (Publication / Handbill)</option>
-                                    <option value="In-Store / Point of Sale Display">In-Store / Point of Sale Display (Physical Store / Pharmacy)</option>
+                                    <option value="In-Store / Point of Sale Display">Physical Facility / In-Store Display (Pharmacy, Supermarket, PPMV, Shop)</option>
                                     <option value="Other">Other Media / Mobile PA</option>
                                 </select>
                             </div>
