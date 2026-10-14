@@ -852,7 +852,7 @@ export async function renderActivityHub(root, config) {
       }, 50);
     });
     root.querySelector("#hubHeaderTemplateBtn")?.addEventListener("click", () => {
-      downloadAdvertCsvTemplate();
+      downloadAdvertXlsxTemplate();
     });
   }
 
@@ -1165,6 +1165,15 @@ export function downloadAdvertCsvTemplate() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export function downloadAdvertXlsxTemplate() {
+  const a = document.createElement("a");
+  a.href = "./advert_campaign_template.xlsx";
+  a.download = "nafdac_advert_campaign_template.xlsx";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function parseCSV(text) {
@@ -1549,17 +1558,22 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
       <div id="advCsvSection" style="display:none;">
         <!-- Template Download Banner -->
         <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:16px 20px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-          <div style="max-width:560px;">
+          <div style="max-width:520px;">
             <h4 style="margin:0 0 4px; color:#15803d; font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px;">
-              <span>📄</span> Download Advert Bulk Upload Template
+              <span>📊</span> Download Advert Bulk Upload Template (.XLSX / .CSV)
             </h4>
             <p class="muted small" style="margin:0; font-size:13px; color:#166534;">
-              Use the official CSV template with pre-configured headers and example rows across TV, Radio, Outdoor, Social Media, and In-Store sightings.
+              Open in Microsoft Excel, fill in campaigns using the dropdowns, then save as <strong>CSV UTF-8 (.csv)</strong> to upload.
             </p>
           </div>
-          <button type="button" id="advDownloadTemplateBtn" class="success" style="padding:10px 20px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; box-shadow:0 2px 4px rgba(22,101,52,0.15);">
-            <span>📥</span> Download CSV Template
-          </button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" id="advDownloadXlsxBtn" class="success" style="padding:10px 18px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:6px; box-shadow:0 2px 4px rgba(22,101,52,0.15);">
+              <span>📗</span> Download Excel (.xlsx)
+            </button>
+            <button type="button" id="advDownloadTemplateBtn" class="secondary" style="padding:10px 14px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; background:#fff;">
+              <span>📄</span> Download CSV (.csv)
+            </button>
+          </div>
         </div>
 
         <!-- Collapsible Specification Guide -->
@@ -1735,7 +1749,8 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
   });
 
   container.querySelector("#advLaunchWizardBtn").onclick = () => navigate("report");
-  container.querySelector("#advDownloadTemplateBtn").onclick = downloadAdvertCsvTemplate;
+  container.querySelector("#advDownloadXlsxBtn")?.addEventListener("click", downloadAdvertXlsxTemplate);
+  container.querySelector("#advDownloadTemplateBtn")?.addEventListener("click", downloadAdvertCsvTemplate);
 
   // Single Form Dropdown & Field Dynamics
   const compSelect = container.querySelector("#advFormCompanySelect");
