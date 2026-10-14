@@ -75,7 +75,10 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
       const cleanAdvert = (advertDetails.advertName || 'GENERAL_ADVERT').trim().replace(/[."*:<>?\/\\|]/g, '').trim();
       const cleanFacility = (advertDetails.facilityName || 'FACILITY').trim().replace(/[."*:<>?\/\\|]/g, '').trim();
       const dateStr = advertDetails.dateStr || new Date().toISOString().split('T')[0];
-      const facilitySubPath = `Facilities/${dateStr}_${cleanFacility}`;
+      const med = String(advertDetails.advertMedium || '').toLowerCase();
+      const isFacility = med.includes('facility') || med.includes('in-store') || med.includes('point of sale');
+      const mediumOrFacilityFolder = isFacility ? 'Facilities' : 'Medium';
+      const facilitySubPath = `${mediumOrFacilityFolder}/${dateStr}_${cleanFacility}`;
       const prodType = getAdvertProductTypeFolder(mainProductType);
 
       // rootFolder MUST be /ADVERTS/${prodType} so Power Automate appends /${year}/${month}
@@ -91,8 +94,8 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
       }
 
       const subfolders = advertDetails.advertFolderExists
-        ? ['Facilities', `${facilitySubPath}/Inspection_Report`]
-        : ['Advert Data and Evidence', 'Consultative Meetings', 'Facilities', `${facilitySubPath}/Inspection_Report`];
+        ? [mediumOrFacilityFolder, `${facilitySubPath}/Inspection_Report`]
+        : ['Advert Data and Evidence', 'Consultative Meetings', mediumOrFacilityFolder, `${facilitySubPath}/Inspection_Report`];
 
       return {
         rootFolder,

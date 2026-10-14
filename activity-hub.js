@@ -1508,8 +1508,8 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
             </div>
 
             <!-- Live folder indicator -->
-            <div style="margin-top:10px; font-size:12px; color:#0369a1; font-weight:600; padding:6px 10px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px;">
-              📁 SharePoint Sighting Folder: <span id="advFormSightingFolderDisplay" style="font-family:monospace; font-weight:700;">Channels_TV</span>
+            <div style="margin-top:10px; font-size:12px; color:#0369a1; font-weight:600; padding:8px 12px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px;">
+              📁 SharePoint Sighting Folder: <span id="advFormSightingFolderDisplay" style="font-family:monospace; font-weight:700;">Medium/2026-10-14_Channels_TV/Inspection_Report</span>
             </div>
           </div>
 
@@ -1827,6 +1827,7 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
   customRadioInput.addEventListener("input", updateSightingFolderPreview);
 
   // Inputs for live preview
+  container.querySelector("#advFormDate")?.addEventListener("input", updateSightingFolderPreview);
   container.querySelector("#advFormBillboardLoc")?.addEventListener("input", updateSightingFolderPreview);
   container.querySelector("#advFormSocialHandle")?.addEventListener("input", updateSightingFolderPreview);
   container.querySelector("#advFormPrintPub")?.addEventListener("input", updateSightingFolderPreview);
@@ -1852,14 +1853,21 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
       target = container.querySelector("#advFormOtherMedium").value.trim();
     }
     return (target || "General_Sighting")
-      .replace(/[."*:<>?\/\|]/g, "_")
+      .replace(/[."*:<>?\/\\|]/g, "_")
       .replace(/\s+/g, "_")
       .replace(/_+/g, "_")
       .replace(/^_+|_+$/g, "") || "General_Sighting";
   }
 
   function updateSightingFolderPreview() {
-    if (folderDisplay) folderDisplay.textContent = getActiveSightingFolder();
+    const med = mediumSelect ? mediumSelect.value : "";
+    const isFacility = med === "In-Store / Point of Sale Display";
+    const categoryFolder = isFacility ? "Facilities" : "Medium";
+    const sighting = getActiveSightingFolder();
+    const dateVal = container.querySelector("#advFormDate")?.value || new Date().toISOString().split("T")[0];
+    if (folderDisplay) {
+      folderDisplay.textContent = `${categoryFolder}/${dateVal}_${sighting}/Inspection_Report`;
+    }
   }
 
   updateMediumView();

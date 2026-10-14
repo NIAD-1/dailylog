@@ -1053,7 +1053,7 @@ function bindStep_FacilityForm(root) {
                         container.dataset.advertFolderExists = "true";
                         container.dataset.isSubsequentRound = "false";
                         container.dataset.activityRound = "";
-                        advertFolderHierarchyStatus.innerHTML = `<span style="color:#0284c7;font-weight:600;">ℹ️ Product exists in database — will link sighting under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/${escapeHTML(effectiveComp)}/${escapeHTML(effectiveProd)}/Facilities/</span>`;
+                        advertFolderHierarchyStatus.innerHTML = `<span style="color:#0284c7;font-weight:600;">ℹ️ Product exists in database — will link sighting under: ADVERTS/[Product Line]/2026/[Month]/Unexpected Adverts/${escapeHTML(effectiveComp)}/${escapeHTML(effectiveProd)}/[Medium or Facilities]/</span>`;
                     } else {
                         container.dataset.advertFolderExists = "false";
                         container.dataset.isSubsequentRound = "false";
@@ -2299,7 +2299,10 @@ function getFolderConfig(report) {
                 .trim();
             const dateStr = `${advDateObj.getFullYear()}-${String(advDateObj.getMonth() + 1).padStart(2, '0')}-${String(advDateObj.getDate()).padStart(2, '0')}`;
 
-            const facilitySubPath = `Facilities/${dateStr}_${cleanSighting}`;
+            const med = String(report.advertMedium || '').toLowerCase();
+            const isFacility = med.includes('facility') || med.includes('in-store') || med.includes('point of sale');
+            const mediumOrFacilityFolder = isFacility ? 'Facilities' : 'Medium';
+            const sightingSubPath = `${mediumOrFacilityFolder}/${dateStr}_${cleanSighting}`;
             const isUnexpected = String(report.advertCategory || '').toLowerCase().includes('unexpect');
             const advertFolderExists = !!report.advertFolderExists;
             const isSubsequentRound = !!report.isSubsequentRound;
@@ -2323,18 +2326,18 @@ function getFolderConfig(report) {
             // Subfolders created inside the entity folder by Power Automate Step 7 (Apply to each)
             let subfolders = [];
             if (advertFolderExists) {
-                // If advert folder already exists, only create the new facility folder structure
+                // If advert folder already exists, only create the new medium/facility folder structure
                 subfolders = [
-                    'Facilities',
-                    `${facilitySubPath}/Inspection_Report`
+                    mediumOrFacilityFolder,
+                    `${sightingSubPath}/Inspection_Report`
                 ];
             } else {
-                // First inspection for this advert -> scaffold root advert structure + this facility folder
+                // First inspection for this advert -> scaffold root advert structure + this medium/facility folder
                 subfolders = [
                     'Advert Data and Evidence',
                     'Consultative Meetings',
-                    'Facilities',
-                    `${facilitySubPath}/Inspection_Report`
+                    mediumOrFacilityFolder,
+                    `${sightingSubPath}/Inspection_Report`
                 ];
             }
 
@@ -2347,7 +2350,7 @@ function getFolderConfig(report) {
                 advertCategory: isUnexpected ? 'Unexpected Advert' : 'Scheduled Advert',
                 advertFolderExists: advertFolderExists,
                 isSubsequentRound: isSubsequentRound,
-                facilityFolder: facilitySubPath,
+                facilityFolder: sightingSubPath,
                 subfolders: subfolders
             };
         }
