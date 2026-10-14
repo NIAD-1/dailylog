@@ -1917,7 +1917,22 @@ async function handleSubmitWizard(root) {
     }
 }
 
-async function triggerTeamsWebhook(report) {
+export function getReportDateObj(rawDate) {
+    if (!rawDate) return new Date();
+    if (rawDate instanceof Date && !isNaN(rawDate.getTime())) return rawDate;
+    if (typeof rawDate.toDate === 'function') return rawDate.toDate();
+    if (typeof rawDate === 'object' && (rawDate.seconds || rawDate._seconds)) {
+        return new Date((rawDate.seconds || rawDate._seconds) * 1000);
+    }
+    if (typeof rawDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(rawDate.trim())) {
+        const [y, m, d] = rawDate.trim().split('-').map(Number);
+        return new Date(y, m - 1, d);
+    }
+    const parsed = new Date(rawDate);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
+export async function triggerTeamsWebhook(report) {
     try {
         // Fetch URL from settings
         const settingsRef = doc(db, 'settings', 'kpiTargets');
@@ -1928,8 +1943,8 @@ async function triggerTeamsWebhook(report) {
         const webhookUrl = settingsSnap.data().webhookUrl;
         if (!webhookUrl) return;
 
-        // Extract Year and Month from inspectionDate
-        const dateObj = new Date(report.inspectionDate);
+        // Extract Year and Month from inspectionDate safely
+        const dateObj = getReportDateObj(report.inspectionDate);
         const year = dateObj.getFullYear().toString();
         const month = dateObj.toLocaleString('default', { month: 'long' }).toUpperCase();
 
@@ -2174,7 +2189,8 @@ function getFolderConfig(report) {
 
     switch (activity) {
         case 'Routine Surveillance': {
-            const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+            const dateObj = getReportDateObj(report.inspectionDate);
+            const year = dateObj.getFullYear().toString();
             if (isSpecial) {
                 return {
                     rootFolder: `/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS/${year}`,
@@ -2211,7 +2227,8 @@ function getFolderConfig(report) {
             };
 
         case 'GSDP': {
-            const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+            const dateObj = getReportDateObj(report.inspectionDate);
+            const year = dateObj.getFullYear().toString();
             const root = `/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES/${year}`;
             const risk = String(report.riskCategory || '').toLowerCase();
             const isLowRisk = risk.includes('low') || risk.includes('category a') || risk === 'a';
@@ -2262,7 +2279,8 @@ function getFolderConfig(report) {
             };
 
         case 'Advert': {
-            const year = (report.inspectionDate ? new Date(report.inspectionDate).getFullYear() : new Date().getFullYear()).toString();
+            const advDateObj = getReportDateObj(report.inspectionDate);
+            const year = advDateObj.getFullYear().toString();
             const prodType = getAdvertProductTypeFolder(report.mainProductType);
             const cleanCompany = (report.advertCompany || 'GENERAL_COMPANY')
                 .trim()
@@ -2279,8 +2297,7 @@ function getFolderConfig(report) {
                 .replace(/[."*:<>?\/\\|]/g, '')
                 .replace(/\.+$/, '')
                 .trim();
-            const dateStr = (report.inspectionDate ? new Date(report.inspectionDate) : new Date())
-                .toISOString().split('T')[0];
+            const dateStr = `${advDateObj.getFullYear()}-${String(advDateObj.getMonth() + 1).padStart(2, '0')}-${String(advDateObj.getDate()).padStart(2, '0')}`;
 
             const facilitySubPath = `Facilities/${dateStr}_${cleanSighting}`;
             const isUnexpected = String(report.advertCategory || '').toLowerCase().includes('unexpect');

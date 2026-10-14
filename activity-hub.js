@@ -10,6 +10,8 @@
 import { db, collection, addDoc, doc, getDoc, getDocs, query, where, orderBy, setDoc, serverTimestamp } from "./db.js";
 import { currentUser, currentUserRole } from "./auth.js";
 import { navigate } from "./ui.js";
+import { triggerTeamsWebhook } from "./wizard.js";
+import { LAGOS_LGAS } from "./activity-configs.js";
 
 // Keep track of active Chart.js instances across all hubs to avoid canvas reuse / memory leaks
 const activeCharts = {};
@@ -25,15 +27,44 @@ function destroyAllCharts() {
   });
 }
 
+function getItemDateObj(item) {
+  const raw = item?.inspectionDate || item?.dateOfVisit || item?.dateReceived || item?.dateLogged || item?.createdAt;
+  if (!raw) return null;
+  if (raw instanceof Date) return isNaN(raw.getTime()) ? null : raw;
+  if (typeof raw.toDate === "function") return raw.toDate();
+  if (typeof raw === "object" && (raw.seconds || raw._seconds)) {
+    return new Date((raw.seconds || raw._seconds) * 1000);
+  }
+  if (typeof raw === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.trim())) {
+    const [y, m, d] = raw.trim().split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const parsed = new Date(raw);
+  return isNaN(parsed.getTime()) ? null : parsed;
+}
+
 function getItemYear(item) {
   if (item.year) return String(item.year);
+  const d = getItemDateObj(item);
+  if (d) return String(d.getFullYear());
   const raw = item.dateReceived || item.inspectionDate || item.dateOfVisit || item.dateLogged || item.createdAt;
-  if (!raw) return "";
-  if (raw.toDate && typeof raw.toDate === "function") return String(raw.toDate().getFullYear());
-  if (raw instanceof Date) return String(raw.getFullYear());
-  if (typeof raw === "object" && raw.seconds) return String(new Date(raw.seconds * 1000).getFullYear());
-  const m = String(raw).match(/\b(20\d{2})\b/);
+  const m = String(raw || "").match(/\b(20\d{2})\b/);
   return m ? m[1] : "";
+}
+
+function getItemMonth(item) {
+  const d = getItemDateObj(item);
+  return d ? d.toLocaleString("default", { month: "long" }).toUpperCase() : "";
+}
+
+function getAdvertProductTypeFolder(mainProductType) {
+  if (!mainProductType) return "DRUGS";
+  const lower = mainProductType.toLowerCase();
+  if (lower.includes("food") || lower.includes("drink") || lower.includes("water")) return "FOOD";
+  if (lower.includes("cosmetic")) return "COSMETICS";
+  if (lower.includes("device")) return "MEDICAL DEVICES";
+  if (lower.includes("chemical")) return "CHEMICALS";
+  return "DRUGS";
 }
 
 export async function renderActivityHub(root, config) {
@@ -580,9 +611,9 @@ export async function renderActivityHub(root, config) {
       if (!folderUrl && baseUrl) {
         const cleanBase = baseUrl.replace(/\/+$/, "");
         if (cfg.key === "adverts") {
-          const prodType = (item.mainProductType || 'DRUGS').toLowerCase().includes('food') ? 'FOOD' : 'DRUGS';
+          const prodType = getAdvertProductTypeFolder(item.mainProductType);
           const itemYear = getItemYear(item) || new Date().getFullYear();
-          const itemMonth = item.inspectionDate ? new Date(item.inspectionDate).toLocaleString('default', { month: 'long' }).toUpperCase() : '';
+          const itemMonth = getItemMonth(item);
           const advName = (item.advertName || 'GENERAL_ADVERT').replace(/[."*:<>?\/\\|]/g, '').trim();
           const compName = (item.advertCompany || '').replace(/[."*:<>?\/\\|]/g, '').trim();
           const isUnexp = String(item.advertCategory || '').toLowerCase().includes('unexpect');
@@ -684,12 +715,16 @@ export async function renderActivityHub(root, config) {
       return;
     }
 
-    // Case 2: Routine Surveillance redirects to Start New Log
+    // Case 2: Routine Surveillance & Adverts
     if (cfg.useWizardForLog) {
+      if (cfg.key === "adverts") {
+        renderAdvertIntakeForm(container, items, cfg, loadData, root);
+        return;
+      }
       container.innerHTML = `
         <div class="card" style="text-align:center;padding:60px 20px;max-width:600px;margin:auto;">
-          <h2>Log Field Routine Surveillance</h2>
-          <p class="muted" style="margin:16px 0;">Routine surveillance inspections are registered directly through the comprehensive Inspector Logging Wizard.</p>
+          <h2>Log Field ${escapeHTML(cfg.title)}</h2>
+          <p class="muted" style="margin:16px 0;">Activity logs for ${escapeHTML(cfg.title)} are captured through the comprehensive Inspector Logging Wizard.</p>
           <button id="hubGoToWizardBtn" style="padding:14px 32px;font-size:16px;">Go to Start New Log</button>
         </div>
       `;
@@ -1087,7 +1122,569 @@ function renderStandardLogForm(container, cfg, onSaved) {
   };
 }
 
-// ─── CSV Exporter ─────────────────────────────────────────────────────────────
+// ─── Advert Campaign Intake Form Renderer ─────────────────────────────────────
+function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
+  // Build map of companies -> products
+  const companiesMap = new Map();
+  items.forEach(it => {
+    const c = (it.advertCompany || it.companyName || it.advertiser || "").trim();
+    const p = (it.advertName || "").trim();
+    if (c) {
+      if (!companiesMap.has(c)) companiesMap.set(c, new Set());
+      if (p) companiesMap.get(c).add(p);
+    }
+  });
+  const sortedCompanies = Array.from(companiesMap.keys()).sort((a, b) => a.localeCompare(b));
+  const todayStr = new Date().toISOString().split("T")[0];
+  const inspectorDefault = currentUser ? (currentUser.displayName || currentUser.email || "") : "";
+
+  container.innerHTML = `
+    <div class="card" style="max-width:850px; margin:auto; padding:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; gap:16px;">
+        <div>
+          <h3 style="margin:0; font-size:18px; color:#15803d; display:flex; align-items:center; gap:8px;">
+            <span>📢</span> Register Advert Campaign / Sighting
+          </h3>
+          <p class="muted small" style="margin:4px 0 0;">
+            Directly register a <strong>Scheduled Advert Campaign</strong> or log an <strong>Unexpected Sighting</strong> into the Directorate database and scaffold SharePoint folders.
+          </p>
+        </div>
+        <button id="advLaunchWizardBtn" class="secondary small" style="white-space:nowrap; padding:6px 12px;">
+          Launch Full Multi-Facility Wizard ↗
+        </button>
+      </div>
+
+      <form id="hubAdvertIntakeForm">
+        <!-- Category & Product Line -->
+        <div class="row" style="margin-bottom:14px;">
+          <div class="col">
+            <label style="font-weight:700; font-size:12px;">Advert Category <span style="color:red">*</span></label>
+            <select name="advertCategory" id="advFormCategory" required style="width:100%;">
+              <option value="Scheduled Advert" selected>Scheduled Advert (Pre-registered Campaign)</option>
+              <option value="Unexpected Advert">Unexpected Advert (Identified during field monitoring)</option>
+            </select>
+          </div>
+          <div class="col">
+            <label style="font-weight:700; font-size:12px;">Main Product Line <span style="color:red">*</span></label>
+            <select name="mainProductType" id="advFormProdLine" required style="width:100%;">
+              <option value="Drugs" selected>Drugs</option>
+              <option value="Food">Food</option>
+              <option value="Cosmetics">Cosmetics</option>
+              <option value="Medical Devices">Medical Devices</option>
+              <option value="Herbals">Herbals / Traditional</option>
+              <option value="Chemicals">Chemicals</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 1. Company (Parent) -->
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:14px; margin-bottom:14px;">
+          <h5 style="margin:0 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+            🏢 1. Company / Advertiser (Parent Folder)
+          </h5>
+          <div class="row">
+            <div class="col">
+              <label style="font-weight:600; font-size:12px;">Select Existing Company or Enter New</label>
+              <select id="advFormCompanySelect" style="width:100%;">
+                <option value="__NEW_COMPANY__">➕ Enter New Company / Advertiser</option>
+                ${sortedCompanies.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)} (${companiesMap.get(c).size} products)</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="row" id="advFormNewCompRow" style="margin-top:8px;">
+            <div class="col">
+              <label class="small" style="font-weight:600; color:#166534;">Company Name <span style="color:red">*</span></label>
+              <input id="advFormNewCompInput" placeholder="e.g. Unilever Nigeria Plc, Emzor Pharma, Fidson Healthcare Plc" style="width:100%;">
+            </div>
+          </div>
+
+          <!-- 2. Product (Child) -->
+          <h5 style="margin:16px 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; border-top:1px dashed #bbf7d0; padding-top:12px;">
+            📦 2. Product Name (Child Folder)
+          </h5>
+          <div class="row" id="advFormExistingProdRow" style="display:none; margin-bottom:8px;">
+            <div class="col">
+              <label style="font-weight:600; font-size:12px;">Existing Products for this Company</label>
+              <select id="advFormExistingProdSelect" style="width:100%;">
+                <option value="__NEW_PRODUCT__">➕ Enter New Product for this Company</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" id="advFormNewProdRow">
+            <div class="col">
+              <label class="small" style="font-weight:600; color:#166534;">Product / Advert Name <span style="color:red">*</span></label>
+              <input id="advFormProdInput" placeholder="e.g. Joy Beauty Bar with Honey, Gascol Antacid" required style="width:100%;">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Medium & Sighting -->
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:14px;">
+          <h5 style="margin:0 0 8px; color:#334155; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+            📡 3. Medium & Sighting Details
+          </h5>
+          <div class="row" style="margin-bottom:10px;">
+            <div class="col">
+              <label style="font-weight:600; font-size:12px;">Medium of Advertisement <span style="color:red">*</span></label>
+              <select id="advFormMediumSelect" style="width:100%;">
+                <option value="Television / Broadcast" selected>Television / Broadcast (TV Channel)</option>
+                <option value="Radio">Radio (Radio Station)</option>
+                <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor (Location / Landmark)</option>
+                <option value="Social Media / Online">Social Media / Online (Instagram, TikTok, FB, Web)</option>
+                <option value="Print / Flyer / Handbill">Print / Flyer / Handbill (Publication / Handbill)</option>
+                <option value="In-Store / Point of Sale Display">Physical Facility / In-Store Display (Pharmacy, Supermarket, Shop)</option>
+                <option value="Other">Other Media / Mobile PA</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- TV Inputs -->
+          <div id="advSectionTV">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">TV Channel <span style="color:red">*</span></label>
+                <select id="advFormTvChannel" style="width:100%;">
+                  <option value="Channels TV" selected>Channels TV</option>
+                  <option value="TVC News">TVC News / TVC Entertainment</option>
+                  <option value="NTA">NTA (National / Lagos)</option>
+                  <option value="Arise News">Arise News</option>
+                  <option value="Silverbird TV">Silverbird TV (STV)</option>
+                  <option value="AIT">AIT (Africa Independent Television)</option>
+                  <option value="Soundcity TV">Soundcity TV</option>
+                  <option value="__CUSTOM_TV__">➕ Other TV Channel...</option>
+                </select>
+                <input id="advFormCustomTv" placeholder="Specify TV Channel Name" style="display:none; margin-top:6px; width:100%;">
+              </div>
+              <div class="col">
+                <label class="small" style="font-weight:600;">Program / Air Time Window (Optional)</label>
+                <input id="advFormTvProgram" placeholder="e.g. 8:00 PM Prime News, Morning Show" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Radio Inputs -->
+          <div id="advSectionRadio" style="display:none;">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">Radio Station <span style="color:red">*</span></label>
+                <select id="advFormRadioStation" style="width:100%;">
+                  <option value="Wazobia 95.1 FM" selected>Wazobia 95.1 FM</option>
+                  <option value="Cool 96.9 FM">Cool 96.9 FM</option>
+                  <option value="Nigeria Info 99.3 FM">Nigeria Info 99.3 FM</option>
+                  <option value="Raypower 100.5 FM">Raypower 100.5 FM</option>
+                  <option value="The Beat 99.9 FM">The Beat 99.9 FM</option>
+                  <option value="Brila 88.9 FM">Brila 88.9 FM</option>
+                  <option value="Bond 92.9 FM">Bond 92.9 FM</option>
+                  <option value="Radio Lagos 107.5 FM">Radio Lagos 107.5 FM</option>
+                  <option value="__CUSTOM_RADIO__">➕ Other Radio Station...</option>
+                </select>
+                <input id="advFormCustomRadio" placeholder="Specify Station Name / Frequency" style="display:none; margin-top:6px; width:100%;">
+              </div>
+              <div class="col">
+                <label class="small" style="font-weight:600;">Program / Time Slot (Optional)</label>
+                <input id="advFormRadioProgram" placeholder="e.g. Morning Rush, Evening Drive" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Billboard Inputs -->
+          <div id="advSectionBillboard" style="display:none;">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">Billboard Location & Landmark <span style="color:red">*</span></label>
+                <input id="advFormBillboardLoc" placeholder="e.g. Third Mainland Bridge Inbound, Oshodi Terminal Billboard" style="width:100%;">
+              </div>
+              <div class="col">
+                <label class="small" style="font-weight:600;">Signage Agency / Board ID (Optional)</label>
+                <input id="advFormBillboardAgency" placeholder="e.g. Nimbus Media, Board #LAG-042" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Media Inputs -->
+          <div id="advSectionSocial" style="display:none;">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">Platform <span style="color:red">*</span></label>
+                <select id="advFormSocialPlatform" style="width:100%;">
+                  <option value="Instagram" selected>Instagram</option>
+                  <option value="TikTok">TikTok</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="X (Twitter)">X (Twitter)</option>
+                  <option value="YouTube">YouTube</option>
+                  <option value="Website / Blog">Website / Online Store</option>
+                </select>
+              </div>
+              <div class="col">
+                <label class="small" style="font-weight:600;">Handle / Profile URL <span style="color:red">*</span></label>
+                <input id="advFormSocialHandle" placeholder="e.g. @company_ng or instagram.com/brand" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Print Inputs -->
+          <div id="advSectionPrint" style="display:none;">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">Publication Name or Distribution Point <span style="color:red">*</span></label>
+                <input id="advFormPrintPub" placeholder="e.g. Punch Newspaper, Handbills at Oshodi" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- In-Store Inputs -->
+          <div id="advSectionInStore" style="display:none;">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">Store / Pharmacy Name <span style="color:red">*</span></label>
+                <input id="advFormStoreName" placeholder="e.g. Medplus Pharmacy, Ebeano Supermarket" style="width:100%;">
+              </div>
+              <div class="col">
+                <label class="small" style="font-weight:600;">Store Address / Location</label>
+                <input id="advFormStoreAddr" placeholder="e.g. 45 Allen Avenue, Ikeja" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Other Inputs -->
+          <div id="advSectionOther" style="display:none;">
+            <div class="row">
+              <div class="col">
+                <label class="small" style="font-weight:600;">Medium Description <span style="color:red">*</span></label>
+                <input id="advFormOtherDetails" placeholder="e.g. Mobile PA Van at Market, Transit bus branding" style="width:100%;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Live folder indicator -->
+          <div style="margin-top:10px; font-size:12px; color:#0369a1; font-weight:600; padding:6px 10px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px;">
+            📁 SharePoint Sighting Folder: <span id="advFormSightingFolderDisplay" style="font-family:monospace; font-weight:700;">Channels_TV</span>
+          </div>
+        </div>
+
+        <!-- 4. Date, Area, Inspectors -->
+        <div class="row" style="margin-bottom:14px;">
+          <div class="col">
+            <label style="font-weight:700; font-size:12px;">Campaign / Sighting Date <span style="color:red">*</span></label>
+            <input type="date" id="advFormDate" value="${todayStr}" required style="width:100%;">
+          </div>
+          <div class="col">
+            <label style="font-weight:700; font-size:12px;">LGA / Area <span style="color:red">*</span></label>
+            <select id="advFormArea" required style="width:100%;">
+              ${LAGOS_LGAS.map(a => `<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`).join("")}
+            </select>
+          </div>
+          <div class="col">
+            <label style="font-weight:700; font-size:12px;">Inspectors / Monitored By</label>
+            <input id="advFormInspectors" value="${escapeHTML(inspectorDefault)}" placeholder="Inspector Names" style="width:100%;">
+          </div>
+        </div>
+
+        <!-- 5. Remarks / Action Taken -->
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="font-weight:700; font-size:12px;">Permit No. / Observations / Action Taken</label>
+          <textarea id="advFormRemarks" rows="2" placeholder="e.g. Pre-registered advert campaign approved under NAFDAC permit #LAG-ADV-2026-089. Sighted on TV broadcast; compliant." style="width:100%; font-size:13px;"></textarea>
+        </div>
+
+        <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+          <button type="submit" id="advFormSubmitBtn" class="success" style="padding:12px 28px; font-size:15px; font-weight:600;">
+            💾 Save Advert Campaign to Database & Scaffold SharePoint Folders
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  // Bind Interactions
+  const compSelect = container.querySelector("#advFormCompanySelect");
+  const newCompRow = container.querySelector("#advFormNewCompRow");
+  const newCompInput = container.querySelector("#advFormNewCompInput");
+  const existProdRow = container.querySelector("#advFormExistingProdRow");
+  const existProdSelect = container.querySelector("#advFormExistingProdSelect");
+  const newProdRow = container.querySelector("#advFormNewProdRow");
+  const prodInput = container.querySelector("#advFormProdInput");
+
+  compSelect.addEventListener("change", () => {
+    const val = compSelect.value;
+    if (val === "__NEW_COMPANY__") {
+      newCompRow.style.display = "block";
+      existProdRow.style.display = "none";
+      newProdRow.style.display = "block";
+      prodInput.value = "";
+      prodInput.readOnly = false;
+    } else {
+      newCompRow.style.display = "none";
+      const prods = Array.from(companiesMap.get(val) || []).sort();
+      existProdSelect.innerHTML = `<option value="__NEW_PRODUCT__">➕ Enter New Product for ${escapeHTML(val)}</option>` +
+        prods.map(p => `<option value="${escapeHTML(p)}">${escapeHTML(p)}</option>`).join("");
+      existProdRow.style.display = "block";
+      if (prods.length > 0) {
+        existProdSelect.value = prods[0];
+        prodInput.value = prods[0];
+        prodInput.readOnly = true;
+      } else {
+        existProdSelect.value = "__NEW_PRODUCT__";
+        prodInput.value = "";
+        prodInput.readOnly = false;
+      }
+    }
+  });
+
+  existProdSelect?.addEventListener("change", () => {
+    const val = existProdSelect.value;
+    if (val === "__NEW_PRODUCT__") {
+      prodInput.value = "";
+      prodInput.readOnly = false;
+      prodInput.focus();
+    } else {
+      prodInput.value = val;
+      prodInput.readOnly = true;
+    }
+  });
+
+  // Medium Switching
+  const mediumSelect = container.querySelector("#advFormMediumSelect");
+  const folderDisplay = container.querySelector("#advFormSightingFolderDisplay");
+  const tvSection = container.querySelector("#advSectionTV");
+  const radioSection = container.querySelector("#advSectionRadio");
+  const billboardSection = container.querySelector("#advSectionBillboard");
+  const socialSection = container.querySelector("#advSectionSocial");
+  const printSection = container.querySelector("#advSectionPrint");
+  const inStoreSection = container.querySelector("#advSectionInStore");
+  const otherSection = container.querySelector("#advSectionOther");
+
+  function updateMediumView() {
+    const med = mediumSelect.value;
+    if (tvSection) tvSection.style.display = med === "Television / Broadcast" ? "block" : "none";
+    if (radioSection) radioSection.style.display = med === "Radio" ? "block" : "none";
+    if (billboardSection) billboardSection.style.display = med === "Billboard / Poster / Outdoor" ? "block" : "none";
+    if (socialSection) socialSection.style.display = med === "Social Media / Online" ? "block" : "none";
+    if (printSection) printSection.style.display = med === "Print / Flyer / Handbill" ? "block" : "none";
+    if (inStoreSection) inStoreSection.style.display = med === "In-Store / Point of Sale Display" ? "block" : "none";
+    if (otherSection) otherSection.style.display = med === "Other" ? "block" : "none";
+    updateFolderPreview();
+  }
+
+  function updateFolderPreview() {
+    if (!folderDisplay) return;
+    const med = mediumSelect.value;
+    let sFolder = "";
+    if (med === "Television / Broadcast") {
+      const tvCh = container.querySelector("#advFormTvChannel")?.value;
+      sFolder = (tvCh === "__CUSTOM_TV__")
+        ? (container.querySelector("#advFormCustomTv")?.value.trim() || "Custom_TV")
+        : (tvCh || "Channels_TV");
+    } else if (med === "Radio") {
+      const rad = container.querySelector("#advFormRadioStation")?.value;
+      sFolder = (rad === "__CUSTOM_RADIO__")
+        ? (container.querySelector("#advFormCustomRadio")?.value.trim() || "Custom_Radio")
+        : (rad || "Radio_Station");
+    } else if (med === "Billboard / Poster / Outdoor") {
+      sFolder = container.querySelector("#advFormBillboardLoc")?.value.trim() || "Billboard_Location";
+    } else if (med === "Social Media / Online") {
+      const p = container.querySelector("#advFormSocialPlatform")?.value || "Social";
+      const h = container.querySelector("#advFormSocialHandle")?.value.trim() || "@handle";
+      sFolder = `${p}_${h.replace(/[@\/\\:*?"<>|]/g, "").replace(/\s+/g, "_")}`;
+    } else if (med === "Print / Flyer / Handbill") {
+      sFolder = container.querySelector("#advFormPrintPub")?.value.trim() || "Publication_Name";
+    } else if (med === "In-Store / Point of Sale Display") {
+      sFolder = container.querySelector("#advFormStoreName")?.value.trim() || "Store_Outlet";
+    } else {
+      sFolder = container.querySelector("#advFormOtherDetails")?.value.trim() || "Other_Medium";
+    }
+    folderDisplay.textContent = sFolder.replace(/[."*:<>?\/\\|]/g, "").trim().substring(0, 45);
+  }
+
+  mediumSelect.addEventListener("change", updateMediumView);
+  container.querySelector("#advFormTvChannel")?.addEventListener("change", (e) => {
+    const custom = container.querySelector("#advFormCustomTv");
+    if (custom) custom.style.display = e.target.value === "__CUSTOM_TV__" ? "block" : "none";
+    updateFolderPreview();
+  });
+  container.querySelector("#advFormRadioStation")?.addEventListener("change", (e) => {
+    const custom = container.querySelector("#advFormCustomRadio");
+    if (custom) custom.style.display = e.target.value === "__CUSTOM_RADIO__" ? "block" : "none";
+    updateFolderPreview();
+  });
+
+  container.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("input", updateFolderPreview);
+    el.addEventListener("change", updateFolderPreview);
+  });
+
+  container.querySelector("#advLaunchWizardBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    navigate("report");
+  });
+
+  // Handle Form Submit
+  const form = container.querySelector("#hubAdvertIntakeForm");
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = container.querySelector("#advFormSubmitBtn");
+    btn.disabled = true;
+    btn.textContent = "Saving & Creating Folders...";
+
+    try {
+      const category = container.querySelector("#advFormCategory").value;
+      const prodLine = container.querySelector("#advFormProdLine").value;
+      const isNewComp = compSelect.value === "__NEW_COMPANY__";
+      const company = (isNewComp ? newCompInput.value : compSelect.value).trim();
+      const product = prodInput.value.trim();
+
+      if (!company) {
+        alert("Please enter the Company / Advertiser Name.");
+        if (newCompInput) newCompInput.focus();
+        btn.disabled = false;
+        btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
+        return;
+      }
+      if (!product) {
+        alert("Please enter the Product / Advert Name.");
+        prodInput.focus();
+        btn.disabled = false;
+        btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
+        return;
+      }
+
+      const med = mediumSelect.value;
+      let sightingFolder = "";
+      let sightingLabel = "";
+      let sightingAddress = "";
+
+      if (med === "Television / Broadcast") {
+        const tvCh = container.querySelector("#advFormTvChannel").value;
+        const actualCh = (tvCh === "__CUSTOM_TV__") ? container.querySelector("#advFormCustomTv").value.trim() : tvCh;
+        const program = container.querySelector("#advFormTvProgram").value.trim();
+        sightingFolder = actualCh;
+        sightingLabel = actualCh;
+        sightingAddress = program ? `Program: ${program}` : actualCh;
+      } else if (med === "Radio") {
+        const rad = container.querySelector("#advFormRadioStation").value;
+        const actualRad = (rad === "__CUSTOM_RADIO__") ? container.querySelector("#advFormCustomRadio").value.trim() : rad;
+        const program = container.querySelector("#advFormRadioProgram").value.trim();
+        sightingFolder = actualRad;
+        sightingLabel = actualRad;
+        sightingAddress = program ? `Program: ${program}` : actualRad;
+      } else if (med === "Billboard / Poster / Outdoor") {
+        const loc = container.querySelector("#advFormBillboardLoc").value.trim();
+        const agency = container.querySelector("#advFormBillboardAgency").value.trim();
+        sightingFolder = loc;
+        sightingLabel = `Billboard: ${loc}`;
+        sightingAddress = agency ? `${loc} (${agency})` : loc;
+      } else if (med === "Social Media / Online") {
+        const platform = container.querySelector("#advFormSocialPlatform").value;
+        const handle = container.querySelector("#advFormSocialHandle").value.trim();
+        sightingFolder = `${platform}_${handle.replace(/[@\/\\:*?"<>|]/g, "").replace(/\s+/g, "_")}`;
+        sightingLabel = `${platform}: ${handle}`;
+        sightingAddress = handle;
+      } else if (med === "Print / Flyer / Handbill") {
+        const pub = container.querySelector("#advFormPrintPub").value.trim();
+        sightingFolder = pub;
+        sightingLabel = `Print: ${pub}`;
+        sightingAddress = pub;
+      } else if (med === "In-Store / Point of Sale Display") {
+        const storeName = container.querySelector("#advFormStoreName").value.trim();
+        const storeAddr = container.querySelector("#advFormStoreAddr").value.trim();
+        sightingFolder = storeName;
+        sightingLabel = storeName;
+        sightingAddress = storeAddr;
+      } else {
+        const otherDet = container.querySelector("#advFormOtherDetails").value.trim();
+        sightingFolder = otherDet;
+        sightingLabel = otherDet;
+        sightingAddress = otherDet;
+      }
+
+      sightingFolder = (sightingFolder || "OUTLET").replace(/[."*:<>?\/\\|]/g, "").trim().substring(0, 45);
+      const cleanFacName = (sightingLabel || "ADVERT_OUTLET").trim().replace(/[."*:<>?\/\\|]/g, "").replace(/\.+$/, "").trim();
+
+      const rawDateStr = container.querySelector("#advFormDate").value || todayStr;
+      const [y, m, d] = rawDateStr.split("-").map(Number);
+      const inspectionDate = new Date(y, m - 1, d);
+
+      const inspectorsRaw = container.querySelector("#advFormInspectors").value.trim();
+      const inspectors = inspectorsRaw ? inspectorsRaw.split(",").map(i => i.trim()).filter(Boolean) : [currentUser?.displayName || "Inspector"];
+      const remarks = container.querySelector("#advFormRemarks").value.trim();
+
+      const reportData = {
+        submissionId: "sub_" + Date.now(),
+        lookupKey: `${cleanFacName}_Advert`,
+        inspectorNames: inspectors,
+        mainProductType: prodLine,
+        productTypes: [prodLine],
+        inspectionDate: inspectionDate,
+        area: container.querySelector("#advFormArea").value,
+        facilityName: sightingLabel,
+        facilityAddress: sightingAddress,
+        activityType: "Advert",
+        actionTaken: remarks,
+        sanctionGiven: false,
+        sanctionDocUrl: "",
+        mopUp: false,
+        mopUpCount: 0,
+        mopUpCounts: { drugs: 0, cosmetics: 0, medicalDevices: 0, food: 0 },
+        hold: false,
+        holdCount: 0,
+        holdCounts: { drugs: 0, cosmetics: 0, medicalDevices: 0, food: 0 },
+        gsdpSubActivity: "",
+        riskCategory: "",
+        companyEmail: "",
+        Samples: false,
+        Samplescount: 0,
+        consultativeMeetingCategory: "",
+        consultativeProductType: "",
+        isNewFacility: false,
+        linkedComplaintId: null,
+        regulatoryAlertEncountered: false,
+        linkedAlertId: null,
+        alertAction: "",
+        advertCategory: category,
+        advertCompany: company,
+        advertName: product,
+        advertMedium: med,
+        advertPlatform: med === "Social Media / Online" ? container.querySelector("#advFormSocialPlatform")?.value : "",
+        advertHandle: med === "Social Media / Online" ? container.querySelector("#advFormSocialHandle")?.value.trim() : "",
+        advertChannel: med === "Television / Broadcast" ? sightingFolder : "",
+        advertTvProgram: med === "Television / Broadcast" ? container.querySelector("#advFormTvProgram")?.value.trim() : "",
+        advertRadioStation: med === "Radio" ? sightingFolder : "",
+        advertRadioProgram: med === "Radio" ? container.querySelector("#advFormRadioProgram")?.value.trim() : "",
+        advertBillboardLocation: med === "Billboard / Poster / Outdoor" ? sightingFolder : "",
+        advertBillboardAgency: med === "Billboard / Poster / Outdoor" ? container.querySelector("#advFormBillboardAgency")?.value.trim() : "",
+        advertPrintPublication: med === "Print / Flyer / Handbill" ? sightingFolder : "",
+        sightingFolder: sightingFolder,
+        advertFolderExists: false,
+        isSubsequentRound: false,
+        advertActivityRound: "",
+        createdBy: currentUser?.uid || "admin",
+        createdAt: serverTimestamp()
+      };
+
+      // 1. Save to facilityReports
+      await addDoc(collection(db, "facilityReports"), reportData);
+
+      // 2. Trigger Power Automate SharePoint Scaffold Webhook
+      try {
+        await triggerTeamsWebhook(reportData);
+      } catch (hookErr) {
+        console.warn("Teams webhook error:", hookErr);
+      }
+
+      alert(`✅ Successfully registered "${product}" by "${company}" as a ${category}!\nSharePoint folder scaffold triggered.`);
+
+      // 3. Reload table data and switch to Records tab
+      if (onSaved) await onSaved();
+      root.querySelector('[data-tab="records"]')?.click();
+
+    } catch (err) {
+      console.error("Error saving advert campaign:", err);
+      alert("Failed to save advert campaign: " + err.message);
+      btn.disabled = false;
+      btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
+    }
+  };
+}
 function exportActivityCSV(items, cfg) {
   if (!items || items.length === 0) {
     alert("No records to export.");
