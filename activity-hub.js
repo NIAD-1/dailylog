@@ -95,6 +95,15 @@ export async function renderActivityHub(root, config) {
           <p class="muted" style="margin-top:4px; font-size:14px;">${escapeHTML(config.subtitle || "")}</p>
         </div>
         <div class="hub-header-actions">
+          ${config.key === "adverts" ? `
+          <button id="hubImportCsvBtn" class="secondary" style="display:flex;align-items:center;gap:6px;" title="Bulk Upload Advert Campaigns via CSV">
+            <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Import CSV
+          </button>
+          <button id="hubHeaderTemplateBtn" class="secondary" style="display:flex;align-items:center;gap:6px;" title="Download Advert CSV Upload Template">
+            📥 Template
+          </button>
+          ` : ""}
           <button id="hubExportCsvBtn" class="secondary" style="display:flex;align-items:center;gap:6px;">
             <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Export CSV
@@ -835,6 +844,18 @@ export async function renderActivityHub(root, config) {
     exportActivityCSV(currentFilteredItems.length ? currentFilteredItems : cachedItems, config);
   };
 
+  if (config.key === "adverts") {
+    root.querySelector("#hubImportCsvBtn")?.addEventListener("click", () => {
+      root.querySelector('[data-tab="log"]')?.click();
+      setTimeout(() => {
+        root.querySelector("#advModeCsvBtn")?.click();
+      }, 50);
+    });
+    root.querySelector("#hubHeaderTemplateBtn")?.addEventListener("click", () => {
+      downloadAdvertCsvTemplate();
+    });
+  }
+
   // Refresh
   root.querySelector("#hubRefreshBtn").onclick = loadData;
 
@@ -1122,7 +1143,123 @@ function renderStandardLogForm(container, cfg, onSaved) {
   };
 }
 
-// ─── Advert Campaign Intake Form Renderer ─────────────────────────────────────
+// ─── Advert Campaign & CSV Import Functions ──────────────────────────────────
+export function downloadAdvertCsvTemplate() {
+  const csvContent = "\uFEFF" + [
+    "advertCategory,mainProductType,advertCompany,advertName,advertMedium,sightingTarget,platformOrSubDetail,inspectionDate,area,inspectorNames,actionTaken",
+    'Scheduled Advert,Drugs,Emzor Pharmaceuticals Ltd,Emzor Paracetamol Syrup,Television / Broadcast,Channels TV,8:00 PM Prime News,2026-09-15,Ikeja,"Pharm. Ade B., Pharm. Obi A.",Permit #LAG-ADV-2026-089; Script approved and broadcast verified',
+    'Scheduled Advert,Food,Nestle Nigeria Plc,Milo Energy Food Drink,Billboard / Poster / Outdoor,Third Mainland Bridge Inbound,Nimbus Media Board #LAG-042,2026-09-20,Lagos Island,"Pharm. Chukwu C.",Approved outdoor billboard; Valid NAFDAC Reg #01-1234',
+    'Scheduled Advert,Cosmetics,Unilever Nigeria Plc,Joy Beauty Bar with Honey,Social Media / Online,@unilever_ng,Instagram,2026-10-02,Ikeja,"Pharm. Ade B.",Pre-registered social media campaign; Compliant',
+    'Scheduled Advert,Drugs,Fidson Healthcare Plc,Ciklavit Oral Liquid,Radio,Wazobia 95.1 FM,Morning Drive Slot,2026-10-05,Ikeja,"Pharm. Obi A.",Scheduled radio broadcast; Compliant with approved script',
+    'Scheduled Advert,Drugs,May & Baker Nigeria Plc,M&B Paracetamol Tablets,In-Store / Point of Sale Display,HealthPlus Pharmacy Ikeja,14 Allen Avenue Ikeja,2026-10-08,Ikeja,"Pharm. Obi A., Pharm. Ade B.",Point of sale promotional banner verified',
+    'Unexpected Advert,Cosmetics,Glow World Cosmetics Ltd,Skin Lightening Miracle Cream,Social Media / Online,@glow_miracle_lagos,Instagram,2026-10-10,Surulere,"Pharm. Ade B.",Unregistered bleaching cosmetic advertised online; Investigation invitation issued',
+    'Unexpected Advert,Herbals,Al-Hekmah Herbal Remedies,Super Power Man Booster,Print / Flyer / Handbill,Ojuelegba Bus Stop Distribution,Handbill Flyer,2026-10-12,Surulere,"Pharm. Chukwu C.",Unapproved herbal flyer distribution sighted; Product samples impounded'
+  ].join("\r\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "nafdac_advert_campaign_template.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function parseCSV(text) {
+  const lines = [];
+  let row = [];
+  let inQuotes = false;
+  let curVal = "";
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const next = text[i + 1];
+
+    if (c === '"') {
+      if (inQuotes && next === '"') {
+        curVal += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === ',' && !inQuotes) {
+      row.push(curVal.trim());
+      curVal = "";
+    } else if ((c === '\r' || c === '\n') && !inQuotes) {
+      if (c === '\r' && next === '\n') i++;
+      row.push(curVal.trim());
+      if (row.some(cell => cell !== "")) lines.push(row);
+      row = [];
+      curVal = "";
+    } else {
+      curVal += c;
+    }
+  }
+  if (curVal || row.length > 0) {
+    row.push(curVal.trim());
+    if (row.some(cell => cell !== "")) lines.push(row);
+  }
+  return lines;
+}
+
+function normalizeHeader(h) {
+  const clean = h.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (clean.includes("line") || clean.includes("mainprod") || clean.includes("producttype")) return "mainProductType";
+  if (clean.includes("cat") || clean === "category") return "advertCategory";
+  if (clean.includes("comp") || clean.includes("advertiser")) return "advertCompany";
+  if (clean.includes("prod") || clean.includes("brand") || clean.includes("advname") || clean === "advertname" || clean.includes("item")) return "advertName";
+  if (clean.includes("med") || clean.includes("channeltype")) return "advertMedium";
+  if (clean.includes("target") || clean.includes("sighting") || clean.includes("handle") || clean.includes("station") || clean.includes("channel") || clean.includes("facil") || (clean.includes("location") && !clean.includes("area"))) return "sightingTarget";
+  if (clean.includes("detail") || clean.includes("platform") || clean.includes("program") || clean.includes("agency") || clean.includes("address")) return "platformOrSubDetail";
+  if (clean.includes("date") || clean.includes("time") || clean.includes("day")) return "inspectionDate";
+  if (clean.includes("area") || clean.includes("lga")) return "area";
+  if (clean.includes("inspect") || clean.includes("officer") || clean.includes("monitor")) return "inspectorNames";
+  if (clean.includes("action") || clean.includes("remark") || clean.includes("permit") || clean.includes("note") || clean.includes("comment")) return "actionTaken";
+  return clean;
+}
+
+function parseDateStr(raw) {
+  if (!raw) return new Date().toISOString().split("T")[0];
+  const s = String(raw).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmy) {
+    return `${dmy[3]}-${dmy[2].padStart(2, "0")}-${dmy[1].padStart(2, "0")}`;
+  }
+  const parsed = new Date(s);
+  return isNaN(parsed.getTime()) ? new Date().toISOString().split("T")[0] : parsed.toISOString().split("T")[0];
+}
+
+function normalizeMedium(val) {
+  const m = String(val || "").trim().toLowerCase();
+  if (m.includes("tv") || m.includes("televis") || m.includes("broadcast")) return "Television / Broadcast";
+  if (m.includes("radio") || m.includes("fm") || m.includes("am")) return "Radio";
+  if (m.includes("billboard") || m.includes("outdoor") || m.includes("poster") || m.includes("signage")) return "Billboard / Poster / Outdoor";
+  if (m.includes("social") || m.includes("online") || m.includes("instagram") || m.includes("tiktok") || m.includes("facebook") || m.includes("twitter")) return "Social Media / Online";
+  if (m.includes("print") || m.includes("flyer") || m.includes("handbill") || m.includes("paper")) return "Print / Flyer / Handbill";
+  if (m.includes("store") || m.includes("point of sale") || m.includes("pos") || m.includes("pharmacy") || m.includes("supermarket") || m.includes("facility")) return "In-Store / Point of Sale Display";
+  return "Other";
+}
+
+function normalizeProductLine(val) {
+  const p = String(val || "").trim().toLowerCase();
+  if (p.includes("food") || p.includes("drink") || p.includes("beverage")) return "Food";
+  if (p.includes("cosmetic") || p.includes("beauty") || p.includes("skin")) return "Cosmetics";
+  if (p.includes("device")) return "Medical Devices";
+  if (p.includes("herbal") || p.includes("trad")) return "Herbals";
+  if (p.includes("chem")) return "Chemicals";
+  return "Drugs";
+}
+
+function normalizeCategory(val) {
+  const c = String(val || "").trim().toLowerCase();
+  if (c.includes("unexpect") || c.includes("field") || c.includes("unapproved")) return "Unexpected Advert";
+  return "Scheduled Advert";
+}
+
+// ─── Advert Campaign Intake & Bulk CSV Form Renderer ──────────────────────────
 function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
   // Build map of companies -> products
   const companiesMap = new Map();
@@ -1139,14 +1276,15 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
   const inspectorDefault = currentUser ? (currentUser.displayName || currentUser.email || "") : "";
 
   container.innerHTML = `
-    <div class="card" style="max-width:850px; margin:auto; padding:24px;">
+    <div class="card" style="max-width:920px; margin:auto; padding:24px;">
+      <!-- Top Title Bar -->
       <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid #e2e8f0; padding-bottom:12px; gap:16px;">
         <div>
           <h3 style="margin:0; font-size:18px; color:#15803d; display:flex; align-items:center; gap:8px;">
-            <span>📢</span> Register Advert Campaign / Sighting
+            <span>📢</span> Advert Campaign & Sighting Logging
           </h3>
           <p class="muted small" style="margin:4px 0 0;">
-            Directly register a <strong>Scheduled Advert Campaign</strong> or log an <strong>Unexpected Sighting</strong> into the Directorate database and scaffold SharePoint folders.
+            Register individual campaigns/sightings or bulk-import via CSV into the database and scaffold SharePoint folders.
           </p>
         </div>
         <button id="advLaunchWizardBtn" class="secondary small" style="white-space:nowrap; padding:6px 12px;">
@@ -1154,249 +1292,452 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
         </button>
       </div>
 
-      <form id="hubAdvertIntakeForm">
-        <!-- Category & Product Line -->
-        <div class="row" style="margin-bottom:14px;">
-          <div class="col">
-            <label style="font-weight:700; font-size:12px;">Advert Category <span style="color:red">*</span></label>
-            <select name="advertCategory" id="advFormCategory" required style="width:100%;">
-              <option value="Scheduled Advert" selected>Scheduled Advert (Pre-registered Campaign)</option>
-              <option value="Unexpected Advert">Unexpected Advert (Identified during field monitoring)</option>
-            </select>
-          </div>
-          <div class="col">
-            <label style="font-weight:700; font-size:12px;">Main Product Line <span style="color:red">*</span></label>
-            <select name="mainProductType" id="advFormProdLine" required style="width:100%;">
-              <option value="Drugs" selected>Drugs</option>
-              <option value="Food">Food</option>
-              <option value="Cosmetics">Cosmetics</option>
-              <option value="Medical Devices">Medical Devices</option>
-              <option value="Herbals">Herbals / Traditional</option>
-              <option value="Chemicals">Chemicals</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-        </div>
+      <!-- Mode Selector Tabs -->
+      <div style="display:flex; gap:8px; margin-bottom:20px; background:#f1f5f9; padding:4px; border-radius:8px; width:fit-content;">
+        <button type="button" id="advModeSingleBtn" class="primary small" style="padding:7px 16px; border-radius:6px; font-weight:600; display:flex; align-items:center; gap:6px;">
+          <span>✍️</span> Single Campaign Entry
+        </button>
+        <button type="button" id="advModeCsvBtn" class="secondary small" style="padding:7px 16px; border-radius:6px; font-weight:600; display:flex; align-items:center; gap:6px;">
+          <span>📤</span> Bulk CSV Upload
+        </button>
+      </div>
 
-        <!-- 1. Company (Parent) -->
-        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:14px; margin-bottom:14px;">
-          <h5 style="margin:0 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
-            🏢 1. Company / Advertiser (Parent Folder)
-          </h5>
-          <div class="row">
+      <!-- Section 1: Single Campaign Entry Form -->
+      <div id="advSingleSection">
+        <form id="hubAdvertIntakeForm">
+          <!-- Category & Product Line -->
+          <div class="row" style="margin-bottom:14px;">
             <div class="col">
-              <label style="font-weight:600; font-size:12px;">Select Existing Company or Enter New</label>
-              <select id="advFormCompanySelect" style="width:100%;">
-                <option value="__NEW_COMPANY__">➕ Enter New Company / Advertiser</option>
-                ${sortedCompanies.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)} (${companiesMap.get(c).size} products)</option>`).join("")}
+              <label style="font-weight:700; font-size:12px;">Advert Category <span style="color:red">*</span></label>
+              <select name="advertCategory" id="advFormCategory" required style="width:100%;">
+                <option value="Scheduled Advert" selected>Scheduled Advert (Pre-registered Campaign)</option>
+                <option value="Unexpected Advert">Unexpected Advert (Identified during field monitoring)</option>
               </select>
             </div>
-          </div>
-          <div class="row" id="advFormNewCompRow" style="margin-top:8px;">
             <div class="col">
-              <label class="small" style="font-weight:600; color:#166534;">Company Name <span style="color:red">*</span></label>
-              <input id="advFormNewCompInput" placeholder="e.g. Unilever Nigeria Plc, Emzor Pharma, Fidson Healthcare Plc" style="width:100%;">
-            </div>
-          </div>
-
-          <!-- 2. Product (Child) -->
-          <h5 style="margin:16px 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; border-top:1px dashed #bbf7d0; padding-top:12px;">
-            📦 2. Product Name (Child Folder)
-          </h5>
-          <div class="row" id="advFormExistingProdRow" style="display:none; margin-bottom:8px;">
-            <div class="col">
-              <label style="font-weight:600; font-size:12px;">Existing Products for this Company</label>
-              <select id="advFormExistingProdSelect" style="width:100%;">
-                <option value="__NEW_PRODUCT__">➕ Enter New Product for this Company</option>
-              </select>
-            </div>
-          </div>
-          <div class="row" id="advFormNewProdRow">
-            <div class="col">
-              <label class="small" style="font-weight:600; color:#166534;">Product / Advert Name <span style="color:red">*</span></label>
-              <input id="advFormProdInput" placeholder="e.g. Joy Beauty Bar with Honey, Gascol Antacid" required style="width:100%;">
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Medium & Sighting -->
-        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:14px;">
-          <h5 style="margin:0 0 8px; color:#334155; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
-            📡 3. Medium & Sighting Details
-          </h5>
-          <div class="row" style="margin-bottom:10px;">
-            <div class="col">
-              <label style="font-weight:600; font-size:12px;">Medium of Advertisement <span style="color:red">*</span></label>
-              <select id="advFormMediumSelect" style="width:100%;">
-                <option value="Television / Broadcast" selected>Television / Broadcast (TV Channel)</option>
-                <option value="Radio">Radio (Radio Station)</option>
-                <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor (Location / Landmark)</option>
-                <option value="Social Media / Online">Social Media / Online (Instagram, TikTok, FB, Web)</option>
-                <option value="Print / Flyer / Handbill">Print / Flyer / Handbill (Publication / Handbill)</option>
-                <option value="In-Store / Point of Sale Display">Physical Facility / In-Store Display (Pharmacy, Supermarket, Shop)</option>
-                <option value="Other">Other Media / Mobile PA</option>
+              <label style="font-weight:700; font-size:12px;">Main Product Line <span style="color:red">*</span></label>
+              <select name="mainProductType" id="advFormProdLine" required style="width:100%;">
+                <option value="Drugs" selected>Drugs</option>
+                <option value="Food">Food</option>
+                <option value="Cosmetics">Cosmetics</option>
+                <option value="Medical Devices">Medical Devices</option>
+                <option value="Herbals">Herbals / Traditional</option>
+                <option value="Chemicals">Chemicals</option>
+                <option value="Other">Other</option>
               </select>
             </div>
           </div>
 
-          <!-- TV Inputs -->
-          <div id="advSectionTV">
+          <!-- 1. Company (Parent) -->
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:14px; margin-bottom:14px;">
+            <h5 style="margin:0 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+              🏢 1. Company / Advertiser (Parent Folder)
+            </h5>
             <div class="row">
               <div class="col">
-                <label class="small" style="font-weight:600;">TV Channel <span style="color:red">*</span></label>
-                <select id="advFormTvChannel" style="width:100%;">
-                  <option value="Channels TV" selected>Channels TV</option>
-                  <option value="TVC News">TVC News / TVC Entertainment</option>
-                  <option value="NTA">NTA (National / Lagos)</option>
-                  <option value="Arise News">Arise News</option>
-                  <option value="Silverbird TV">Silverbird TV (STV)</option>
-                  <option value="AIT">AIT (Africa Independent Television)</option>
-                  <option value="Soundcity TV">Soundcity TV</option>
-                  <option value="__CUSTOM_TV__">➕ Other TV Channel...</option>
-                </select>
-                <input id="advFormCustomTv" placeholder="Specify TV Channel Name" style="display:none; margin-top:6px; width:100%;">
-              </div>
-              <div class="col">
-                <label class="small" style="font-weight:600;">Program / Air Time Window (Optional)</label>
-                <input id="advFormTvProgram" placeholder="e.g. 8:00 PM Prime News, Morning Show" style="width:100%;">
-              </div>
-            </div>
-          </div>
-
-          <!-- Radio Inputs -->
-          <div id="advSectionRadio" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <label class="small" style="font-weight:600;">Radio Station <span style="color:red">*</span></label>
-                <select id="advFormRadioStation" style="width:100%;">
-                  <option value="Wazobia 95.1 FM" selected>Wazobia 95.1 FM</option>
-                  <option value="Cool 96.9 FM">Cool 96.9 FM</option>
-                  <option value="Nigeria Info 99.3 FM">Nigeria Info 99.3 FM</option>
-                  <option value="Raypower 100.5 FM">Raypower 100.5 FM</option>
-                  <option value="The Beat 99.9 FM">The Beat 99.9 FM</option>
-                  <option value="Brila 88.9 FM">Brila 88.9 FM</option>
-                  <option value="Bond 92.9 FM">Bond 92.9 FM</option>
-                  <option value="Radio Lagos 107.5 FM">Radio Lagos 107.5 FM</option>
-                  <option value="__CUSTOM_RADIO__">➕ Other Radio Station...</option>
-                </select>
-                <input id="advFormCustomRadio" placeholder="Specify Station Name / Frequency" style="display:none; margin-top:6px; width:100%;">
-              </div>
-              <div class="col">
-                <label class="small" style="font-weight:600;">Program / Time Slot (Optional)</label>
-                <input id="advFormRadioProgram" placeholder="e.g. Morning Rush, Evening Drive" style="width:100%;">
-              </div>
-            </div>
-          </div>
-
-          <!-- Billboard Inputs -->
-          <div id="advSectionBillboard" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <label class="small" style="font-weight:600;">Billboard Location & Landmark <span style="color:red">*</span></label>
-                <input id="advFormBillboardLoc" placeholder="e.g. Third Mainland Bridge Inbound, Oshodi Terminal Billboard" style="width:100%;">
-              </div>
-              <div class="col">
-                <label class="small" style="font-weight:600;">Signage Agency / Board ID (Optional)</label>
-                <input id="advFormBillboardAgency" placeholder="e.g. Nimbus Media, Board #LAG-042" style="width:100%;">
-              </div>
-            </div>
-          </div>
-
-          <!-- Social Media Inputs -->
-          <div id="advSectionSocial" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <label class="small" style="font-weight:600;">Platform <span style="color:red">*</span></label>
-                <select id="advFormSocialPlatform" style="width:100%;">
-                  <option value="Instagram" selected>Instagram</option>
-                  <option value="TikTok">TikTok</option>
-                  <option value="Facebook">Facebook</option>
-                  <option value="X (Twitter)">X (Twitter)</option>
-                  <option value="YouTube">YouTube</option>
-                  <option value="Website / Blog">Website / Online Store</option>
+                <label style="font-weight:600; font-size:12px;">Select Existing Company or Enter New</label>
+                <select id="advFormCompanySelect" style="width:100%;">
+                  <option value="__NEW_COMPANY__">➕ Enter New Company / Advertiser</option>
+                  ${sortedCompanies.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)} (${companiesMap.get(c).size} products)</option>`).join("")}
                 </select>
               </div>
+            </div>
+            <div class="row" id="advFormNewCompRow" style="margin-top:8px;">
               <div class="col">
-                <label class="small" style="font-weight:600;">Handle / Profile URL <span style="color:red">*</span></label>
-                <input id="advFormSocialHandle" placeholder="e.g. @company_ng or instagram.com/brand" style="width:100%;">
+                <label class="small" style="font-weight:600; color:#166534;">Company Name <span style="color:red">*</span></label>
+                <input id="advFormNewCompInput" placeholder="e.g. Unilever Nigeria Plc, Emzor Pharma, Fidson Healthcare Plc" style="width:100%;">
+              </div>
+            </div>
+
+            <!-- 2. Product (Child) -->
+            <h5 style="margin:16px 0 8px; color:#15803d; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; border-top:1px dashed #bbf7d0; padding-top:12px;">
+              📦 2. Product Name (Child Folder)
+            </h5>
+            <div class="row" id="advFormExistingProdRow" style="display:none; margin-bottom:8px;">
+              <div class="col">
+                <label style="font-weight:600; font-size:12px;">Existing Products for this Company</label>
+                <select id="advFormExistingProdSelect" style="width:100%;">
+                  <option value="__NEW_PRODUCT__">➕ Enter New Product for this Company</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" id="advFormNewProdRow">
+              <div class="col">
+                <label class="small" style="font-weight:600; color:#166534;">Product / Advert Name <span style="color:red">*</span></label>
+                <input id="advFormProdInput" placeholder="e.g. Joy Beauty Bar with Honey, Gascol Antacid" required style="width:100%;">
               </div>
             </div>
           </div>
 
-          <!-- Print Inputs -->
-          <div id="advSectionPrint" style="display:none;">
-            <div class="row">
+          <!-- 3. Medium & Sighting -->
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:14px;">
+            <h5 style="margin:0 0 8px; color:#334155; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">
+              📡 3. Medium & Sighting Details
+            </h5>
+            <div class="row" style="margin-bottom:10px;">
               <div class="col">
-                <label class="small" style="font-weight:600;">Publication Name or Distribution Point <span style="color:red">*</span></label>
-                <input id="advFormPrintPub" placeholder="e.g. Punch Newspaper, Handbills at Oshodi" style="width:100%;">
+                <label style="font-weight:600; font-size:12px;">Medium of Advertisement <span style="color:red">*</span></label>
+                <select id="advFormMediumSelect" style="width:100%;">
+                  <option value="Television / Broadcast" selected>Television / Broadcast (TV Channel)</option>
+                  <option value="Radio">Radio (Radio Station)</option>
+                  <option value="Billboard / Poster / Outdoor">Billboard / Poster / Outdoor (Location / Landmark)</option>
+                  <option value="Social Media / Online">Social Media / Online (Instagram, TikTok, FB, Web)</option>
+                  <option value="Print / Flyer / Handbill">Print / Flyer / Handbill (Publication / Handbill)</option>
+                  <option value="In-Store / Point of Sale Display">Physical Facility / In-Store Display (Pharmacy, Supermarket, Shop)</option>
+                  <option value="Other">Other Media / Mobile PA</option>
+                </select>
               </div>
+            </div>
+
+            <!-- TV Inputs -->
+            <div id="advSectionTV">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">TV Channel <span style="color:red">*</span></label>
+                  <select id="advFormTvChannel" style="width:100%;">
+                    <option value="Channels TV" selected>Channels TV</option>
+                    <option value="TVC News">TVC News / TVC Entertainment</option>
+                    <option value="NTA">NTA (National / Lagos)</option>
+                    <option value="Arise News">Arise News</option>
+                    <option value="Silverbird TV">Silverbird TV (STV)</option>
+                    <option value="AIT">AIT (Africa Independent Television)</option>
+                    <option value="Soundcity TV">Soundcity TV</option>
+                    <option value="__CUSTOM_TV__">➕ Other TV Channel...</option>
+                  </select>
+                  <input id="advFormCustomTv" placeholder="Specify TV Channel Name" style="display:none; margin-top:6px; width:100%;">
+                </div>
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Program / Air Time Window (Optional)</label>
+                  <input id="advFormTvProgram" placeholder="e.g. 8:00 PM Prime News, Morning Show" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Radio Inputs -->
+            <div id="advSectionRadio" style="display:none;">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Radio Station <span style="color:red">*</span></label>
+                  <select id="advFormRadioStation" style="width:100%;">
+                    <option value="Wazobia 95.1 FM" selected>Wazobia 95.1 FM</option>
+                    <option value="Cool 96.9 FM">Cool 96.9 FM</option>
+                    <option value="Nigeria Info 99.3 FM">Nigeria Info 99.3 FM</option>
+                    <option value="Raypower 100.5 FM">Raypower 100.5 FM</option>
+                    <option value="The Beat 99.9 FM">The Beat 99.9 FM</option>
+                    <option value="Brila 88.9 FM">Brila 88.9 FM</option>
+                    <option value="Bond 92.9 FM">Bond 92.9 FM</option>
+                    <option value="Radio Lagos 107.5 FM">Radio Lagos 107.5 FM</option>
+                    <option value="__CUSTOM_RADIO__">➕ Other Radio Station...</option>
+                  </select>
+                  <input id="advFormCustomRadio" placeholder="Specify Station Name / Frequency" style="display:none; margin-top:6px; width:100%;">
+                </div>
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Program / Time Slot (Optional)</label>
+                  <input id="advFormRadioProgram" placeholder="e.g. Morning Rush, Evening Drive" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Billboard Inputs -->
+            <div id="advSectionBillboard" style="display:none;">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Billboard Location & Landmark <span style="color:red">*</span></label>
+                  <input id="advFormBillboardLoc" placeholder="e.g. Third Mainland Bridge Inbound, Oshodi Terminal Billboard" style="width:100%;">
+                </div>
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Signage Agency / Board ID (Optional)</label>
+                  <input id="advFormBillboardAgency" placeholder="e.g. Nimbus Media, Board #LAG-042" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Media Inputs -->
+            <div id="advSectionSocial" style="display:none;">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Platform <span style="color:red">*</span></label>
+                  <select id="advFormSocialPlatform" style="width:100%;">
+                    <option value="Instagram" selected>Instagram</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="X (Twitter)">X (Twitter)</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="Website / Blog">Website / Online Store</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Handle / Profile URL <span style="color:red">*</span></label>
+                  <input id="advFormSocialHandle" placeholder="e.g. @company_ng or instagram.com/brand" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Print Inputs -->
+            <div id="advSectionPrint" style="display:none;">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Publication Name or Distribution Point <span style="color:red">*</span></label>
+                  <input id="advFormPrintPub" placeholder="e.g. The Punch Newspaper, Vanguard, Ikeja Under-Bridge Flyer" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- In-Store / Facility Inputs -->
+            <div id="advSectionInStore" style="display:none;">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Facility / Store Name <span style="color:red">*</span></label>
+                  <input id="advFormFacilityName" placeholder="e.g. Alpha Pharmacy, Medplus VI, Shoprite Ikeja" style="width:100%;">
+                </div>
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Facility Address</label>
+                  <input id="advFormFacilityAddr" placeholder="e.g. 14 Allen Avenue, Ikeja" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Other Media Inputs -->
+            <div id="advSectionOther" style="display:none;">
+              <div class="row">
+                <div class="col">
+                  <label class="small" style="font-weight:600;">Specify Medium & Identifier <span style="color:red">*</span></label>
+                  <input id="advFormOtherMedium" placeholder="e.g. Mobile PA Van Oshodi, Trade Fair Banner" style="width:100%;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Live folder indicator -->
+            <div style="margin-top:10px; font-size:12px; color:#0369a1; font-weight:600; padding:6px 10px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px;">
+              📁 SharePoint Sighting Folder: <span id="advFormSightingFolderDisplay" style="font-family:monospace; font-weight:700;">Channels_TV</span>
             </div>
           </div>
 
-          <!-- In-Store Inputs -->
-          <div id="advSectionInStore" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <label class="small" style="font-weight:600;">Store / Pharmacy Name <span style="color:red">*</span></label>
-                <input id="advFormStoreName" placeholder="e.g. Medplus Pharmacy, Ebeano Supermarket" style="width:100%;">
-              </div>
-              <div class="col">
-                <label class="small" style="font-weight:600;">Store Address / Location</label>
-                <input id="advFormStoreAddr" placeholder="e.g. 45 Allen Avenue, Ikeja" style="width:100%;">
-              </div>
+          <!-- 4. Date, Area, Inspectors -->
+          <div class="row" style="margin-bottom:14px;">
+            <div class="col">
+              <label style="font-weight:700; font-size:12px;">Campaign / Sighting Date <span style="color:red">*</span></label>
+              <input type="date" id="advFormDate" value="${todayStr}" required style="width:100%;">
+            </div>
+            <div class="col">
+              <label style="font-weight:700; font-size:12px;">LGA / Area <span style="color:red">*</span></label>
+              <select id="advFormArea" required style="width:100%;">
+                ${LAGOS_LGAS.map(a => `<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="col">
+              <label style="font-weight:700; font-size:12px;">Inspectors / Monitored By</label>
+              <input id="advFormInspectors" value="${escapeHTML(inspectorDefault)}" placeholder="Inspector Names" style="width:100%;">
             </div>
           </div>
 
-          <!-- Other Inputs -->
-          <div id="advSectionOther" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <label class="small" style="font-weight:600;">Medium Description <span style="color:red">*</span></label>
-                <input id="advFormOtherDetails" placeholder="e.g. Mobile PA Van at Market, Transit bus branding" style="width:100%;">
-              </div>
-            </div>
+          <!-- 5. Remarks / Action Taken -->
+          <div class="form-group" style="margin-bottom:14px;">
+            <label style="font-weight:700; font-size:12px;">Permit No. / Observations / Action Taken</label>
+            <textarea id="advFormRemarks" rows="2" placeholder="e.g. Pre-registered advert campaign approved under NAFDAC permit #LAG-ADV-2026-089. Sighted on TV broadcast; compliant." style="width:100%; font-size:13px;"></textarea>
           </div>
 
-          <!-- Live folder indicator -->
-          <div style="margin-top:10px; font-size:12px; color:#0369a1; font-weight:600; padding:6px 10px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px;">
-            📁 SharePoint Sighting Folder: <span id="advFormSightingFolderDisplay" style="font-family:monospace; font-weight:700;">Channels_TV</span>
+          <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <button type="submit" id="advFormSubmitBtn" class="success" style="padding:12px 28px; font-size:15px; font-weight:600;">
+              💾 Save Advert Campaign to Database & Scaffold SharePoint Folders
+            </button>
           </div>
-        </div>
+        </form>
+      </div>
 
-        <!-- 4. Date, Area, Inspectors -->
-        <div class="row" style="margin-bottom:14px;">
-          <div class="col">
-            <label style="font-weight:700; font-size:12px;">Campaign / Sighting Date <span style="color:red">*</span></label>
-            <input type="date" id="advFormDate" value="${todayStr}" required style="width:100%;">
+      <!-- Section 2: Bulk CSV Upload -->
+      <div id="advCsvSection" style="display:none;">
+        <!-- Template Download Banner -->
+        <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:16px 20px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div style="max-width:560px;">
+            <h4 style="margin:0 0 4px; color:#15803d; font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px;">
+              <span>📄</span> Download Advert Bulk Upload Template
+            </h4>
+            <p class="muted small" style="margin:0; font-size:13px; color:#166534;">
+              Use the official CSV template with pre-configured headers and example rows across TV, Radio, Outdoor, Social Media, and In-Store sightings.
+            </p>
           </div>
-          <div class="col">
-            <label style="font-weight:700; font-size:12px;">LGA / Area <span style="color:red">*</span></label>
-            <select id="advFormArea" required style="width:100%;">
-              ${LAGOS_LGAS.map(a => `<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`).join("")}
-            </select>
-          </div>
-          <div class="col">
-            <label style="font-weight:700; font-size:12px;">Inspectors / Monitored By</label>
-            <input id="advFormInspectors" value="${escapeHTML(inspectorDefault)}" placeholder="Inspector Names" style="width:100%;">
-          </div>
-        </div>
-
-        <!-- 5. Remarks / Action Taken -->
-        <div class="form-group" style="margin-bottom:14px;">
-          <label style="font-weight:700; font-size:12px;">Permit No. / Observations / Action Taken</label>
-          <textarea id="advFormRemarks" rows="2" placeholder="e.g. Pre-registered advert campaign approved under NAFDAC permit #LAG-ADV-2026-089. Sighted on TV broadcast; compliant." style="width:100%; font-size:13px;"></textarea>
-        </div>
-
-        <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
-          <button type="submit" id="advFormSubmitBtn" class="success" style="padding:12px 28px; font-size:15px; font-weight:600;">
-            💾 Save Advert Campaign to Database & Scaffold SharePoint Folders
+          <button type="button" id="advDownloadTemplateBtn" class="success" style="padding:10px 20px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; box-shadow:0 2px 4px rgba(22,101,52,0.15);">
+            <span>📥</span> Download CSV Template
           </button>
         </div>
-      </form>
+
+        <!-- Collapsible Specification Guide -->
+        <details style="margin-bottom:18px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px 14px; font-size:13px;">
+          <summary style="font-weight:600; color:#334155; cursor:pointer; user-select:none;">
+            ℹ️ Click to view Required Columns & Accepted Field Values
+          </summary>
+          <div style="margin-top:12px; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:12px;">
+              <thead>
+                <tr style="background:#e2e8f0; text-align:left;">
+                  <th style="padding:6px 8px;">Column Header</th>
+                  <th style="padding:6px 8px;">Required?</th>
+                  <th style="padding:6px 8px;">Accepted Values / Explanation</th>
+                  <th style="padding:6px 8px;">Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>advertCategory</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;"><code>Scheduled Advert</code> or <code>Unexpected Advert</code></td>
+                  <td style="padding:6px 8px;"><code>Scheduled Advert</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>mainProductType</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;"><code>Drugs</code>, <code>Food</code>, <code>Cosmetics</code>, <code>Medical Devices</code>, <code>Herbals</code>, <code>Chemicals</code></td>
+                  <td style="padding:6px 8px;"><code>Drugs</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>advertCompany</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;">Advertiser / Manufacturer company name (Parent folder in SharePoint)</td>
+                  <td style="padding:6px 8px;"><code>Emzor Pharmaceuticals Ltd</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>advertName</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;">Product brand or advertised item name (Child folder in SharePoint)</td>
+                  <td style="padding:6px 8px;"><code>Emzor Paracetamol Syrup</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>advertMedium</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;"><code>Television / Broadcast</code>, <code>Radio</code>, <code>Billboard / Poster / Outdoor</code>, <code>Social Media / Online</code>, <code>Print / Flyer / Handbill</code>, <code>In-Store / Point of Sale Display</code></td>
+                  <td style="padding:6px 8px;"><code>Television / Broadcast</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>sightingTarget</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;">Channel name (TV), Radio Station (Radio), Billboard Location, Social Handle (@handle), Publication, or Facility Name</td>
+                  <td style="padding:6px 8px;"><code>Channels TV</code> / <code>@emzorpharma</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>platformOrSubDetail</code></td>
+                  <td style="padding:6px 8px; color:#64748b;">Optional</td>
+                  <td style="padding:6px 8px;">Show airtime, Social platform name (Instagram, TikTok), Agency ID, or Street Address</td>
+                  <td style="padding:6px 8px;"><code>8PM Prime News</code> / <code>Instagram</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>inspectionDate</code></td>
+                  <td style="padding:6px 8px; color:#15803d; font-weight:600;">Required</td>
+                  <td style="padding:6px 8px;">Date in format <code>YYYY-MM-DD</code> (or DD/MM/YYYY)</td>
+                  <td style="padding:6px 8px;"><code>2026-09-15</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>area</code></td>
+                  <td style="padding:6px 8px; color:#64748b;">Optional</td>
+                  <td style="padding:6px 8px;">Lagos LGA (e.g. <code>Ikeja</code>, <code>Lagos Island</code>, <code>Surulere</code>. Defaults to Ikeja)</td>
+                  <td style="padding:6px 8px;"><code>Ikeja</code></td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:6px 8px; font-weight:600;"><code>inspectorNames</code></td>
+                  <td style="padding:6px 8px; color:#64748b;">Optional</td>
+                  <td style="padding:6px 8px;">Officers who logged or verified the campaign (comma-separated)</td>
+                  <td style="padding:6px 8px;"><code>Pharm. Ade B., Pharm. Obi A.</code></td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px; font-weight:600;"><code>actionTaken</code></td>
+                  <td style="padding:6px 8px; color:#64748b;">Optional</td>
+                  <td style="padding:6px 8px;">Permit #, observations, compliance verification, or enforcement action taken</td>
+                  <td style="padding:6px 8px;"><code>Permit #LAG-ADV-2026-089; compliant</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <!-- Dropzone Box -->
+        <div id="advCsvDropzone" style="border:2px dashed #94a3b8; border-radius:8px; padding:32px 20px; text-align:center; background:#fafafa; cursor:pointer; transition:all 0.2s ease;">
+          <input type="file" id="advCsvFileInput" accept=".csv,text/csv" style="display:none;">
+          <div style="font-size:40px; margin-bottom:8px;">📁</div>
+          <h4 style="margin:0 0 6px; font-size:15px; color:#1e293b;">Click to select a CSV file or drag and drop here</h4>
+          <p class="muted small" style="margin:0;">Supports standard .csv format exported from Excel, Google Sheets, or Numbers.</p>
+        </div>
+
+        <!-- Preview Card -->
+        <div id="advCsvPreviewCard" style="display:none; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <div>
+              <strong id="advCsvFileName" style="font-size:14px; color:#0f172a;"></strong>
+              <span id="advCsvStatsBadge" style="margin-left:8px; font-size:12px; padding:3px 10px; border-radius:12px; font-weight:600;"></span>
+            </div>
+            <button type="button" id="advCsvResetBtn" class="secondary small">✕ Clear File</button>
+          </div>
+
+          <!-- Table Container -->
+          <div style="max-height:320px; overflow:auto; border:1px solid #cbd5e1; border-radius:6px; background:#fff; margin-bottom:16px;">
+            <table style="width:100%; border-collapse:collapse; font-size:12px; white-space:nowrap;" id="advCsvTable">
+              <thead style="background:#f1f5f9; position:sticky; top:0; z-index:1;">
+                <tr>
+                  <th style="padding:8px 10px; text-align:center;">#</th>
+                  <th style="padding:8px 10px; text-align:left;">Category</th>
+                  <th style="padding:8px 10px; text-align:left;">Line</th>
+                  <th style="padding:8px 10px; text-align:left;">Company</th>
+                  <th style="padding:8px 10px; text-align:left;">Product</th>
+                  <th style="padding:8px 10px; text-align:left;">Medium</th>
+                  <th style="padding:8px 10px; text-align:left;">Target / Sighting</th>
+                  <th style="padding:8px 10px; text-align:left;">Date</th>
+                  <th style="padding:8px 10px; text-align:left;">LGA</th>
+                  <th style="padding:8px 10px; text-align:center;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="advCsvTableBody"></tbody>
+            </table>
+          </div>
+
+          <!-- Controls Container -->
+          <div style="display:flex; flex-direction:column; gap:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:14px;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor:pointer;">
+              <input type="checkbox" id="advCsvWebhookCheck" checked style="width:16px; height:16px; accent-color:#16a34a;">
+              Scaffold SharePoint Folder Hierarchy for each row via Power Automate Webhook
+            </label>
+            <div id="advCsvProgressContainer" style="display:none;">
+              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+                <span id="advCsvProgressText" style="font-weight:600; color:#15803d;">Importing records...</span>
+                <span id="advCsvProgressPercent" style="font-weight:700;">0%</span>
+              </div>
+              <div style="width:100%; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                <div id="advCsvProgressBar" style="width:0%; height:100%; background:#16a34a; transition:width 0.2s ease;"></div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+              <button type="button" id="advCsvImportBtn" class="success" style="padding:12px 24px; font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                <span>🚀</span> Import Records into Database
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 
-  // Bind Interactions
+  // Bind Mode Switching
+  const modeSingleBtn = container.querySelector("#advModeSingleBtn");
+  const modeCsvBtn = container.querySelector("#advModeCsvBtn");
+  const singleSection = container.querySelector("#advSingleSection");
+  const csvSection = container.querySelector("#advCsvSection");
+
+  modeSingleBtn.addEventListener("click", () => {
+    modeSingleBtn.className = "primary small";
+    modeCsvBtn.className = "secondary small";
+    singleSection.style.display = "block";
+    csvSection.style.display = "none";
+  });
+
+  modeCsvBtn.addEventListener("click", () => {
+    modeCsvBtn.className = "primary small";
+    modeSingleBtn.className = "secondary small";
+    singleSection.style.display = "none";
+    csvSection.style.display = "block";
+  });
+
+  container.querySelector("#advLaunchWizardBtn").onclick = () => navigate("report");
+  container.querySelector("#advDownloadTemplateBtn").onclick = downloadAdvertCsvTemplate;
+
+  // Single Form Dropdown & Field Dynamics
   const compSelect = container.querySelector("#advFormCompanySelect");
   const newCompRow = container.querySelector("#advFormNewCompRow");
   const newCompInput = container.querySelector("#advFormNewCompInput");
@@ -1463,155 +1804,148 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
     if (printSection) printSection.style.display = med === "Print / Flyer / Handbill" ? "block" : "none";
     if (inStoreSection) inStoreSection.style.display = med === "In-Store / Point of Sale Display" ? "block" : "none";
     if (otherSection) otherSection.style.display = med === "Other" ? "block" : "none";
-    updateFolderPreview();
-  }
-
-  function updateFolderPreview() {
-    if (!folderDisplay) return;
-    const med = mediumSelect.value;
-    let sFolder = "";
-    if (med === "Television / Broadcast") {
-      const tvCh = container.querySelector("#advFormTvChannel")?.value;
-      sFolder = (tvCh === "__CUSTOM_TV__")
-        ? (container.querySelector("#advFormCustomTv")?.value.trim() || "Custom_TV")
-        : (tvCh || "Channels_TV");
-    } else if (med === "Radio") {
-      const rad = container.querySelector("#advFormRadioStation")?.value;
-      sFolder = (rad === "__CUSTOM_RADIO__")
-        ? (container.querySelector("#advFormCustomRadio")?.value.trim() || "Custom_Radio")
-        : (rad || "Radio_Station");
-    } else if (med === "Billboard / Poster / Outdoor") {
-      sFolder = container.querySelector("#advFormBillboardLoc")?.value.trim() || "Billboard_Location";
-    } else if (med === "Social Media / Online") {
-      const p = container.querySelector("#advFormSocialPlatform")?.value || "Social";
-      const h = container.querySelector("#advFormSocialHandle")?.value.trim() || "@handle";
-      sFolder = `${p}_${h.replace(/[@\/\\:*?"<>|]/g, "").replace(/\s+/g, "_")}`;
-    } else if (med === "Print / Flyer / Handbill") {
-      sFolder = container.querySelector("#advFormPrintPub")?.value.trim() || "Publication_Name";
-    } else if (med === "In-Store / Point of Sale Display") {
-      sFolder = container.querySelector("#advFormStoreName")?.value.trim() || "Store_Outlet";
-    } else {
-      sFolder = container.querySelector("#advFormOtherDetails")?.value.trim() || "Other_Medium";
-    }
-    folderDisplay.textContent = sFolder.replace(/[."*:<>?\/\\|]/g, "").trim().substring(0, 45);
+    updateSightingFolderPreview();
   }
 
   mediumSelect.addEventListener("change", updateMediumView);
-  container.querySelector("#advFormTvChannel")?.addEventListener("change", (e) => {
-    const custom = container.querySelector("#advFormCustomTv");
-    if (custom) custom.style.display = e.target.value === "__CUSTOM_TV__" ? "block" : "none";
-    updateFolderPreview();
-  });
-  container.querySelector("#advFormRadioStation")?.addEventListener("change", (e) => {
-    const custom = container.querySelector("#advFormCustomRadio");
-    if (custom) custom.style.display = e.target.value === "__CUSTOM_RADIO__" ? "block" : "none";
-    updateFolderPreview();
-  });
 
-  container.querySelectorAll("input, select").forEach(el => {
-    el.addEventListener("input", updateFolderPreview);
-    el.addEventListener("change", updateFolderPreview);
+  // Custom TV Channel & Radio Station toggles
+  const tvSelect = container.querySelector("#advFormTvChannel");
+  const customTvInput = container.querySelector("#advFormCustomTv");
+  tvSelect.addEventListener("change", () => {
+    customTvInput.style.display = tvSelect.value === "__CUSTOM_TV__" ? "block" : "none";
+    updateSightingFolderPreview();
   });
+  customTvInput.addEventListener("input", updateSightingFolderPreview);
 
-  container.querySelector("#advLaunchWizardBtn")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    navigate("report");
+  const radioSelect = container.querySelector("#advFormRadioStation");
+  const customRadioInput = container.querySelector("#advFormCustomRadio");
+  radioSelect.addEventListener("change", () => {
+    customRadioInput.style.display = radioSelect.value === "__CUSTOM_RADIO__" ? "block" : "none";
+    updateSightingFolderPreview();
   });
+  customRadioInput.addEventListener("input", updateSightingFolderPreview);
 
-  // Handle Form Submit
+  // Inputs for live preview
+  container.querySelector("#advFormBillboardLoc")?.addEventListener("input", updateSightingFolderPreview);
+  container.querySelector("#advFormSocialHandle")?.addEventListener("input", updateSightingFolderPreview);
+  container.querySelector("#advFormPrintPub")?.addEventListener("input", updateSightingFolderPreview);
+  container.querySelector("#advFormFacilityName")?.addEventListener("input", updateSightingFolderPreview);
+  container.querySelector("#advFormOtherMedium")?.addEventListener("input", updateSightingFolderPreview);
+
+  function getActiveSightingFolder() {
+    const med = mediumSelect.value;
+    let target = "";
+    if (med === "Television / Broadcast") {
+      target = tvSelect.value === "__CUSTOM_TV__" ? customTvInput.value.trim() : tvSelect.value;
+    } else if (med === "Radio") {
+      target = radioSelect.value === "__CUSTOM_RADIO__" ? customRadioInput.value.trim() : radioSelect.value;
+    } else if (med === "Billboard / Poster / Outdoor") {
+      target = container.querySelector("#advFormBillboardLoc").value.trim();
+    } else if (med === "Social Media / Online") {
+      target = container.querySelector("#advFormSocialHandle").value.trim().replace(/^@/, "");
+    } else if (med === "Print / Flyer / Handbill") {
+      target = container.querySelector("#advFormPrintPub").value.trim();
+    } else if (med === "In-Store / Point of Sale Display") {
+      target = container.querySelector("#advFormFacilityName").value.trim();
+    } else {
+      target = container.querySelector("#advFormOtherMedium").value.trim();
+    }
+    return (target || "General_Sighting")
+      .replace(/[."*:<>?\/\|]/g, "_")
+      .replace(/\s+/g, "_")
+      .replace(/_+/g, "_")
+      .replace(/^_+|_+$/g, "") || "General_Sighting";
+  }
+
+  function updateSightingFolderPreview() {
+    if (folderDisplay) folderDisplay.textContent = getActiveSightingFolder();
+  }
+
+  updateMediumView();
+
+  // Submit Handler for Single Form
   const form = container.querySelector("#hubAdvertIntakeForm");
   form.onsubmit = async (e) => {
     e.preventDefault();
     const btn = container.querySelector("#advFormSubmitBtn");
     btn.disabled = true;
-    btn.textContent = "Saving & Creating Folders...";
+    btn.textContent = "⏳ Saving Advert & Creating Folders...";
 
     try {
       const category = container.querySelector("#advFormCategory").value;
       const prodLine = container.querySelector("#advFormProdLine").value;
-      const isNewComp = compSelect.value === "__NEW_COMPANY__";
-      const company = (isNewComp ? newCompInput.value : compSelect.value).trim();
-      const product = prodInput.value.trim();
 
+      // Resolve Company
+      let company = compSelect.value;
+      if (company === "__NEW_COMPANY__") {
+        company = newCompInput.value.trim();
+      }
       if (!company) {
-        alert("Please enter the Company / Advertiser Name.");
-        if (newCompInput) newCompInput.focus();
-        btn.disabled = false;
-        btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
-        return;
-      }
-      if (!product) {
-        alert("Please enter the Product / Advert Name.");
-        prodInput.focus();
+        alert("Please enter a Company name.");
         btn.disabled = false;
         btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
         return;
       }
 
+      // Resolve Product
+      const product = prodInput.value.trim();
+      if (!product) {
+        alert("Please enter a Product / Advert name.");
+        btn.disabled = false;
+        btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
+        return;
+      }
+
+      // Sighting Details
       const med = mediumSelect.value;
-      let sightingFolder = "";
+      const sightingFolder = getActiveSightingFolder();
       let sightingLabel = "";
       let sightingAddress = "";
 
       if (med === "Television / Broadcast") {
-        const tvCh = container.querySelector("#advFormTvChannel").value;
-        const actualCh = (tvCh === "__CUSTOM_TV__") ? container.querySelector("#advFormCustomTv").value.trim() : tvCh;
-        const program = container.querySelector("#advFormTvProgram").value.trim();
-        sightingFolder = actualCh;
-        sightingLabel = actualCh;
-        sightingAddress = program ? `Program: ${program}` : actualCh;
+        const ch = tvSelect.value === "__CUSTOM_TV__" ? customTvInput.value.trim() : tvSelect.value;
+        sightingLabel = `${ch || 'Television'} (Television / Broadcast)`;
+        sightingAddress = container.querySelector("#advFormTvProgram")?.value.trim() || "Lagos Broadcast";
       } else if (med === "Radio") {
-        const rad = container.querySelector("#advFormRadioStation").value;
-        const actualRad = (rad === "__CUSTOM_RADIO__") ? container.querySelector("#advFormCustomRadio").value.trim() : rad;
-        const program = container.querySelector("#advFormRadioProgram").value.trim();
-        sightingFolder = actualRad;
-        sightingLabel = actualRad;
-        sightingAddress = program ? `Program: ${program}` : actualRad;
+        const st = radioSelect.value === "__CUSTOM_RADIO__" ? customRadioInput.value.trim() : radioSelect.value;
+        sightingLabel = `${st || 'Radio'} (Radio Broadcast)`;
+        sightingAddress = container.querySelector("#advFormRadioProgram")?.value.trim() || "Lagos Broadcast";
       } else if (med === "Billboard / Poster / Outdoor") {
         const loc = container.querySelector("#advFormBillboardLoc").value.trim();
-        const agency = container.querySelector("#advFormBillboardAgency").value.trim();
-        sightingFolder = loc;
-        sightingLabel = `Billboard: ${loc}`;
-        sightingAddress = agency ? `${loc} (${agency})` : loc;
+        sightingLabel = `${loc || 'Billboard'} (Billboard / Outdoor)`;
+        sightingAddress = loc || "Lagos Outdoor";
       } else if (med === "Social Media / Online") {
-        const platform = container.querySelector("#advFormSocialPlatform").value;
+        const plat = container.querySelector("#advFormSocialPlatform").value;
         const handle = container.querySelector("#advFormSocialHandle").value.trim();
-        sightingFolder = `${platform}_${handle.replace(/[@\/\\:*?"<>|]/g, "").replace(/\s+/g, "_")}`;
-        sightingLabel = `${platform}: ${handle}`;
-        sightingAddress = handle;
+        sightingLabel = `${handle || 'Social Account'} (${plat})`;
+        sightingAddress = `Online - ${plat}`;
       } else if (med === "Print / Flyer / Handbill") {
         const pub = container.querySelector("#advFormPrintPub").value.trim();
-        sightingFolder = pub;
-        sightingLabel = `Print: ${pub}`;
-        sightingAddress = pub;
+        sightingLabel = `${pub || 'Print'} (Print Media)`;
+        sightingAddress = "Lagos Circulation";
       } else if (med === "In-Store / Point of Sale Display") {
-        const storeName = container.querySelector("#advFormStoreName").value.trim();
-        const storeAddr = container.querySelector("#advFormStoreAddr").value.trim();
-        sightingFolder = storeName;
-        sightingLabel = storeName;
-        sightingAddress = storeAddr;
+        const fac = container.querySelector("#advFormFacilityName").value.trim();
+        sightingLabel = fac || "In-Store Display";
+        sightingAddress = container.querySelector("#advFormFacilityAddr")?.value.trim() || "Lagos";
       } else {
-        const otherDet = container.querySelector("#advFormOtherDetails").value.trim();
-        sightingFolder = otherDet;
-        sightingLabel = otherDet;
-        sightingAddress = otherDet;
+        const oth = container.querySelector("#advFormOtherMedium").value.trim();
+        sightingLabel = oth || "Other Sighting";
+        sightingAddress = "Lagos";
       }
 
-      sightingFolder = (sightingFolder || "OUTLET").replace(/[."*:<>?\/\\|]/g, "").trim().substring(0, 45);
-      const cleanFacName = (sightingLabel || "ADVERT_OUTLET").trim().replace(/[."*:<>?\/\\|]/g, "").replace(/\.+$/, "").trim();
-
-      const rawDateStr = container.querySelector("#advFormDate").value || todayStr;
-      const [y, m, d] = rawDateStr.split("-").map(Number);
-      const inspectionDate = new Date(y, m - 1, d);
-
-      const inspectorsRaw = container.querySelector("#advFormInspectors").value.trim();
-      const inspectors = inspectorsRaw ? inspectorsRaw.split(",").map(i => i.trim()).filter(Boolean) : [currentUser?.displayName || "Inspector"];
+      const inspectionDate = container.querySelector("#advFormDate").value;
+      const cleanFacName = sightingLabel.replace(/[."*:<>?\/\|]/g, '').trim();
+      const inspectors = container.querySelector("#advFormInspectors").value
+        .split(/[,;&]/)
+        .map(n => n.trim())
+        .filter(Boolean);
       const remarks = container.querySelector("#advFormRemarks").value.trim();
 
       const reportData = {
         submissionId: "sub_" + Date.now(),
         lookupKey: `${cleanFacName}_Advert`,
-        inspectorNames: inspectors,
+        inspectorNames: inspectors.length ? inspectors : ["Directorate Inspector"],
         mainProductType: prodLine,
         productTypes: [prodLine],
         inspectionDate: inspectionDate,
@@ -1683,6 +2017,317 @@ function renderAdvertIntakeForm(container, items, cfg, onSaved, root) {
       btn.disabled = false;
       btn.textContent = "💾 Save Advert Campaign to Database & Scaffold SharePoint Folders";
     }
+  };
+
+  // ─── Bulk CSV Upload Handlers ──────────────────────────────────────────────
+  const dropzone = container.querySelector("#advCsvDropzone");
+  const fileInput = container.querySelector("#advCsvFileInput");
+  const previewCard = container.querySelector("#advCsvPreviewCard");
+  const fileNameDisplay = container.querySelector("#advCsvFileName");
+  const statsBadge = container.querySelector("#advCsvStatsBadge");
+  const tableBody = container.querySelector("#advCsvTableBody");
+  const resetBtn = container.querySelector("#advCsvResetBtn");
+  const importBtn = container.querySelector("#advCsvImportBtn");
+  const webhookCheck = container.querySelector("#advCsvWebhookCheck");
+  const progressContainer = container.querySelector("#advCsvProgressContainer");
+  const progressBar = container.querySelector("#advCsvProgressBar");
+  const progressText = container.querySelector("#advCsvProgressText");
+  const progressPercent = container.querySelector("#advCsvProgressPercent");
+
+  let parsedRowsCache = [];
+
+  dropzone.addEventListener("click", () => fileInput.click());
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.style.borderColor = "#15803d";
+    dropzone.style.background = "#f0fdf4";
+  });
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.style.borderColor = "#94a3b8";
+    dropzone.style.background = "#fafafa";
+  });
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.style.borderColor = "#94a3b8";
+    dropzone.style.background = "#fafafa";
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processCsvFile(e.dataTransfer.files[0]);
+    }
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files && fileInput.files.length > 0) {
+      processCsvFile(fileInput.files[0]);
+    }
+  });
+
+  resetBtn.addEventListener("click", () => {
+    fileInput.value = "";
+    parsedRowsCache = [];
+    previewCard.style.display = "none";
+    progressContainer.style.display = "none";
+    importBtn.disabled = false;
+    importBtn.textContent = "🚀 Import Records into Database";
+  });
+
+  function processCsvFile(file) {
+    if (!file.name.toLowerCase().endsWith(".csv")) {
+      alert("Please select a valid CSV file (.csv).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        const rawLines = parseCSV(text);
+        if (!rawLines || rawLines.length < 2) {
+          alert("The uploaded CSV file is empty or missing data rows.");
+          return;
+        }
+
+        const rawHeaders = rawLines[0];
+        const normalizedHeaders = rawHeaders.map(normalizeHeader);
+
+        const parsedRows = [];
+        for (let i = 1; i < rawLines.length; i++) {
+          const rowVals = rawLines[i];
+          const rowObj = {};
+          normalizedHeaders.forEach((h, idx) => {
+            rowObj[h] = rowVals[idx] || "";
+          });
+
+          // Required validation
+          const comp = (rowObj.advertCompany || "").trim();
+          const prod = (rowObj.advertName || "").trim();
+          const target = (rowObj.sightingTarget || "").trim();
+          const isValid = Boolean(comp && prod && target);
+
+          parsedRows.push({
+            rowNum: i,
+            raw: rowObj,
+            isValid,
+            reason: !isValid ? "Missing Company, Product, or Sighting Target" : "Ready"
+          });
+        }
+
+        parsedRowsCache = parsedRows;
+        renderCsvPreview(file.name, parsedRows);
+
+      } catch (err) {
+        console.error("Error reading CSV:", err);
+        alert("Failed to parse CSV file: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function renderCsvPreview(fileName, rows) {
+    fileNameDisplay.textContent = `📄 ${fileName}`;
+    const validCount = rows.filter(r => r.isValid).length;
+    const invalidCount = rows.length - validCount;
+
+    if (invalidCount === 0) {
+      statsBadge.textContent = `${validCount} Rows Ready`;
+      statsBadge.style.background = "#dcfce7";
+      statsBadge.style.color = "#166534";
+    } else {
+      statsBadge.textContent = `${validCount} Ready, ${invalidCount} Incomplete`;
+      statsBadge.style.background = "#fef9c3";
+      statsBadge.style.color = "#854d0e";
+    }
+
+    tableBody.innerHTML = rows.map(r => {
+      const it = r.raw;
+      const cat = normalizeCategory(it.advertCategory);
+      const line = normalizeProductLine(it.mainProductType);
+      const med = normalizeMedium(it.advertMedium);
+      const d = parseDateStr(it.inspectionDate);
+
+      return `
+        <tr style="border-bottom:1px solid #f1f5f9; ${r.isValid ? "" : "background:#fff1f2;"}">
+          <td style="padding:6px 10px; text-align:center; color:#64748b;">${r.rowNum}</td>
+          <td style="padding:6px 10px;"><span style="background:${cat.includes('Sched') ? '#e0f2fe' : '#fef3c7'}; color:${cat.includes('Sched') ? '#0369a1' : '#b45309'}; padding:2px 6px; border-radius:4px; font-weight:600;">${escapeHTML(cat)}</span></td>
+          <td style="padding:6px 10px;">${escapeHTML(line)}</td>
+          <td style="padding:6px 10px; font-weight:600; color:#1e293b;">${escapeHTML(it.advertCompany || '—')}</td>
+          <td style="padding:6px 10px; font-weight:600; color:#0f766e;">${escapeHTML(it.advertName || '—')}</td>
+          <td style="padding:6px 10px;">${escapeHTML(med)}</td>
+          <td style="padding:6px 10px; font-family:monospace;">${escapeHTML(it.sightingTarget || '—')}</td>
+          <td style="padding:6px 10px;">${escapeHTML(d)}</td>
+          <td style="padding:6px 10px;">${escapeHTML(it.area || 'Ikeja')}</td>
+          <td style="padding:6px 10px; text-align:center;">
+            ${r.isValid
+              ? `<span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:12px; font-weight:700;">Ready</span>`
+              : `<span style="background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:12px; font-weight:700;" title="${escapeHTML(r.reason)}">Missing Data</span>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    previewCard.style.display = "block";
+    importBtn.disabled = validCount === 0;
+    importBtn.textContent = `🚀 Import ${validCount} Advert Records to Database`;
+  }
+
+  // Batch CSV Import Execution
+  importBtn.onclick = async () => {
+    const validRows = parsedRowsCache.filter(r => r.isValid);
+    if (!validRows.length) {
+      alert("No valid rows to import.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to import ${validRows.length} advert records into the database?`)) {
+      return;
+    }
+
+    importBtn.disabled = true;
+    resetBtn.disabled = true;
+    progressContainer.style.display = "block";
+    progressBar.style.width = "0%";
+    progressPercent.textContent = "0%";
+
+    const shouldScaffold = webhookCheck.checked;
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < validRows.length; i++) {
+      const item = validRows[i].raw;
+      const cat = normalizeCategory(item.advertCategory);
+      const prodLine = normalizeProductLine(item.mainProductType);
+      const comp = (item.advertCompany || "GENERAL_COMPANY").trim();
+      const prod = (item.advertName || "GENERAL_PRODUCT").trim();
+      const med = normalizeMedium(item.advertMedium);
+      const target = (item.sightingTarget || "").trim();
+      const subDetail = (item.platformOrSubDetail || "").trim();
+      const dateStr = parseDateStr(item.inspectionDate);
+      const area = (item.area || "Ikeja").trim();
+      const inspectors = (item.inspectorNames || currentUser?.displayName || "Directorate Inspector")
+        .split(/[,;&]/)
+        .map(n => n.trim())
+        .filter(Boolean);
+      const remarks = (item.actionTaken || `Advert campaign registered via bulk CSV upload (${cat}).`).trim();
+
+      const cleanSighting = (target || "General_Sighting")
+        .replace(/[."*:<>?\/\\|]/g, "_")
+        .replace(/\s+/g, "_")
+        .replace(/_+/g, "_")
+        .replace(/^_+|_+$/g, "") || "General_Sighting";
+
+      let sightingFolder = cleanSighting;
+      let facilityName = "";
+      let facilityAddress = "";
+
+      if (med === "Television / Broadcast") {
+        sightingFolder = cleanSighting;
+        facilityName = `${target} (Television / Broadcast)`;
+        facilityAddress = subDetail || "Lagos Broadcast";
+      } else if (med === "Radio") {
+        sightingFolder = cleanSighting;
+        facilityName = `${target} (Radio Broadcast)`;
+        facilityAddress = subDetail || "Lagos Broadcast";
+      } else if (med === "Billboard / Poster / Outdoor") {
+        sightingFolder = cleanSighting;
+        facilityName = `${target} (Billboard / Outdoor)`;
+        facilityAddress = target;
+      } else if (med === "Social Media / Online") {
+        sightingFolder = cleanSighting.replace(/^@/, "");
+        const plat = subDetail || "Social Media";
+        facilityName = `${target} (${plat})`;
+        facilityAddress = `Online - ${plat}`;
+      } else if (med === "Print / Flyer / Handbill") {
+        sightingFolder = cleanSighting;
+        facilityName = `${target} (Print Media)`;
+        facilityAddress = subDetail || "Lagos Circulation";
+      } else if (med === "In-Store / Point of Sale Display") {
+        sightingFolder = cleanSighting;
+        facilityName = target;
+        facilityAddress = subDetail || `${area}, Lagos`;
+      } else {
+        sightingFolder = cleanSighting;
+        facilityName = target;
+        facilityAddress = subDetail || `${area}, Lagos`;
+      }
+
+      const cleanFacName = facilityName.replace(/[."*:<>?\/\\|]/g, "").trim();
+
+      const reportData = {
+        submissionId: "sub_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6),
+        lookupKey: `${cleanFacName}_Advert`,
+        inspectorNames: inspectors.length ? inspectors : ["Directorate Inspector"],
+        mainProductType: prodLine,
+        productTypes: [prodLine],
+        inspectionDate: dateStr,
+        area: area,
+        facilityName: facilityName,
+        facilityAddress: facilityAddress,
+        activityType: "Advert",
+        actionTaken: remarks,
+        sanctionGiven: false,
+        sanctionDocUrl: "",
+        mopUp: false,
+        mopUpCount: 0,
+        mopUpCounts: { drugs: 0, cosmetics: 0, medicalDevices: 0, food: 0 },
+        hold: false,
+        holdCount: 0,
+        holdCounts: { drugs: 0, cosmetics: 0, medicalDevices: 0, food: 0 },
+        gsdpSubActivity: "",
+        riskCategory: "",
+        companyEmail: "",
+        Samples: false,
+        Samplescount: 0,
+        consultativeMeetingCategory: "",
+        consultativeProductType: "",
+        isNewFacility: false,
+        linkedComplaintId: null,
+        regulatoryAlertEncountered: false,
+        linkedAlertId: null,
+        alertAction: "",
+        advertCategory: cat,
+        advertCompany: comp,
+        advertName: prod,
+        advertMedium: med,
+        advertPlatform: med === "Social Media / Online" ? (subDetail || "Instagram") : "",
+        advertHandle: med === "Social Media / Online" ? target : "",
+        advertChannel: med === "Television / Broadcast" ? target : "",
+        advertTvProgram: med === "Television / Broadcast" ? subDetail : "",
+        advertRadioStation: med === "Radio" ? target : "",
+        advertRadioProgram: med === "Radio" ? subDetail : "",
+        advertBillboardLocation: med === "Billboard / Poster / Outdoor" ? target : "",
+        advertBillboardAgency: med === "Billboard / Poster / Outdoor" ? subDetail : "",
+        advertPrintPublication: med === "Print / Flyer / Handbill" ? target : "",
+        sightingFolder: sightingFolder,
+        advertFolderExists: false,
+        isSubsequentRound: false,
+        advertActivityRound: "",
+        createdBy: currentUser?.uid || "admin",
+        createdAt: serverTimestamp()
+      };
+
+      try {
+        await addDoc(collection(db, "facilityReports"), reportData);
+        if (shouldScaffold) {
+          try {
+            await triggerTeamsWebhook(reportData);
+          } catch (hookErr) {
+            console.warn("Webhook warning on row " + (i + 1), hookErr);
+          }
+        }
+        successCount++;
+      } catch (writeErr) {
+        console.error("Error writing row " + (i + 1), writeErr);
+        failCount++;
+      }
+
+      const pct = Math.round(((i + 1) / validRows.length) * 100);
+      progressBar.style.width = `${pct}%`;
+      progressPercent.textContent = `${pct}%`;
+      progressText.textContent = `Imported ${i + 1} of ${validRows.length}: ${prod} (${comp})`;
+    }
+
+    alert(`✅ Bulk Import Completed!\nSuccessfully added ${successCount} records${failCount ? ` (${failCount} failed)` : ''}.`);
+    if (onSaved) await onSaved();
+    root.querySelector('[data-tab="records"]')?.click();
   };
 }
 function exportActivityCSV(items, cfg) {
