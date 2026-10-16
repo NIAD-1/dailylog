@@ -617,7 +617,11 @@ export async function renderActivityHub(root, config) {
 
     if (col.format === "teams") {
       let folderUrl = item.teamsFolderUrl;
-      if (!folderUrl && baseUrl) {
+      const isOutdatedLegacyUrl = folderUrl && (
+        /\/ROUTINE(?:%20|\s+)SURVEILLANCE\/\d{4}\/[^\/]+$/i.test(folderUrl) ||
+        /\/GSDP[^\/]+\/\d{4}\/[^\/]+$/i.test(folderUrl)
+      );
+      if ((!folderUrl || isOutdatedLegacyUrl) && baseUrl) {
         const cleanBase = baseUrl.replace(/\/+$/, "");
         if (cfg.key === "adverts") {
           const prodType = getAdvertProductTypeFolder(item.mainProductType);
@@ -639,13 +643,24 @@ export async function renderActivityHub(root, config) {
           }
           folderUrl = `${cleanBase}/ADVERTS/${prodType}/${itemYear}${monthPath}${entityPath}`;
         } else {
-          const facName = item.facilityName || item.outletVisited || item.complainant || item.name || "";
+          const facName = item.sightingFolder || item.facilityName || item.outletVisited || item.complainant || item.name || "";
           if (facName) {
             const sanitized = facName.replace(/[."*:<>?\/\\|]/g, "").trim();
-            const cleanFolder = (cfg.teamsRootFolder || "").replace(/^\/+/, "");
-            const itemYear = getItemYear(item);
-            const yearPath = (itemYear && parseInt(itemYear) >= 2026 && (cfg.key === "gsdp" || cfg.key === "surveillance")) ? `/${itemYear}` : "";
-            folderUrl = `${cleanBase}/${cleanFolder}${yearPath}/${encodeURIComponent(sanitized)}`;
+            const cleanFolder = (cfg.teamsRootFolder || "").replace(/^\/+|\/+$/g, "");
+            const itemYear = getItemYear(item) || String(new Date().getFullYear());
+            const itemMonth = getItemMonth(item) || new Date().toLocaleString("default", { month: "long" }).toUpperCase();
+            const isHistoricalPre2026 = (item.year && parseInt(item.year) < 2026) || (parseInt(itemYear) < 2026);
+
+            if (isHistoricalPre2026) {
+              folderUrl = `${cleanBase}/${cleanFolder}/${encodeURIComponent(sanitized)}`;
+            } else if (cfg.key === "surveillance") {
+              const prodType = (item.mainProductType || item.productType || "DRUGS").trim().toUpperCase();
+              folderUrl = `${cleanBase}/ROUTINE SURVEILLANCE/${encodeURIComponent(prodType)}/${itemYear}/${encodeURIComponent(itemMonth)}/${encodeURIComponent(sanitized)}`;
+            } else if (cfg.key === "glsi") {
+              folderUrl = `${cleanBase}/GLSI MONITORING/${itemYear}/${encodeURIComponent(itemMonth)}/${encodeURIComponent(sanitized)}`;
+            } else {
+              folderUrl = `${cleanBase}/${cleanFolder}/${itemYear}/${encodeURIComponent(itemMonth)}/${encodeURIComponent(sanitized)}`;
+            }
           }
         }
       }

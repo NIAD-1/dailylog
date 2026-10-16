@@ -2199,12 +2199,8 @@ function getFolderConfig(report) {
                 };
             }
 
-            let root = '/ROUTINE SURVEILLANCE/DRUGS';
-            if (mainProductType === 'Medical Devices') {
-                root = '/MEDICAL DEVICES/ROUTINE SURVEILLANCE FOR MEDICAL DEVICES';
-            } else if (mainProductType) {
-                root = `/ROUTINE SURVEILLANCE/${mainProductType.toUpperCase()}`;
-            }
+            const prodType = (mainProductType || 'DRUGS').trim().toUpperCase();
+            const root = `/ROUTINE SURVEILLANCE/${prodType}`;
             return {
                 rootFolder: root,
                 productType: mainProductType || 'Drugs',
@@ -2229,7 +2225,7 @@ function getFolderConfig(report) {
         case 'GSDP': {
             const dateObj = getReportDateObj(report.inspectionDate);
             const year = dateObj.getFullYear().toString();
-            const root = `/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES/${year}`;
+            const root = '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES';
             const risk = String(report.riskCategory || '').toLowerCase();
             const isLowRisk = risk.includes('low') || risk.includes('category a') || risk === 'a';
 

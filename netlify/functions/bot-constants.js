@@ -58,16 +58,12 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
   const specialDrugs = ['Service Drugs', 'Donated Items/Drugs', 'Orphan Drugs'];
   const isSpecial = mainProductType && specialDrugs.includes(mainProductType);
   switch (activityType) {
-    case 'Routine Surveillance':
+    case 'Routine Surveillance': {
       if (isSpecial) return { rootFolder: `/DONATED DRUGS, SERVICE DRUGS AND ORPHAN DRUGS/${currentYear}`, productType: mainProductType, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
-
-      let root = '/ROUTINE SURVEILLANCE/DRUGS';
-      if (mainProductType === 'Medical Devices') {
-        root = '/MEDICAL DEVICES/ROUTINE SURVEILLANCE FOR MEDICAL DEVICES';
-      } else if (mainProductType) {
-        root = `/ROUTINE SURVEILLANCE/${mainProductType.toUpperCase()}`;
-      }
+      const prodType = (mainProductType || 'DRUGS').trim().toUpperCase();
+      const root = `/ROUTINE SURVEILLANCE/${prodType}`;
       return { rootFolder: root, productType: mainProductType || 'Drugs', subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
+    }
     case 'Special Surveillance':
       return { rootFolder: mainProductType ? `/Special Surveillance/${mainProductType.toUpperCase()}` : '/Special Surveillance', productType: mainProductType || null, subfolders: ['Surveillance_Report', 'Consultative_Meeting', 'Extra_Data'] };
     case 'Advert': {
@@ -110,7 +106,7 @@ function getFolderConfig(activityType, productTypes, mainProductType, riskCatego
     case 'Consumer Complaint':
       return { rootFolder: '/CONSUMER COMPLAINT', productType: (productTypes || []).join(', ') || null, subfolders: ['Inspection_Report', 'Consultative_Meeting', 'Investigation_Data'] };
     case 'GSDP': {
-      const gsdpRoot = `/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES/${currentYear}`;
+      const gsdpRoot = '/GSDP (GOOD STORAGE AND DISTRIBUTION PRACTICE)/GSDP COMPANY FILES';
       const risk = String(riskCategory || '').toLowerCase();
       const isLowRisk = risk.includes('low') || risk.includes('category a') || risk === 'a';
       if (isLowRisk) {
