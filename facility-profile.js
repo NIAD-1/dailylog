@@ -11,7 +11,7 @@ export const invalidateFacilitiesCache = () => {
     allFacilities = [];
     lastFetchedFacilities = 0;
 };
-let dirState = { letter: "A", activity: "All", zone: "All", status: "All", year: "All" };
+let dirState = { letter: "A", activity: "All", zone: "All", lga: "All", status: "All", year: "All" };
 let selectedFacilities = new Set();
 let isMergeMode = false;
 
@@ -265,6 +265,7 @@ function renderDirectoryArea(facilities) {
     // Get unique options for filters
     const activities = [...new Set(facilities.flatMap(f => f.activityTypes || []))].filter(Boolean).sort();
     const zones = [...new Set(facilities.map(f => f.zone ? f.zone.trim() : ""))].filter(Boolean).sort();
+    const lgas = [...new Set(facilities.map(f => (f.lga || f.area || "").trim()))].filter(Boolean).sort();
     const statuses = [...new Set(facilities.map(f => f.status ? f.status.trim() : ""))].filter(Boolean).sort();
     const years = [...new Set(facilities.map(f => {
         if (!f.lastVisitDate) return null;
@@ -311,6 +312,13 @@ function renderDirectoryArea(facilities) {
                 </select>
             </div>
             <div class="fp-filter-wrapper">
+                <label>Local Govt. Area</label>
+                <select id="dirFilterLGA" class="fp-filter-select">
+                    <option value="All">All LGAs</option>
+                    ${lgas.map(l => `<option value="${l}" ${dirState.lga === l ? 'selected' : ''}>${l}</option>`).join('')}
+                </select>
+            </div>
+            <div class="fp-filter-wrapper">
                 <label>Zone / Region</label>
                 <select id="dirFilterZone" class="fp-filter-select">
                     <option value="All">All Zones</option>
@@ -331,6 +339,11 @@ function renderDirectoryArea(facilities) {
                     ${years.map(y => `<option value="${y}" ${dirState.year === y ? 'selected' : ''}>${y}</option>`).join('')}
                 </select>
             </div>
+            ${(dirState.lga !== "All" || dirState.zone !== "All" || dirState.activity !== "All" || dirState.status !== "All" || dirState.year !== "All") ? `
+            <div class="fp-filter-wrapper" style="align-self: flex-end;">
+                <button id="dirClearFilters" class="fp-btn-outline" style="font-size: 12px; padding: 6px 12px; height: 36px;">✕ Clear Filters</button>
+            </div>
+            ` : ''}
         </div>
 
         <div id="fpDirResults" class="fp-dir-grid"></div>
@@ -377,6 +390,19 @@ function renderDirectoryArea(facilities) {
         autoLinkBtn.onclick = () => autoLinkFacilities(facilities);
     }
 
+    // Clear filters button
+    const clearFiltersBtn = document.getElementById("dirClearFilters");
+    if (clearFiltersBtn) {
+        clearFiltersBtn.onclick = () => {
+            dirState.activity = "All";
+            dirState.zone = "All";
+            dirState.lga = "All";
+            dirState.status = "All";
+            dirState.year = "All";
+            renderDirectoryArea(facilities);
+        };
+    }
+
     // Bind Filters
     const bindFilter = (id, key) => {
         const el = document.getElementById(id);
@@ -386,6 +412,7 @@ function renderDirectoryArea(facilities) {
         });
     };
     bindFilter("dirFilterActivity", "activity");
+    bindFilter("dirFilterLGA", "lga");
     bindFilter("dirFilterZone", "zone");
     bindFilter("dirFilterStatus", "status");
     bindFilter("dirFilterYear", "year");
@@ -411,6 +438,7 @@ function renderDirectoryResults(facilities) {
             }
         }
         if (dirState.activity !== "All" && !(f.activityTypes || []).includes(dirState.activity)) return false;
+        if (dirState.lga !== "All" && (f.lga || f.area || "").trim() !== dirState.lga) return false;
         if (dirState.zone !== "All" && f.zone !== dirState.zone) return false;
         if (dirState.status !== "All" && f.status !== dirState.status) return false;
         if (dirState.year !== "All") {
@@ -443,6 +471,7 @@ function renderDirectoryResults(facilities) {
                     ${f.lastVisitDate ? `<div style="margin-top:4px;">⏱️ Last Visit: ${f.lastVisitDate}</div>` : ""}
                 </div>
                 <div class="fp-dir-card-tags">
+                    ${(f.lga || f.area) ? `<span class="fp-tag fp-tag-lga" title="Local Government Area">${f.lga || f.area}</span>` : ""}
                     ${f.zone ? `<span class="fp-tag fp-tag-zone">${f.zone}</span>` : ""}
                     ${f.status ? `<span class="fp-status-badge fp-status-${(f.status || 'Active').toLowerCase().replace(/\s/g, '-')}" style="padding: 2px 6px; font-size: 10px;">${f.status}</span>` : ""}
                 </div>
