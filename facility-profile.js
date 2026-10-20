@@ -19,6 +19,114 @@ export const setFacilityProfileUser = (user, role) => {
     currentUserRole = role;
 };
 
+// ─── LGA Inference & Standardization Engine ──────────────────────────────────
+export const LAGOS_LGAS = [
+    "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa",
+    "Badagry", "Epe", "Eti-Osa", "Ibeju-Lekki", "Ifako-Ijaiye",
+    "Ikeja", "Ikorodu", "Kosofe", "Lagos Island", "Lagos Mainland",
+    "Mushin", "Ojo", "Oshodi-Isolo", "Shomolu", "Surulere"
+];
+
+const CANONICAL_LGA_MAP = {
+    "AGEGE": "Agege",
+    "AJEROMI-IFELODUN": "Ajeromi-Ifelodun",
+    "AJEROMI": "Ajeromi-Ifelodun",
+    "AJEROMI IFELODUN": "Ajeromi-Ifelodun",
+    "ALIMOSHO": "Alimosho",
+    "AMUWO-ODOFIN": "Amuwo-Odofin",
+    "AMUWO": "Amuwo-Odofin",
+    "AMUWO ODOFIN": "Amuwo-Odofin",
+    "TRADEFAIR": "Amuwo-Odofin",
+    "TRADE FAIR": "Amuwo-Odofin",
+    "FESTAC": "Amuwo-Odofin",
+    "APAPA": "Apapa",
+    "BADAGRY": "Badagry",
+    "EPE": "Epe",
+    "ETI-OSA": "Eti-Osa",
+    "ETI OSA": "Eti-Osa",
+    "IBEJU-LEKKI": "Ibeju-Lekki",
+    "IBEJU LEKKI": "Ibeju-Lekki",
+    "IBEJU": "Ibeju-Lekki",
+    "IFAKO-IJAIYE": "Ifako-Ijaiye",
+    "IFAKO IJAIYE": "Ifako-Ijaiye",
+    "IFAKO": "Ifako-Ijaiye",
+    "IKEJA": "Ikeja",
+    "IKORODU": "Ikorodu",
+    "KOSOFE": "Kosofe",
+    "LAGOS ISLAND": "Lagos Island",
+    "ISLAND": "Lagos Island",
+    "LAGOS MAINLAND": "Lagos Mainland",
+    "MAINLAND": "Lagos Mainland",
+    "MUSHIN": "Mushin",
+    "OJO": "Ojo",
+    "OSHODI-ISOLO": "Oshodi-Isolo",
+    "OSHODI": "Oshodi-Isolo",
+    "ISOLO": "Oshodi-Isolo",
+    "SHOMOLU": "Shomolu",
+    "SOMOLU": "Shomolu",
+    "SURULERE": "Surulere",
+    "SURU-LERE": "Surulere"
+};
+
+const LGA_KEYWORD_MAP = {
+    "Agege":            ["agege", "ifon road", "oko-oba", "oko oba", "abule egba", "abule-egba", "dopemu", "tabon tabon", "pen cinema", "agbotikuyo"],
+    "Ajeromi-Ifelodun": ["ajeromi", "ifelodun", "ajegunle", "tolu", "layeni", "badia", "alayabiagba", "olodi", "boundary", "orileiganmu", "orile iganmu"],
+    "Alimosho":         ["alimosho", "ikotun", "igando", "egbe", "idimu", "meiran", "shasha", "akowonjo", "akwonjo", "iyana ipaja", "ipaja", "ayobo", "meran", "baruwa", "abesan", "egbeda", "gowon estate", "command", "alaja", "mosan", "okunola", "alapomeji"],
+    "Amuwo-Odofin":     ["amuwo", "odofin", "mile 2", "mile2", "satellite town", "festac", "ago palace", "mazamaza", "maza-maza", "kirikiri", "trade fair", "tradefair", "alaba express", "abule ado", "abule-ado", "finiger", "apple junction"],
+    "Apapa":            ["apapa", "wharf", "tin can", "tincan", "liverpool", "dockyard", "point road", "burma", "creek road"],
+    "Badagry":          ["badagry", "seme", "ajara", "arawao", "bereko", "toga", "topo"],
+    "Epe":              ["epe", "itoikin", "ejirin", "poka"],
+    "Eti-Osa":          ["eti-osa", "eti osa", "victoria island", "v.i.", " vi ", "ikoyi", "lekki", "oniru", "ajah", "sangotedo", "awoyaya", "maroko", "kuramo", "osapa", "chevron", "jakande", "ilasan", "marwa", "orchid", "agungi", "ikate", "badore", "ilubirin"],
+    "Ibeju-Lekki":      ["ibeju", "eleko", "dangote", "akodo", "bogije", "abijo", "lakowe"],
+    "Ifako-Ijaiye":     ["ifako", "ijaiye", "agbado", "ojokoro", "fagba", "obawole", "ishaga", "ijaye"],
+    "Ikeja":            ["ikeja", "maryland", "ogba", "alausa", "oregun", "opebi", "allen", "toyin", "ikeja gra", "mobolaji bank", "anthony", "mende", "onigbongbo", "computer village", "anifowoshe", "adeniyi jones", "kudirat abiola", "awolowo way", "airport road", "wasimi", "acme"],
+    "Ikorodu":          ["ikorodu", "igbogbo", "owutu", "bayeku", "imota", "agbowa", "odogunyan", "laspotech", "ogolonto", "agric", "isawo", "ebute", "tos benson", "benson"],
+    "Kosofe":           ["kosofe", "ojota", "mile 12", "mile12", "ketu", "oworo", "oworoshoki", "magodo", "alapere", "ikosi", "shangisha", "isiti", "ogudu"],
+    "Lagos Island":     ["lagos island", "broad street", "balogun", "marina", "idumota", "obalende", "carter bridge", "tinubu", "idunmota", "isale eko", "davies", "docemo", "ebute ero", "tom jones", "nnamdi azikiwe", "abibu oki", "martins street", "breadfruit", "odunlami"],
+    "Lagos Mainland":   ["lagos mainland", "yaba", "ebute metta", "ebute-metta", "ebute meta", "abule-oja", "abule oja", "iwaya", "makoko", "otto", "alagomeji", "tejuosho", "jibowu", "adekunle", "akoka", "sabo", "oyigbo", "oyingbo", "borno way", "herbert macaulay"],
+    "Mushin":           ["mushin", "papa ajao", "ilasamaja", "ilasa", "itire road", "agege motor road", "palm avenue", "daleko", "ladipo", "fatai atere", "chalenge"],
+    "Ojo":              ["ojo", "alaba int", "alaba market", "alaba rago", "ijanikin", "iyana iba", "iba", "shibiri", "okoko", "okokomaiko"],
+    "Oshodi-Isolo":     ["oshodi", "isolo", "ejigbo", "ejibo", "cele", "shogunle", "aspamda", "mafoluku", "ilupeju", "okota", "ajaocash", "ajao estate", "bolade", "bucknor", "isheri osun", "isolo road", "matori", "cappa"],
+    "Shomolu":          ["shomolu", "somolu", "bariga", "pedro", "gbagada", "onipanu", "onipan", "badiya", "bajulaiye", "shipeolu", "palmgrove", "palmgroove", "fola agoro"],
+    "Surulere":         ["surulere", "suru-lere", "bode thomas", "itire", "ijesha", "kilo", "ojuelegba", "aguda", "randle", "eric moore", "masha", "lawanson", "adeniran ogunsanya", "adelabu", "stadium", "national stadium", "coker", "orile", "animashaun", "akerele"]
+};
+
+/**
+ * Infers a Lagos LGA from text (address or name).
+ */
+export function inferLGAFromAddress(text) {
+    if (!text) return null;
+    const lower = " " + String(text).toLowerCase() + " ";
+    for (const [lga, keywords] of Object.entries(LGA_KEYWORD_MAP)) {
+        if (keywords.some(kw => lower.includes(kw))) return lga;
+    }
+    return null;
+}
+
+/**
+ * Resolves canonical LGA for a facility record:
+ * 1. Stored f.lga or f.area (normalized via CANONICAL_LGA_MAP)
+ * 2. Inferred from f.address
+ * 3. Fallback: Inferred from f.name
+ */
+export function resolveFacilityLGA(facility) {
+    if (!facility) return null;
+    const raw = (facility.lga || facility.area || "").trim();
+    if (raw) {
+        const upper = raw.toUpperCase();
+        if (CANONICAL_LGA_MAP[upper]) return CANONICAL_LGA_MAP[upper];
+        for (const [k, std] of Object.entries(CANONICAL_LGA_MAP)) {
+            if (upper.includes(k)) return std;
+        }
+    }
+    // Infer from address
+    const fromAddr = inferLGAFromAddress(facility.address);
+    if (fromAddr) return fromAddr;
+
+    // Fallback: Infer from name
+    return inferLGAFromAddress(facility.name);
+}
+
 async function loadAllFacilities(forceRefresh = false) {
     if (!forceRefresh && allFacilities.length > 0 && (Date.now() - lastFetchedFacilities < FACILITIES_CACHE_TTL)) {
         return allFacilities;
@@ -29,6 +137,7 @@ async function loadAllFacilities(forceRefresh = false) {
         snap.forEach(d => {
             const data = d.data();
             data._docId = d.id;
+            data.resolvedLga = resolveFacilityLGA(data);
             allFacilities.push(data);
         });
         allFacilities.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
@@ -265,7 +374,7 @@ function renderDirectoryArea(facilities) {
     // Get unique options for filters
     const activities = [...new Set(facilities.flatMap(f => f.activityTypes || []))].filter(Boolean).sort();
     const zones = [...new Set(facilities.map(f => f.zone ? f.zone.trim() : ""))].filter(Boolean).sort();
-    const lgas = [...new Set(facilities.map(f => (f.lga || f.area || "").trim()))].filter(Boolean).sort();
+    const lgas = [...new Set(facilities.map(f => f.resolvedLga).filter(Boolean))].sort();
     const statuses = [...new Set(facilities.map(f => f.status ? f.status.trim() : ""))].filter(Boolean).sort();
     const years = [...new Set(facilities.map(f => {
         if (!f.lastVisitDate) return null;
@@ -315,7 +424,7 @@ function renderDirectoryArea(facilities) {
                 <label>Local Govt. Area</label>
                 <select id="dirFilterLGA" class="fp-filter-select">
                     <option value="All">All LGAs</option>
-                    ${lgas.map(l => `<option value="${l}" ${dirState.lga === l ? 'selected' : ''}>${l}</option>`).join('')}
+                    ${lgas.map(l => `<option value="${l}" ${dirState.lga.toUpperCase() === l.toUpperCase() ? 'selected' : ''}>${l}</option>`).join('')}
                 </select>
             </div>
             <div class="fp-filter-wrapper">
@@ -339,9 +448,9 @@ function renderDirectoryArea(facilities) {
                     ${years.map(y => `<option value="${y}" ${dirState.year === y ? 'selected' : ''}>${y}</option>`).join('')}
                 </select>
             </div>
-            ${(dirState.lga !== "All" || dirState.zone !== "All" || dirState.activity !== "All" || dirState.status !== "All" || dirState.year !== "All") ? `
+            ${(dirState.lga !== "All" || dirState.zone !== "All" || dirState.activity !== "All" || dirState.status !== "All" || dirState.year !== "All" || dirState.letter !== "A") ? `
             <div class="fp-filter-wrapper" style="align-self: flex-end;">
-                <button id="dirClearFilters" class="fp-btn-outline" style="font-size: 12px; padding: 6px 12px; height: 36px;">✕ Clear Filters</button>
+                <button id="dirClearFilters" class="fp-btn-outline" style="font-size: 12px; padding: 6px 12px; height: 36px;">✕ Reset Filters</button>
             </div>
             ` : ''}
         </div>
@@ -390,7 +499,7 @@ function renderDirectoryArea(facilities) {
         autoLinkBtn.onclick = () => autoLinkFacilities(facilities);
     }
 
-    // Clear filters button
+    // Reset filters button
     const clearFiltersBtn = document.getElementById("dirClearFilters");
     if (clearFiltersBtn) {
         clearFiltersBtn.onclick = () => {
@@ -399,6 +508,7 @@ function renderDirectoryArea(facilities) {
             dirState.lga = "All";
             dirState.status = "All";
             dirState.year = "All";
+            dirState.letter = "ALL";
             renderDirectoryArea(facilities);
         };
     }
@@ -408,7 +518,12 @@ function renderDirectoryArea(facilities) {
         const el = document.getElementById(id);
         if (el) el.addEventListener("change", () => {
             dirState[key] = el.value;
-            renderDirectoryResults(facilities);
+            // When filtering by LGA, zone, activity, etc., switch letter filter to ALL
+            // so results aren't blocked by the default "A" letter button!
+            if (dirState[key] !== "All" && dirState.letter === "A") {
+                dirState.letter = "ALL";
+            }
+            renderDirectoryArea(facilities);
         });
     };
     bindFilter("dirFilterActivity", "activity");
@@ -438,7 +553,9 @@ function renderDirectoryResults(facilities) {
             }
         }
         if (dirState.activity !== "All" && !(f.activityTypes || []).includes(dirState.activity)) return false;
-        if (dirState.lga !== "All" && (f.lga || f.area || "").trim() !== dirState.lga) return false;
+        if (dirState.lga !== "All") {
+            if (!f.resolvedLga || f.resolvedLga.toUpperCase() !== dirState.lga.toUpperCase()) return false;
+        }
         if (dirState.zone !== "All" && f.zone !== dirState.zone) return false;
         if (dirState.status !== "All" && f.status !== dirState.status) return false;
         if (dirState.year !== "All") {
@@ -471,7 +588,7 @@ function renderDirectoryResults(facilities) {
                     ${f.lastVisitDate ? `<div style="margin-top:4px;">⏱️ Last Visit: ${f.lastVisitDate}</div>` : ""}
                 </div>
                 <div class="fp-dir-card-tags">
-                    ${(f.lga || f.area) ? `<span class="fp-tag fp-tag-lga" title="Local Government Area">${f.lga || f.area}</span>` : ""}
+                    ${f.resolvedLga ? `<span class="fp-tag fp-tag-lga" title="Local Government Area">📍 ${f.resolvedLga}</span>` : ""}
                     ${f.zone ? `<span class="fp-tag fp-tag-zone">${f.zone}</span>` : ""}
                     ${f.status ? `<span class="fp-status-badge fp-status-${(f.status || 'Active').toLowerCase().replace(/\s/g, '-')}" style="padding: 2px 6px; font-size: 10px;">${f.status}</span>` : ""}
                 </div>
@@ -519,8 +636,7 @@ async function renderProfile(container, facility) {
                     </div>
                     <div class="fp-profile-tags">
                         ${facility.fileNumber ? `<span class="fp-tag fp-tag-file">${facility.fileNumber}</span>` : ""}
-                        ${facility.zone ? `<span class="fp-tag fp-tag-zone">${facility.zone}</span>` : ""}
-                        ${facility.lga ? `<span class="fp-tag fp-tag-lga">${facility.lga}</span>` : ""}
+                        ${(facility.resolvedLga || facility.lga || facility.area) ? `<span class="fp-tag fp-tag-lga" title="Local Government Area">📍 ${facility.resolvedLga || facility.lga || facility.area}</span>` : ""}
                         ${(facility.activityTypes || []).map(at => `<span class="fp-tag fp-tag-activity">${at}</span>`).join("")}
                     </div>
                 </div>
@@ -1072,7 +1188,7 @@ function showEditProfileModal(facility) {
                 </div>
                 <div class="form-group">
                     <label>LGA</label>
-                    <input type="text" id="editFacLGA" value="${facility.lga || ""}">
+                    <input type="text" id="editFacLGA" value="${facility.lga || facility.resolvedLga || ""}">
                 </div>
             </div>
             <div class="controls" style="margin-top: 24px;">
