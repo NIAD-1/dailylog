@@ -627,16 +627,20 @@ export async function renderActivityHub(root, config) {
           const prodType = getAdvertProductTypeFolder(item.mainProductType);
           const itemYear = getItemYear(item) || new Date().getFullYear();
           const itemMonth = getItemMonth(item);
-          const advName = (item.advertName || 'GENERAL_ADVERT').replace(/[."*:<>?\/\\|]/g, '').trim();
-          const compName = (item.advertCompany || '').replace(/[."*:<>?\/\\|]/g, '').trim();
+          const compName = (item.advertCompany || item.companyName || item.advertiser || item.facilityName || '').replace(/[."*:<>?\/\\|]/g, '').trim();
+          const advName = (item.advertName || item.productName || item.brandName || (item.advertCompany ? 'GENERAL_ADVERT' : '')).replace(/[."*:<>?\/\\|]/g, '').trim();
           const isUnexp = String(item.advertCategory || '').toLowerCase().includes('unexpect');
           const monthPath = itemMonth ? `/${itemMonth}` : '';
           let entityPath = '';
-          if (compName) {
+          if (compName && advName) {
             entityPath = isUnexp
               ? `/Unexpected Adverts/${encodeURIComponent(compName)}/${encodeURIComponent(advName)}`
               : `/${encodeURIComponent(compName)}/${encodeURIComponent(advName)}`;
-          } else {
+          } else if (compName) {
+            entityPath = isUnexp
+              ? `/Unexpected Adverts/${encodeURIComponent(compName)}`
+              : `/${encodeURIComponent(compName)}`;
+          } else if (advName) {
             entityPath = isUnexp
               ? `/Unexpected Adverts/${encodeURIComponent(advName)}`
               : `/${encodeURIComponent(advName)}`;
